@@ -1,0 +1,77 @@
+# --- Visual Studio / MSBuild ---
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.VC.db
+*.VC.VC.opendb
+*.opendb
+ipch/
+*.aps
+*.ncb
+*.cache
+*.ilk
+*.meta
+*.obj
+*.pch
+*.pdb
+*.ipdb
+*.iobj
+*.exp
+*.tlog/
+*.lastbuildstate
+*.recipe
+*.FileListAbsolute.txt
+*.idb
+*.sdf
+*.opensdf
+
+# --- Build outputs (Cookie layout) ---
+/obj/
+/bin/
+/build/
+/x64/
+/Cookie/
+BlackBoneLib/**/Release/
+BlackBoneLib/**/Debug/
+
+# --- vcpkg manifest mode ---
+/vcpkg_installed/
+
+# --- Third-party (clone manually: see README) ---
+/external/BlackBone/
+
+# --- Generated at build time ---
+/src/launcher/vac3_bypass/vac3_bypass.hpp
+/src/launcher/CookiePayload.rc
+/src/launcher/lib/*.lib
+/external/BlackBone/**/BlackBone.lib
+
+# --- Runtime / local logs ---
+*.log
+debug.log
+imgui.ini
+*.ini.bak
+
+# --- OS & editor ---
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.swp
+*~
+.DS_Store
+
+# --- Backup / temp ---
+*.bak
+*.tmp
+*.temp
+~$*
+
+# --- Secrets (never commit) ---
+.env
+.env.*
+*.pfx
+*.key
+credentials.json

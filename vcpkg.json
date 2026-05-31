@@ -1,0 +1,15 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
+  "name": "cookie",
+  "version-string": "1.4",
+  "builtin-baseline": "00d899c410b31467733472fc3a83a25729046b13",
+  "dependencies": [
+    "protobuf"
+  ],
+  "overrides": [
+    {
+      "name": "protobuf",
+      "version": "3.21.12#4"
+    }
+  ]
+}
