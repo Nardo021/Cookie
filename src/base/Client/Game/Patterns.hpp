@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-// Signature patterns — see patterns/pattern.txt (LAST CHECKED: 25/05/2026)
+// Signature patterns — see patterns/pattern.txt
 
 namespace Patterns
 {
@@ -8,7 +8,7 @@ namespace Patterns
     constexpr const char* sig_Present = "48 89 5C 24 ? 48 89 6C 24 ? 56 57 41 54 41 56 41 57 48 83 EC ? 41 8B E8";
 
     // client.dll
-    constexpr const char* sig_CreateMove_client = "48 8B C4 4C 89 40 ? 48 89 48 ? 55 53 41 54";
+    constexpr const char* sig_CreateMove = "48 8B C4 4C 89 40 ? 48 89 48 ? 55 53 41 54";
     constexpr const char* sig_OverrideView = "40 57 48 83 EC ? 48 8B FA E8 ? ? ? ? BA";
     constexpr const char* sig_DrawScopeOverlay = "48 8B C4 53 57 48 83 EC ? 48 8B FA";
     constexpr const char* sig_DrawLegs = "40 55 53 56 41 56 41 57 48 8D AC 24 ? ? ? ? 48 81 EC ? ? ? ? F2 0F 10 42";
@@ -23,7 +23,6 @@ namespace Patterns
     constexpr const char* sig_LevelShutdown = "48 83 EC ? 48 8B 0D ? ? ? ? 48 8D 15 ? ? ? ? 45 33 C9 45 33 C0 ? ? ? FF 50 ? 48 85 C0 74 ? 48 8B 0D ? ? ? ? 48 8B D0 ? ? ? 41 FF 50 ? 48 83 C4";
     constexpr const char* sig_FlashOverlay = "85 D2 0F 88 ? ? ? ? 48 89 4C 24 ? 55 56";
     constexpr const char* sig_TraceShape = "48 89 5C 24 ? 48 89 4C 24 ? 55 57";
-    constexpr const char* sig_TraceManager = "48 8B 0D ? ? ? ? 48 8D 55 ? 66 89 44 24";
     constexpr const char* sig_ChangeModel = "40 53 48 83 EC ? 48 8B D9 4C 8B C2 48 8B 0D ? ? ? ? 48 8D 54 24";
     constexpr const char* sig_FrameStageNotify = "48 89 5C 24 ? 48 89 6C 24 ? 57 48 83 EC ? 48 8B F9 33 ED";
     constexpr const char* sig_OnAddEntity = "48 89 74 24 ? 57 48 83 EC ? 41 B9 ? ? ? ? 41 8B C0 41 23 C1 48 8B F2 41 83 F8 ? 48 8B F9 44 0F 45 C8 41 81 F9 ? ? ? ? 73 ? FF 81";
@@ -78,10 +77,16 @@ namespace Patterns
     constexpr const char* sig_GetPlayerTeamName = "48 89 5C 24 ? 48 89 6C 24 ? 48 89 74 24 ? 57 48 83 EC ? 48 8B CA 48 8B EA";
     constexpr const char* sig_IsLatched = "0F B6 81 ? ? ? ? C3 ? ? ? ? ? ? ? ? 48 83 EC ? 33 C9";
     constexpr const char* sig_DrawOverhead = "40 53 48 83 EC ? 48 8B D9 83 FA ? 75";
+    constexpr const char* sig_CalculateWorldSpaceBones = "48 89 4C 24 ? 55 53 56 57 41 54 41 55 41 56 41 57 B8 ? ? ? ? E8 ? ? ? ? 48 2B E0 48 8D 6C 24 ? 48 8B 81";
+    constexpr const char* sig_CreateNewSubtickMoveStep = "48 89 5C 24 ? 57 48 83 EC ? 33 DB 48 8B F9 48 85 C9 75 ? B9 ? ? ? ? E8 ? ? ? ? 48 85 C0 74 ? 45 33 C0 33 D2 48 8B C8 E8 ? ? ? ? 48 8B D8 48 8B C3 48 8B 5C 24 ? 48 83 C4 ? 5F C3 4C 8D 05 ? ? ? ? BA ? ? ? ? E8 ? ? ? ? 45 33 C0 48 8B D7 48 8B C8 E8 ? ? ? ? 48 8B 5C 24 ? 48 83 C4 ? 5F C3 ? ? ? ? ? 48 89 5C 24 ? 57 48 83 EC ? 33 FF 48 8B D9 48 85 C9 75 ? B9 ? ? ? ? E8 ? ? ? ? 48 85 C0 74 ? 48 89 78 ? EB ? 48 8B C7 48 8B 5C 24 ? 48 83 C4 ? 5F C3 4C 8D 05 ? ? ? ? BA ? ? ? ? E8 ? ? ? ? 48 89 58 ? 48 8B 5C 24 ? 48 8D 0D ? ? ? ? ? ? ? 33 C9 48 89 48 ? 48 89 78 ? 48 83 C4 ? 5F C3 ? ? ? ? ? 48 89 5C 24 ? 56";
+    constexpr const char* sig_Shutdown = "48 89 5C 24 ? 55 56 57 41 54 41 55 41 56 41 57 48 81 EC ? ? ? ? 8B 0D";
+    constexpr const char* sig_GetSOCache = "48 89 5C 24 ? 57 48 83 EC ? 4C 8B 52";
 
-    // Third person sv_cheats bypass (client.dll) — not in pattern.txt, kept for existing hook
+    constexpr const char* sig_TraceManager = "48 8B 0D ? ? ? ? 48 8D 55 ? 66 89 44 24";
     constexpr const char* sig_ThirdPersonReset = "48 8B 40 08 44 38 20 75 10 44 88 67 01";
     constexpr const char* sig_ThirdPersonBypassAlt = "75 15 44 88 BC 3E ? ? ? ? 44 89 BC 3E";
+    constexpr const char* sig_CreateMoveHook = "85 D2 0F 85 ? ? ? ? 48 8B C4 44 88 40 18";
+    constexpr const char* sig_SerializePartialToArray = "48 89 5C 24 ? 55 56 57 48 81 EC ? ? ? ? 48 8B 05 ? ? ? ? 48 33 C4 48 89 84 24 ? ? ? ? 49 63 F0";
 
     // materialsystem2.dll
     constexpr const char* sig_CreateMaterial = "48 89 5C 24 ? 48 89 6C 24 ? 48 89 74 24 ? 48 89 7C 24 ? 41 56 48 81 EC ? ? ? ? 48 8B 05 ? ? ? ? 48 8B F2";

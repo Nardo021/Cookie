@@ -2,6 +2,9 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="src\base\Client\CCookieClient.cpp" />
+    <ClCompile Include="src\base\Client\Features\Cookie\Bhop.cpp" />
+    <ClCompile Include="src\base\Client\Features\Cookie\ThirdPerson.cpp" />
+    <ClCompile Include="src\base\Client\Game\Trace.cpp" />
     <ClCompile Include="src\base\Client\CCookieGUI.cpp" />
     <ClCompile Include="src\base\Client\Fonts\CFont.cpp" />
     <ClCompile Include="src\base\Client\Fonts\CFontManager.cpp" />

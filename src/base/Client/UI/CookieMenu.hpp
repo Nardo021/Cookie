@@ -6,6 +6,7 @@
 #include "AntiAim.hpp"
 #include "NoSpread.hpp"
 #include "Bhop.hpp"
+#include "ThirdPerson.hpp"
 #include "Triggerbot.hpp"
 #include "TextureOverride.hpp"
 #include "PaintKits.hpp"
@@ -283,22 +284,24 @@ namespace CookieUI
                 
                 ImGui::Text("Other");
                 ImGui::Checkbox("Bunny Hop", &Bhop::config.enabled);
+                ImGui::Checkbox("Edge Jump", &Bhop::config.edgeJump);
+                ImGui::Checkbox("Jump Bug", &Bhop::config.jumpBug);
                 ImGui::Checkbox("Hold Space (Bhop)", &Bhop::config.requireSpace);
                 ImGui::Checkbox("Auto Forward", &Bhop::config.autoForward);
                 ImGui::Checkbox("Auto Strafe", &Bhop::config.autoStrafe);
                 ImGui::Checkbox("Bullet Tracers", &BulletTracer::config.enabled);
-                ImGui::Checkbox("Third Person Camera", &thirdPerson);
-                if ( thirdPerson )
+                ImGui::Checkbox("Third Person Camera", &ThirdPerson::config.enabled);
+                if ( ThirdPerson::config.enabled )
                 {
-                    ImGui::SliderFloat( "Third Person Distance" , &thirdPersonDistance , 40.f , 400.f , "%.0f" );
+                    ImGui::SliderFloat( "Third Person Distance" , &ThirdPerson::config.distance , 40.f , 400.f , "%.0f" );
                     ImGui::SameLine();
                     if ( ImGui::Button( "Reset##ThirdPersonDist" ) )
-                        thirdPersonDistance = thirdPersonDistanceDefault;
+                        ThirdPerson::config.distance = ThirdPerson::Config::kDistanceDefault;
 
-                    ImGui::SliderInt( "Third Person FOV" , &thirdPersonFov , 60 , 140 , "%d" );
+                    ImGui::SliderInt( "Third Person FOV" , &ThirdPerson::config.fov , 60 , 140 , "%d" );
                     ImGui::SameLine();
                     if ( ImGui::Button( "Reset##ThirdPersonFov" ) )
-                        thirdPersonFov = thirdPersonFovDefault;
+                        ThirdPerson::config.fov = ThirdPerson::Config::kFovDefault;
                 }
                 ImGui::Checkbox( "Anti-Aim" , &AntiAim::config.enabled );
                 if ( AntiAim::config.enabled )

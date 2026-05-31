@@ -1,8 +1,8 @@
 // -------------------------------- //
-//    PATTERNS: 87                  //
-//    UPDATED:  87                  //
+//    PATTERNS: 91                  //
+//    UPDATED:  91                  //
 //    OUTDATED: 0                   //
-//    LAST CHECKED: 25/05/2026      //
+//    LAST CHECKED: 31/05/2026      //
 // -------------------------------- //
 
 // GameOverlayRenderer64.dll (steam)
@@ -78,6 +78,10 @@
 #define GETPLAYERTEAMNAME_PATTERN "48 89 5C 24 ? 48 89 6C 24 ? 48 89 74 24 ? 57 48 83 EC ? 48 8B CA 48 8B EA"
 #define ISLATCHED_PATTERN "0F B6 81 ? ? ? ? C3 ? ? ? ? ? ? ? ? 48 83 EC ? 33 C9"
 #define DRAWOVERHEAD_PATTERN "40 53 48 83 EC ? 48 8B D9 83 FA ? 75"
+#define CALCULATEWORLDSPACEBONES_PATTERN "48 89 4C 24 ? 55 53 56 57 41 54 41 55 41 56 41 57 B8 ? ? ? ? E8 ? ? ? ? 48 2B E0 48 8D 6C 24 ? 48 8B 81"
+#define CREATENEWSUBTICKMOVESTEP_PATTERN "48 89 5C 24 ? 57 48 83 EC ? 33 DB 48 8B F9 48 85 C9 75 ? B9 ? ? ? ? E8 ? ? ? ? 48 85 C0 74 ? 45 33 C0 33 D2 48 8B C8 E8 ? ? ? ? 48 8B D8 48 8B C3 48 8B 5C 24 ? 48 83 C4 ? 5F C3 4C 8D 05 ? ? ? ? BA ? ? ? ? E8 ? ? ? ? 45 33 C0 48 8B D7 48 8B C8 E8 ? ? ? ? 48 8B 5C 24 ? 48 83 C4 ? 5F C3 ? ? ? ? ? 48 89 5C 24 ? 57 48 83 EC ? 33 FF 48 8B D9 48 85 C9 75 ? B9 ? ? ? ? E8 ? ? ? ? 48 85 C0 74 ? 48 89 78 ? EB ? 48 8B C7 48 8B 5C 24 ? 48 83 C4 ? 5F C3 4C 8D 05 ? ? ? ? BA ? ? ? ? E8 ? ? ? ? 48 89 58 ? 48 8B 5C 24 ? 48 8D 0D ? ? ? ? ? ? ? 33 C9 48 89 48 ? 48 89 78 ? 48 83 C4 ? 5F C3 ? ? ? ? ? 48 89 5C 24 ? 56"
+#define SHUTDOWN_PATTERN "48 89 5C 24 ? 55 56 57 41 54 41 55 41 56 41 57 48 81 EC ? ? ? ? 8B 0D"
+#define GETSOCACHE_PATTERN "48 89 5C 24 ? 57 48 83 EC ? 4C 8B 52"
 
 // materialsystem2.dll
 #define CREATEMATERIAL_PATTERN "48 89 5C 24 ? 48 89 6C 24 ? 48 89 74 24 ? 48 89 7C 24 ? 41 56 48 81 EC ? ? ? ? 48 8B 05 ? ? ? ? 48 8B F2"

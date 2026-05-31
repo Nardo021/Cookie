@@ -2,8 +2,8 @@
 #include <cstddef>
 #include <cstdint>
 
-// Memory offsets — synced from sdk/offsets.hpp + sdk/client_dll.hpp (cs2-dumper 2026-05-29)
-// Signature patterns live in Patterns.hpp (see patterns/pattern.txt)
+// Memory offsets — synced from sdk/offsets.hpp (cs2-dumper 2026-05-29)
+// Signature patterns live in Patterns.hpp
 
 namespace Offsets
 {

@@ -4,15 +4,13 @@
 
 #include <CS2/SDK/Network/CNetworkMessages.hpp>
 
+#include <GameClient/ProtobufSerialize.hpp>
+
 class CCSGOInput;
 
-// Third parameter is frame_active (bool), NOT CUserCmd* (UC thread #750063).
 auto Hook_CreateMove( CCSGOInput* pInput , uint32_t split_screen_index , bool frame_active ) -> bool;
 
 using CreateMove_t = decltype( &Hook_CreateMove );
 inline CreateMove_t CreateMove_o = nullptr;
 
 auto Hook_MessageLite_SerializePartialToArray( google::protobuf::Message* pMsg , void* out_buffer , int size ) -> bool;
-
-using MessageLite_SerializePartialToArray_t = decltype( &Hook_MessageLite_SerializePartialToArray );
-inline MessageLite_SerializePartialToArray_t MessageLite_SerializePartialToArray_o = nullptr;

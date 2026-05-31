@@ -66,12 +66,7 @@ namespace SkinChanger
 
     inline std::atomic<bool> forceUpdate = false;
     inline std::atomic<bool> running = false;
-    inline bool thirdPerson = false;
-    inline constexpr int thirdPersonFovDefault = 90;
-    inline int thirdPersonFov = thirdPersonFovDefault;
-    inline constexpr float thirdPersonDistanceDefault = 150.f;
-    inline float thirdPersonDistance = thirdPersonDistanceDefault;
-    inline ChamsConfig chamsConfig;   // local player arms chams
+    inline ChamsConfig chamsConfig;
     inline uintptr_t regenAddr = 0;
     inline bool regenPatched = false;
     inline std::mutex configMutex;
@@ -298,19 +293,6 @@ namespace SkinChanger
         return false;
     }
 
-    inline CCSGOInput* GetCSGOInput()
-    {
-        if ( !Game::clientBase )
-            return nullptr;
-
-        return Game::Read<CCSGOInput*>( Game::clientBase + Offsets::dwCSGOInput );
-    }
-
-    inline void ShutdownThirdPerson()
-    {
-        thirdPerson = false;
-    }
-
     // --- Main Tick ---
     inline void TickInner()
     {
@@ -452,9 +434,6 @@ namespace SkinChanger
                 }
             }
         }
-
-        // ===== THIRD PERSON CAMERA =====
-        // Third person camera is applied in Hook_OverrideView (trace-based).
 
         // ===== CHAMS =====
         // NOTE: m_clrRender does NOT work for viewmodels in CS2.

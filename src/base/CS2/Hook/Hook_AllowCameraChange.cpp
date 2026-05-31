@@ -3,12 +3,13 @@
 #include <Windows.h>
 
 #include <Client/Features/Cookie/AntiAim.hpp>
-#include <Client/Features/Cookie/SkinChanger.hpp>
+#include <Client/Features/Cookie/ThirdPerson.hpp>
 #include <Client/Game/Game.hpp>
 #include <Client/Game/Offsets.hpp>
 #include <CS2/SDK/FunctionListSDK.hpp>
 #include <CS2/SDK/Math/QAngle.hpp>
 #include <CS2/SDK/Update/CCSGOInput.hpp>
+#include <GameClient/CL_Input.hpp>
 
 namespace
 {
@@ -18,7 +19,7 @@ namespace
 
 auto Hook_AllowCameraChange( CCSGOInput* input , void* a2 ) -> void
 {
-	if ( AntiAim::config.enabled && input )
+	if ( ( AntiAim::config.enabled || ThirdPerson::config.enabled ) && input )
 	{
 		QAngle saved = *CCSGOInput_GetViewAngles( input , 0 );
 		AllowCameraChange_o( input , a2 );
@@ -37,7 +38,7 @@ auto AntiAim::InitHook() -> void
 	if ( !Game::clientBase )
 		Game::clientBase = Game::GetModuleBase( L"client.dll" );
 
-	auto* input = SkinChanger::GetCSGOInput();
+	auto* input = GetCL_Input();
 	if ( !input )
 		return;
 

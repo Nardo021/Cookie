@@ -10,6 +10,7 @@
 
 #include <CS2/SDK/Interface/CInputSystem.hpp>
 #include <CS2/SDK/FunctionListSDK.hpp>
+#include <GameClient/ProtobufSerialize.hpp>
 
 static CL_Bypass g_CL_Bypass{};
 
@@ -24,12 +25,20 @@ auto CL_Bypass::PostClientCreateMove( CCSGOInput* pCCSGOInput , CUserCmd* pUserC
 	if ( !pUserCmd || !m_backupReady || !m_needsPostProcess )
 		return;
 
+	const PostProcessScope postProcessScope( *this );
+
 	int EncodeLen = 0;
 
 	const auto OriginalCrc = pUserCmd->cmd.base().move_crc();
 	const auto OriginalCrcBase64 = base64( (unsigned char*)OriginalCrc.c_str() , OriginalCrc.size() , &EncodeLen );
 
 	const auto SpoofedOriginalCrc = SpoofCrc();
+	if ( SpoofedOriginalCrc.empty() )
+	{
+		m_backupReady = false;
+		return;
+	}
+
 	const auto SpoofedOriginalCrcBase64 = base64( (unsigned char*)SpoofedOriginalCrc.c_str() , SpoofedOriginalCrc.size() , &EncodeLen );
 
 	if ( std::string( OriginalCrcBase64 ) != std::string( SpoofedOriginalCrcBase64 ) )
@@ -57,6 +66,11 @@ auto CL_Bypass::PostClientCreateMove( CCSGOInput* pCCSGOInput , CUserCmd* pUserC
 	SyncModifiedCmdToBackup( pUserCmd );
 
 	const auto SpoofedCrc = SpoofCrc();
+	if ( SpoofedCrc.empty() )
+	{
+		m_backupReady = false;
+		return;
+	}
 
 	pUserCmd->cmd.mutable_base()->set_move_crc( SpoofedCrc );
 }
@@ -152,22 +166,22 @@ auto CL_Bypass::SetDontAttack( CUserCmd* pUserCmd , bool AddSubTIck ) -> void
 #endif
 }
 
-auto CL_Bypass::SetJump( CUserCmd* pUserCmd , bool pressed , bool addSubTick , float when ) -> void
+auto CL_Bypass::SetButton( CUserCmd* pUserCmd , uint64_t button , bool pressed , bool addSubTick , float when ) -> void
 {
 	if ( !pUserCmd )
 		return;
 
 	if ( pressed )
 	{
-		pUserCmd->button_states.buttonstate1 |= IN_JUMP;
-		pUserCmd->button_states.buttonstate2 |= IN_JUMP;
-		pUserCmd->button_states.buttonstate3 |= IN_JUMP;
+		pUserCmd->button_states.buttonstate1 |= button;
+		pUserCmd->button_states.buttonstate2 |= button;
+		pUserCmd->button_states.buttonstate3 |= button;
 	}
 	else
 	{
-		pUserCmd->button_states.buttonstate1 &= ~IN_JUMP;
-		pUserCmd->button_states.buttonstate2 &= ~IN_JUMP;
-		pUserCmd->button_states.buttonstate3 &= ~IN_JUMP;
+		pUserCmd->button_states.buttonstate1 &= ~button;
+		pUserCmd->button_states.buttonstate2 &= ~button;
+		pUserCmd->button_states.buttonstate3 &= ~button;
 	}
 
 	m_needsPostProcess = true;
@@ -181,8 +195,8 @@ auto CL_Bypass::SetJump( CUserCmd* pUserCmd , bool pressed , bool addSubTick , f
 
 	if ( addSubTick )
 	{
-		AddProcessSubTick( IN_JUMP , pressed );
-		AddSubtickMoveStep( pUserCmd , IN_JUMP , pressed , when );
+		AddProcessSubTick( button , pressed );
+		AddSubtickMoveStep( pUserCmd , button , pressed , when );
 	}
 
 #endif
@@ -202,7 +216,10 @@ auto CL_Bypass::AddSubTickMove( CUserCmd* pUserCmd , const uint64_t button , con
 
 auto CL_Bypass::OnCBaseUserCmdPB( CBaseUserCmdPB* pBaseUserCmdPB ) -> void
 {
-	m_Backup = *pBaseUserCmdPB;
+	if ( !pBaseUserCmdPB || pBaseUserCmdPB == &m_Backup || m_inPostProcess )
+		return;
+
+	m_Backup.CopyFrom( *pBaseUserCmdPB );
 	m_backupReady = true;
 }
 
@@ -231,6 +248,56 @@ auto CL_Bypass::AddSubtickMoveStep( CUserCmd* pUserCmd , const uint64_t button ,
 #endif
 }
 
+auto CL_Bypass::ApplyJumpBug( CUserCmd* pUserCmd , float landFraction ) -> void
+{
+#if DISABLE_PROTOBUF == 0
+	if ( !pUserCmd )
+		return;
+
+	pUserCmd->button_states.buttonstate1 |= IN_DUCK | IN_JUMP;
+	pUserCmd->button_states.buttonstate2 |= IN_DUCK | IN_JUMP;
+	pUserCmd->button_states.buttonstate3 |= IN_DUCK | IN_JUMP;
+
+	auto* buttonsPb = pUserCmd->cmd.mutable_base()->mutable_buttons_pb();
+	buttonsPb->set_buttonstate1( pUserCmd->button_states.buttonstate1 );
+	buttonsPb->set_buttonstate2( pUserCmd->button_states.buttonstate2 );
+	buttonsPb->set_buttonstate3( pUserCmd->button_states.buttonstate3 );
+
+	AddSubtickMoveStep( pUserCmd , IN_DUCK , true , 0.f );
+	AddSubtickMoveStep( pUserCmd , IN_DUCK , false , landFraction );
+	AddSubtickMoveStep( pUserCmd , IN_JUMP , false , landFraction );
+	AddSubtickMoveStep( pUserCmd , IN_JUMP , true , landFraction );
+
+	m_needsPostProcess = true;
+#endif
+}
+
+auto CL_Bypass::AddSubtickStrafeStep( CUserCmd* pUserCmd , float yawDelta , float pitchDelta , float when ) -> void
+{
+#if DISABLE_PROTOBUF == 0
+	if ( !pUserCmd )
+		return;
+
+	auto* base = pUserCmd->cmd.mutable_base();
+	if ( !base )
+		return;
+
+	CSubtickMoveStep* subtick = base->add_subtick_moves();
+	if ( !subtick )
+		return;
+
+	subtick->set_when( when );
+	subtick->set_button( 0 );
+	subtick->set_pressed( false );
+	subtick->set_analog_forward_delta( 0.f );
+	subtick->set_analog_left_delta( 0.f );
+	subtick->set_yaw_delta( yawDelta );
+	subtick->set_pitch_delta( pitchDelta );
+
+	m_needsPostProcess = true;
+#endif
+}
+
 auto CL_Bypass::SyncModifiedCmdToBackup( CUserCmd* pUserCmd ) -> void
 {
 #if DISABLE_PROTOBUF == 0
@@ -255,8 +322,8 @@ auto CL_Bypass::SpoofCrc() -> std::string
 	std::vector<uint8_t> bytes;
 	bytes.resize( size );
 
-	if ( !m_Backup.SerializePartialToArray( bytes.data() , size ) )
-		DEV_LOG( "SpoofCrc: #1\n" );
+	if ( !ProtobufSerializePartialToArrayOriginal || !ProtobufSerializePartialToArrayOriginal( &m_Backup , bytes.data() , size ) )
+		return {};
 
 	return std::string( bytes.begin() , bytes.end() );
 }

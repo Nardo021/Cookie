@@ -241,6 +241,7 @@ public:
 	SCHEMA_OFFSET( "C_BaseEntity" , "m_iHealth" , m_iHealth , int32 );
 	SCHEMA_OFFSET( "C_BaseEntity" , "m_iTeamNum" , m_iTeamNum , uint8 );
 	SCHEMA_OFFSET( "C_BaseEntity" , "m_fFlags" , m_fFlags , uint32 );
+	SCHEMA_OFFSET( "C_BaseEntity" , "m_vecAbsVelocity" , m_vecAbsVelocity , Vector3 );
 	SCHEMA_OFFSET( "C_BaseEntity" , "m_MoveType" , m_MoveType , MoveType_t );
 	SCHEMA_OFFSET( "C_BaseEntity" , "m_hOwnerEntity" , m_hOwnerEntity , CHandle );
 	SCHEMA_OFFSET( "C_BaseEntity" , "m_nSubclassID" , m_nSubclassID , CUtlStringToken );

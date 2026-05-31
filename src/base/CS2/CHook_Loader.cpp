@@ -17,6 +17,8 @@
 #include <CS2/Hook/Hook_GetMatricesForView.hpp>
 #include <CS2/Hook/Hook_OverrideView.hpp>
 #include <CS2/Hook/Hook_CreateMove.hpp>
+#include <Client/Game/Patterns.hpp>
+#include <GameClient/ProtobufSerialize.hpp>
 #include <CS2/Hook/Hook_OnClientOutput.hpp>
 #include <CS2/Hook/Hook_ParseMessage.hpp>
 #include <CS2/Hook/Hook_IsRelativeMouseMode.hpp>
@@ -53,7 +55,7 @@ auto CHook_Loader::InstallSecondHook() -> bool
 		sub_180095150 -> PresentOverlay
 		sub_18008ED80(*(_QWORD *)(v4 + 64), sub_180095150, &qword_180162258, 1, "DXGISwapChain_Present");
 		*/
-		{ { XorStr( "Hook::PresentOverlay" ) , XorStr( "48 89 5C 24 ? 48 89 6C 24 ? 56 57 41 54 41 56 41 57 48 83 EC ? 41 8B E8" ) , GAMEOVERLAYRENDER64_DLL } , &Hook_Present , reinterpret_cast<LPVOID*>( &Present_o ) },
+		{ { XorStr( "Hook::PresentOverlay" ) , XorStr( Patterns::sig_Present ) , GAMEOVERLAYRENDER64_DLL } , &Hook_Present , reinterpret_cast<LPVOID*>( &Present_o ) },
 		/*
 		sub_180095520 -> ResizeBuffers
 		sub_18008ED80(*(_QWORD *)(v4 + 104), sub_180095520, &qword_180162260, 1, "DXGISwapChain_ResizeBuffers");
@@ -65,13 +67,13 @@ auto CHook_Loader::InstallSecondHook() -> bool
 		{ { XorStr( "Hook::CreateSwapChain" ) , XorStr( "40 53 55 56 57 48 83 EC ? 48 8B F9 49 8B F1 48 8D 0D ? ? ? ? 49 8B D8 48 8B EA E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8D 0D ? ? ? ? E8 ? ? ? ? 48 8B 05 ? ? ? ? 4C 8B CE 4C 8B C3 48 8B D5 48 8B CF FF D0 8B D8 85 C0 78 ? 48 85 F6 74 ? 48 83 3E ? 74 ? 48 8B D5 48 8B CE E8 ? ? ? ? 8B C3 48 83 C4 ? 5F 5E 5D 5B C3 CC CC CC CC CC CC CC CC CC CC CC CC CC CC CC 48 83 EC" ) , GAMEOVERLAYRENDER64_DLL } , &Hook_CreateSwapChain , reinterpret_cast<LPVOID*>( &CreateSwapChain_o ) } ,
 		{ { XorStr( "Hook::MouseInputEnabled" ) , XorStr( "40 53 48 83 EC 20 80 B9 ? ? ? ? ? 48 8B D9 75 78" ) , CLIENT_DLL } , &Hook_MouseInputEnabled , reinterpret_cast<LPVOID*>( &MouseInputEnabled_o ) },
 		{ { XorStr( "Hook::FireEventClientSide" ) , XorStr( "40 53 41 54 41 56 48 83 EC ? 4C 8B F2" ) , CLIENT_DLL } , &Hook_FireEventClientSide , reinterpret_cast<LPVOID*>( &FireEventClientSide_o ) },
-		{ { XorStr( "Hook::OnAddEntity" ) , XorStr( "48 89 74 24 10 57 48 83 EC 20 41 B9 FF 7F 00 00 41 8B C0 41 23 C1 48 8B F2 41 83 F8 FF 48 8B F9 44 0F 45 C8 41 81 F9 00 40 00 00 73 0D" ) , CLIENT_DLL } , &Hook_OnAddEntity , reinterpret_cast<LPVOID*>( &OnAddEntity_o ) },
-		{ { XorStr( "Hook::OnRemoveEntity" ) , XorStr( "48 89 74 24 10 57 48 83 EC 20 41 B9 FF 7F 00 00 41 8B C0 41 23 C1 48 8B F2 41 83 F8 FF 48 8B F9 44 0F 45 C8 41 81 F9 00 40 00 00 73 08" ) , CLIENT_DLL } , &Hook_OnRemoveEntity , reinterpret_cast<LPVOID*>( &OnRemoveEntity_o ) },
-		{ { XorStr( "Hook::FrameStageNotify" ) , XorStr( "48 89 5C 24 ? 48 89 6C 24 ? 57 48 83 EC ? 48 8B F9 33 ED" ) , CLIENT_DLL } , &Hook_FrameStageNotify , reinterpret_cast<LPVOID*>( &FrameStageNotify_o ) },
+		{ { XorStr( "Hook::OnAddEntity" ) , XorStr( Patterns::sig_OnAddEntity ) , CLIENT_DLL } , &Hook_OnAddEntity , reinterpret_cast<LPVOID*>( &OnAddEntity_o ) },
+		{ { XorStr( "Hook::OnRemoveEntity" ) , XorStr( Patterns::sig_OnRemoveEntity ) , CLIENT_DLL } , &Hook_OnRemoveEntity , reinterpret_cast<LPVOID*>( &OnRemoveEntity_o ) },
+		{ { XorStr( "Hook::FrameStageNotify" ) , XorStr( Patterns::sig_FrameStageNotify ) , CLIENT_DLL } , &Hook_FrameStageNotify , reinterpret_cast<LPVOID*>( &FrameStageNotify_o ) },
 		{ { XorStr( "Hook::GetMatricesForView" ) , XorStr( "48 8B C4 48 89 68 ? 48 89 70 ? 57 48 81 EC ? ? ? ? 0F 29 70 ? 49 8B F1" ) , CLIENT_DLL } , &Hook_GetMatricesForView , reinterpret_cast<LPVOID*>( &GetMatricesForView_o ) },
-		{ { XorStr( "Hook::OverrideView" ) , XorStr( "40 57 48 83 EC ? 48 8B FA E8 ? ? ? ? BA" ) , CLIENT_DLL } , &Hook_OverrideView , reinterpret_cast<LPVOID*>( &OverrideView_o ) },
-		{ { XorStr( "Hook::CreateMove" ) , XorStr( "85 D2 0F 85 ? ? ? ? 48 8B C4 44 88 40 18" ) , CLIENT_DLL } , &Hook_CreateMove , reinterpret_cast<LPVOID*>( &CreateMove_o ) },
-		{ { XorStr( "Hook::SerializePartialToArray" ) , XorStr( "48 89 5C 24 ? 55 56 57 48 81 EC ? ? ? ? 48 8B 05 ? ? ? ? 48 33 C4 48 89 84 24 ? ? ? ? 49 63 F0" ) , CLIENT_DLL } , &Hook_MessageLite_SerializePartialToArray , reinterpret_cast<LPVOID*>( &MessageLite_SerializePartialToArray_o ) },
+		{ { XorStr( "Hook::OverrideView" ) , XorStr( Patterns::sig_OverrideView ) , CLIENT_DLL } , &Hook_OverrideView , reinterpret_cast<LPVOID*>( &OverrideView_o ) },
+		{ { XorStr( "Hook::CreateMove" ) , XorStr( Patterns::sig_CreateMoveHook ) , CLIENT_DLL } , &Hook_CreateMove , reinterpret_cast<LPVOID*>( &CreateMove_o ) },
+		{ { XorStr( "Hook::SerializePartialToArray" ) , XorStr( Patterns::sig_SerializePartialToArray ) , CLIENT_DLL } , &Hook_MessageLite_SerializePartialToArray , reinterpret_cast<LPVOID*>( &ProtobufSerializePartialToArrayOriginal ) },
 		{ { XorStr( "Hook::OnClientOutput" ) , XorStr( "48 89 5C 24 ? 55 56 57 41 56 41 57 48 83 EC ? 48 8D 05" ) , ENGINE2_DLL } , &Hook_OnClientOutput , reinterpret_cast<LPVOID*>( &OnClientOutput_o ) },
 		{ { XorStr( "Hook::CDemoRecorder" ) , XorStr( "40 56 57 41 57 48 83 EC ? 4C 8B F9" ) , ENGINE2_DLL } , &Hook_CDemoRecorder , reinterpret_cast<LPVOID*>( &CDemoRecorder_o ) },
 		{ { XorStr( "Hook::IsRelativeMouseMode" ) , XorStr( "48 89 6C 24 ? 48 89 74 24 ? 48 89 7C 24 ? 41 56 48 83 EC ? 0F B6 F2" ) , INPUTSYSTEM_DLL } , &Hook_IsRelativeMouseMode , reinterpret_cast<LPVOID*>( &IsRelativeMouseMode_o ) },
@@ -79,7 +81,7 @@ auto CHook_Loader::InstallSecondHook() -> bool
 		//{ { XorStr( "Hook::UpdateInPVS" ) , XorStr( "48 89 5C 24 ? 48 89 74 24 ? 57 48 83 EC ? 48 8B D9 8B F2 48 8B 89 ? ? ? ? 48 8B 01 FF 50 ? 33 FF 48 85 C0 74 ? 48 8B 80 ? ? ? ? EB ? 48 8B C7 39 B8 ? ? ? ? 0F 8F ? ? ? ? 0F B6 48 ? 80 F9" ) , CLIENT_DLL } , &Hook_UpdateInPVS , reinterpret_cast<LPVOID*>( &UpdateInPVS_o ) },
 		{ { XorStr( "Hook::AntiTamper" ) , XorStr( "40 53 41 57 48 83 EC ? 48 89 74 24 ? 48 8B F1" ) , CLIENT_DLL } , &Hook_AntiTamper , reinterpret_cast<LPVOID*>( &AntiTamper_o ) },
 		{ {XorStr("Hook::IsLoadoutAllowed") , XorStr("48 89 5C 24 ? 48 89 6C 24 ? 48 89 74 24 ? 57 48 83 EC ? 48 8B E9 48 8B 0D ? ? ? ? ? ? ? FF 50") , CLIENT_DLL } ,&Hook_IsLoadoutAllowed , reinterpret_cast<LPVOID*>(&IsLoadoutAllowed_o) , true , true } ,
-		{ { XorStr( "Hook::EquipItemInLoadout" ) , XorStr( "48 89 5C 24 ? 48 89 6C 24 ? 48 89 74 24 ? 89 54 24 ? 57 41 54 41 55 41 56 41 57 48 83 EC ? 0F B7 FA" ) , CLIENT_DLL } ,& Hook_EquipItemInLoadout , reinterpret_cast<LPVOID*>( &EquipItemInLoadout_o ) },
+		{ { XorStr( "Hook::EquipItemInLoadout" ) , XorStr( Patterns::sig_EquipItemInLoadout ) , CLIENT_DLL } ,& Hook_EquipItemInLoadout , reinterpret_cast<LPVOID*>( &EquipItemInLoadout_o ) },
 		{ { XorStr( "Hook::DrawGlow" ) , XorStr( "40 53 48 83 EC 20 48 8B 54" ) , CLIENT_DLL } , &Hook_DrawGlow , reinterpret_cast<LPVOID*>( &DrawGlow_o ) },
 	};
 

@@ -17,6 +17,7 @@
 #include <Client/Features/Cookie/Bhop.hpp>
 #include <Client/Features/Cookie/Esp.hpp>
 #include <Client/Features/Cookie/SkinChanger.hpp>
+#include <Client/Features/Cookie/ThirdPerson.hpp>
 #include <Client/Features/Cookie/TextureOverride.hpp>
 #include <Client/Features/Cookie/Tracers.hpp>
 #include <Client/Game/Game.hpp>
@@ -57,7 +58,7 @@ auto CCookieClient::OnShutdown() -> void
 		return;
 
 	SkinChanger::running.store( false );
-	SkinChanger::ShutdownThirdPerson();
+	ThirdPerson::Shutdown();
 	AntiAim::ShutdownHook();
 	Aimbot::Shutdown();
 	CustomTexture::Shutdown();
@@ -129,8 +130,10 @@ auto CCookieClient::OnCreateMove( CCSGOInput* input , uint32_t slot , CUserCmd* 
 	if ( !Game::clientBase )
 		Game::clientBase = Game::GetModuleBase( L"client.dll" );
 
-	if ( AntiAim::config.enabled )
+	if ( AntiAim::config.enabled || ThirdPerson::config.enabled )
 		AntiAim::InitHook();
+
+	ThirdPerson::ApplyInput( input );
 
 	Aimbot::OnCreateMove( input , slot , cmd );
 

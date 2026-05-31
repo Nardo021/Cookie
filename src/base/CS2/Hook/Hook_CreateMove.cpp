@@ -10,9 +10,24 @@
 #include <GameClient/CL_Players.hpp>
 #include <GameClient/CL_Bypass.hpp>
 
+namespace
+{
+	thread_local int g_BypassSerializeDepth = 0;
+
+	struct BypassSerializeGuard
+	{
+		BypassSerializeGuard() { ++g_BypassSerializeDepth; }
+		~BypassSerializeGuard() { --g_BypassSerializeDepth; }
+	};
+}
+
 auto Hook_CreateMove( CCSGOInput* pCCSGOInput , uint32_t split_screen_index , bool frame_active ) -> bool
 {
 	const auto Result = CreateMove_o( pCCSGOInput , split_screen_index , frame_active );
+
+	BypassSerializeGuard guard;
+	if ( g_BypassSerializeDepth > 1 )
+		return Result;
 
 	if ( !frame_active || !pCCSGOInput || !SDK::Interfaces::EngineToClient()->IsInGame() )
 		return Result;
@@ -40,18 +55,16 @@ auto Hook_CreateMove( CCSGOInput* pCCSGOInput , uint32_t split_screen_index , bo
 
 auto Hook_MessageLite_SerializePartialToArray( google::protobuf::Message* pMsg , void* out_buffer , int size ) -> bool
 {
+	BypassSerializeGuard guard;
+
 #if DISABLE_PROTOBUF == 0
-	const google::protobuf::Descriptor* descriptor = pMsg->GetDescriptor();
-	if ( !descriptor )
-		return MessageLite_SerializePartialToArray_o( pMsg , out_buffer , size );
-
-	const std::string message_name = descriptor->name();
-
-	if ( message_name == XorStr( "CBaseUserCmdPB" ) )
+	if ( g_BypassSerializeDepth <= 1 && pMsg )
 	{
-		GetCL_Bypass()->OnCBaseUserCmdPB( reinterpret_cast<CBaseUserCmdPB*>( pMsg ) );
+		const google::protobuf::Descriptor* descriptor = pMsg->GetDescriptor();
+		if ( descriptor && descriptor->name() == XorStr( "CBaseUserCmdPB" ) )
+			GetCL_Bypass()->OnCBaseUserCmdPB( reinterpret_cast<CBaseUserCmdPB*>( pMsg ) );
 	}
 #endif
 
-	return MessageLite_SerializePartialToArray_o( pMsg , out_buffer , size );
+	return ProtobufSerializePartialToArrayOriginal( pMsg , out_buffer , size );
 }

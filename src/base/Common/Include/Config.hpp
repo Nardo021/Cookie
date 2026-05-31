@@ -2,12 +2,14 @@
 
 // Project Configuration:
 
+#include "Version.h"
+
 #define LOG_FILE					"debug.log"
 #define GUI_FILE					"gui.ini"
 #define CONFIG_FILE					"config.json"
 
 #define CHEAT_NAME					"Cookie"
-#define CHEAT_VERSION				"1.4"
+#define CHEAT_VERSION				COOKIE_VER_STRING
 
 #define DISABLE_PROTOBUF			0
 #define DISABLE_VMPROTECT			1
