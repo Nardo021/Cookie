@@ -11,6 +11,7 @@ namespace MenuEffects
 	{
 		bool  watermark = true;
 		bool  particles = true;
+		bool  shaderBlur = true;
 		bool  blurPlaceholder = true;
 		bool  menuBackgroundImage = true;
 		float menuBackgroundAlpha = 0.35f;

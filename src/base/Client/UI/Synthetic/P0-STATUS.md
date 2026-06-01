@@ -33,6 +33,10 @@
 
 体验补齐见 **[P2-STATUS.md](P2-STATUS.md)**（水印、菜单特效、ESP 预览、Skins 完整 UI、Custom Texture）。
 
+## P3 ✅
+
+框架打磨见 **[P3-STATUS.md](P3-STATUS.md)**（拖拽 ESP 预览、Shader 模糊、DPI/通知 JSON、去演示编译）。
+
 ## 参考
 
 - `CookieMenu.hpp` — 已不再作运行时入口，仅对照用

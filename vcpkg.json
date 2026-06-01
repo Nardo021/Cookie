@@ -4,6 +4,7 @@
   "version-string": "1.4",
   "builtin-baseline": "00d899c410b31467733472fc3a83a25729046b13",
   "dependencies": [
+    "lua",
     "protobuf"
   ],
   "overrides": [

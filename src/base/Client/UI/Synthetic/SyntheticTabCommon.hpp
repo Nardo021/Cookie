@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 
+#include <Client/UI/Synthetic/SyntheticBinds.hpp>
 #include <framework/settings/functions.h>
 
 namespace SyntheticUI
@@ -16,6 +17,23 @@ namespace SyntheticUI
 	inline auto Checkbox( const char* label , bool* value ) noexcept -> bool
 	{
 		return widget->checkbox( label , value );
+	}
+
+	inline auto CheckboxWithKey(
+		const char* label ,
+		bool* enabled ,
+		int* key ,
+		SyntheticBinds::KeyBindUiState bindUi ) noexcept -> bool
+	{
+		bool holdMode = *bindUi.holdMode;
+		bool useKey = *bindUi.useKey;
+		bool showInBinds = *bindUi.showInBinds;
+		const bool changed = widget->checkbox_with_key( label , enabled , key , &holdMode , &useKey , &showInBinds );
+		*bindUi.holdMode = holdMode;
+		*bindUi.useKey = useKey;
+		*bindUi.showInBinds = showInBinds;
+		SyntheticBinds::Register( label , enabled , key , bindUi );
+		return changed;
 	}
 
 	inline auto SliderInt( const char* label , int* value , int minV , int maxV , int step , const char* fmt ) noexcept -> bool

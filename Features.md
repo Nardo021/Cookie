@@ -70,8 +70,10 @@ EnginePred::End
 | 按武器配置         | `Combat/Legit/WeaponConfig.*`                                           |
 | Subtick 战斗       | `Combat/Rage/RageSubTick.*`                                             |
 | 资源 / 字体        | `src/base/Client/Resources/`、`Fonts/EmbeddedFonts.*`                   |
-| 菜单 UI            | `src/base/Client/UI/Menu/CookieMenu.hpp`                                |
-| 配置序列化         | `src/base/Client/UI/Menu/MenuConfig.cpp`                                |
+| 运行时菜单 UI      | `src/base/Client/UI/Synthetic/gui_cookie.cc`、`SyntheticTab*`         |
+| 菜单共享层         | `src/base/Client/UI/Menu/MenuConfig.cpp`、`MenuEffects.*`               |
+| 旧菜单（对照）     | `src/base/Client/UI/Menu/CookieMenu.hpp`                                |
+| Lua 运行时         | `src/base/Client/UI/Synthetic/SyntheticLuaRuntime.*`                    |
 | Hook               | `src/base/CS2/Hook/`                                                    |
 | 输入绕过 / Subtick | `src/base/GameClient/CL_Bypass.hpp`                                     |
 | 客户端入口         | `src/base/Client/CCookieClient.cpp`                                     |
@@ -80,35 +82,61 @@ EnginePred::End
 
 ## 菜单与配置
 
-### 菜单 Tab
+### Synthetic 菜单（运行时）
 
-| Tab         | 内容                                                                       |
-| ----------- | -------------------------------------------------------------------------- |
-| **Rage**    | Ragebot + Legit Aimbot + Triggerbot（Rage 启用时 Legit 区域禁用）          |
-| **Visuals** | ESP、ESP Overlay、Bhop、第三人称、Anti-Aim、Chams、Movement 高级、菜单特效 |
-| **Skins**   | 手套、刀模、全武器 PaintKit、自定义纹理                                    |
-| **Config**  | JSON 配置保存 / 加载 / 删除 / 列表刷新                                     |
+**入口：** `gui_cookie.cc` → `SyntheticTabs::*` / `SyntheticConfig::RenderConfigTab`  
+**初始化：** `SyntheticMenu::Init`（字体/纹理/DPI/Lua）  
+**水印：** `SyntheticWatermark`（菜单开/关均可绘制）
+
+| Tab | 图标 | 主要模块 |
+| --- | ---- | -------- |
+| **Rage** | R | Ragebot、Hitbox V1/V2、激活键（Hold/Toggle + Active Binds） |
+| **Legit** | L | Aimbot、Triggerbot（合并按键 UI） |
+| **Anti-Aim** | A | AntiAim、Movement（EdgeBug / Strafe 等） |
+| **Visuals** | V | ESP、EspOverlay、Chams、World/ThirdPerson/FOV、**ESP Layout Preview** |
+| **Skins** | S | Gloves、SkinChanger、PaintKit、CustomTexture |
+| **Config** | C | JSON Save/Load/Delete、Create 弹窗、列表排序 |
+| **Lua** | U | 脚本 CRUD、内嵌编辑器、Run |
+| **Misc** | M | MenuEffects、菜单 DPI、Synthetic 水印/通知位置 |
+
+独立调试：**`MenuSandbox.exe`**（`tools/MenuSandbox/`，无 `CookieDll` / 无 Lua VM）。
 
 ### 配置持久化
 
-- 格式：JSON（`*.json`，保存在 DLL 同目录）
-- 覆盖模块：Ragebot、LegitBot、WeaponConfig、Aimbot、Triggerbot、NoSpread、ESP、EspOverlay、Chams、Movement、Bhop、AntiAim、ThirdPerson、WorldFov、PlantBomb、Gloves、MenuEffects、Tracers、SkinChanger 武器皮肤映射
-- 兼容：旧版 Bhop `autoStrafe` 字段自动迁移为 `Movement.strafeMode = Legit`
-- 保存成功时通过 `CNotify` 推送 Toast 提示
+- 格式：JSON（`*.json`，DLL 同目录）
+- 序列化：`MenuConfig.cpp`（`CSettingsJson` 读写）
+- 覆盖：战斗、视觉、移动、皮肤、**Menu**（`toggleKey`、`dpiPercent`、`syntheticWatermark*`、`activeLuaScript`）、**MenuEffects**（含 `shaderBlur`）、EspOverlay **布局边**（`nameSide` 等）
+- 兼容：旧版 Bhop `autoStrafe` → `Movement.strafeMode = Legit`
+- Save/Load：`CSettingsJson` 推送 `CNotify`；菜单内部分操作经 `SyntheticNotifyBridge` 同步 Synthetic toast
 
 ### 快捷键
 
-| 按键                  | 功能                                             |
-| --------------------- | ------------------------------------------------ |
-| `INSERT`（默认）      | 开关菜单                                         |
-| `END`                 | 卸载 DLL                                         |
-| `F10` / `F11` / `F12` | 自定义纹理 Browse 模式（上一张 / 下一张 / 锁定） |
+| 按键 | 功能 |
+| ---- | ---- |
+| `INSERT`（默认，可配置） | 开关菜单 |
+| `END` | 卸载 DLL |
+| `F10` / `F11` / `F12` | 自定义纹理 Browse（上一张 / 下一张 / 锁定） |
 
 ### KeyBind 系统
 
-- `KeyBindWidget`：菜单内绑定按键（Hold 模式）
-- `KeyBindUtils::IsActive`：Edge Bug、Aim Key、Trigger Key 等
-- `CInputSystem`：全局键位状态与 Toggle/Hold 模式
+| 组件 | 说明 |
+| ---- | ---- |
+| `widget->checkbox_with_key` | 功能开关 + 键位 + Hold/Toggle + 「显示于 Active Binds」 |
+| `SyntheticBinds` | 每帧收集绑定，右上角 **Active Binds** 浮层 |
+| `KeyBindUtils::KeyBindSlot` | Hold/Toggle 与 `CInputSystem` 状态缓存 |
+| `KeyBindWidget`（CookieMenu） | 旧菜单 Hold 绑定（对照用） |
+
+战斗键位持久化字段示例：`Ragebot.activationKey*`、`Aimbot.aimKey*`、`Triggerbot.key` / `keyHold` / `showInBinds`。
+
+### Lua 脚本
+
+| 项 | 说明 |
+| --- | ---- |
+| 依赖 | vcpkg **lua** |
+| 目录 | `<dll_dir>/lua/*.lua`（自动创建） |
+| 运行时 | `SyntheticLuaRuntime`：`cookie.print`、`set_aimbot`、`set_rage`、`set_esp` |
+| UI | `SyntheticTabLua` + framework `text_editor` |
+| 配置 | `Menu.activeLuaScript` 记住上次打开的脚本名 |
 
 ---
 
@@ -150,6 +178,10 @@ Rage 启用时自动关闭 Legit Aimbot 与 Triggerbot。
 | 字段                        | 类型 | 默认     | 说明              |
 | --------------------------- | ---- | -------- | ----------------- |
 | `enabled`                   | bool | false    | 总开关            |
+| `activationKey`             | int  | 0        | 激活键 VK         |
+| `activationUseKey`          | bool | false    | 是否要求按键激活  |
+| `activationKeyHold`         | bool | true     | Hold / Toggle     |
+| `activationShowInBinds`     | bool | true     | Active Binds 面板 |
 | `minDamage`                 | int  | 1        | 最小伤害阈值      |
 | `hitchance`                 | int  | 50       | 命中率 %          |
 | `multipointScale`           | int  | 70       | Multipoint 范围 % |
@@ -192,7 +224,7 @@ Rage 未启用时使用 Legit 管线；`LegitBot::SyncToAimbot` 保持配置一�
 | -------------- | ------------------------------------------------------- |
 | FOV 限制       | Angle（角度）或 Screen（像素距准星）两种模式            |
 | Hitbox         | Head / Neck / Chest / Pelvis                            |
-| Aim Key        | 按住瞄准；`autoShoot` 开启时无需按键                    |
+| Aim Key        | `checkbox_with_key`：Hold/Toggle；`autoShoot` 时可免按键 |
 | Visible Only   | `TraceShape` 视线检测                                   |
 | Penetration    | visCheck 失败时用 AutoWall 评估是否可穿墙命中           |
 | Recoil Control | 补偿 aim punch（2×）                                    |
@@ -211,7 +243,7 @@ Rage 未启用时使用 Legit 管线；`LegitBot::SyncToAimbot` 保持配置一�
 | 功能               | 说明                     |
 | ------------------ | ------------------------ |
 | 准星下敌人自动开火 | 基于 crosshair entity    |
-| Trigger Key        | 可选 Hold 键（默认 Alt） |
+| Trigger Key        | 与开关合并 UI；Hold/Toggle + Active Binds |
 | Team Check         | 跳过队友                 |
 | Delay              | 0–200 ms 延迟            |
 
@@ -225,6 +257,9 @@ Rage 未启用时使用 Legit 管线；`LegitBot::SyncToAimbot` 保持配置一�
 | `screenFov`     | float | 100.0      |
 | `targetHitbox`  | int   | 0          |
 | `aimKey`        | int   | VK_LBUTTON |
+| `aimKeyHold`    | bool  | true       |
+| `aimUseKey`     | bool  | true       |
+| `aimShowInBinds`| bool  | true       |
 | `autoShoot`     | bool  | false      |
 | `silentAim`     | bool  | true       |
 | `teamCheck`     | bool  | true       |
@@ -239,6 +274,8 @@ Rage 未启用时使用 Legit 管线；`LegitBot::SyncToAimbot` 保持配置一�
 | `enabled`   | bool | false   |
 | `key`       | int  | VK_MENU |
 | `useKey`    | bool | true    |
+| `keyHold`   | bool | true    |
+| `showInBinds` | bool | true  |
 | `teamCheck` | bool | true    |
 | `delayMs`   | int  | 15      |
 
@@ -564,6 +601,8 @@ RageScan 在 backtrack 开启时：先解析 hitbox 对应 bone index → `GetBa
 - `WeaponIcons`：CS2GunIcons / iconscs2 / 内嵌 `game_icons` fallback
 - 与 legacy `Esp.hpp` 可并存（`skipPlayerRendering` 避免重复）
 - 使用 `CDraw::ProjectPlayerBounds` 统一 WorldToScreen 包围盒
+- **布局边**：`nameSide` / `distanceSide` / `healthBarSide` / `ammoBarSide` / `flagsSide`（`AlignSide` 四边）
+- **菜单预览**：`SyntheticEspPreview` 拖拽 NAME/DISTANCE/FLAGS/HEALTH/AMMO → 写回 `EspOverlay::config.*Side`，随 JSON 持久化
 
 ### 配置项
 
@@ -577,6 +616,7 @@ RageScan 在 backtrack 开启时：先解析 hitbox 对应 bone index → `GetBa
 | `showWeaponIcon`     | true   |
 | `showAmmoBar`        | 见菜单 |
 | `showHK` / `showKIT` | 见菜单 |
+| `nameSide` … `flagsSide` | Top/Bottom/Left/Right |
 
 ---
 
@@ -645,13 +685,19 @@ RageScan 在 backtrack 开启时：先解析 hitbox 对应 bone index → `GetBa
 
 ### Menu Effects
 
-**文件：** `MenuEffects.hpp` / `MenuEffects.cpp`
+**文件：** `MenuEffects.hpp` / `MenuEffects.cpp`  
+**Synthetic 集成：** `gui_cookie.cc`（`shaderBlur` → `draw_background_blur`）、`SyntheticWatermark`、`var->c_notify`
 
-| 功能             | 说明                     |
-| ---------------- | ------------------------ |
-| Watermark        | 屏幕水印                 |
-| Particles        | 菜单背景粒子连线动画     |
-| Blur Placeholder | 高斯模糊占位（WIP 视觉） |
+| 功能 | 说明 |
+| ---- | ---- |
+| Watermark | 关闭菜单时的 ImGui 水印（`MenuEffects::config.watermark`） |
+| Synthetic Watermark | Synthetic 框架水印（位置可配置，Misc Tab） |
+| Particles | 菜单背景粒子连线 |
+| Shader Blur | 菜单面板 DX11 背景模糊（`shaderBlur`） |
+| Blur Fallback | 无 shader 时的暗层占位（`blurPlaceholder`） |
+| Menu Background Image | 面板背景图 + Alpha |
+| Notify Position | Synthetic 菜单内 toast 四角位置 |
+| Menu DPI | 100–200%，写入 Config **Menu** 段 |
 
 ---
 
@@ -883,21 +929,22 @@ ConVar Setup 等敏感调用可选 spoof。
 
 ## 版本说明
 
-- 菜单标题：**Cookie v1.4**（功能集已扩展，见上文 v1.4+ 章节）
-- 文档基准：当前 `src/base/Client/` 源码树（含库存皮肤、LagComp 骨骼插值、SpreadHooks detour、Resources 迁移）
-- 平台：主要为 Windows CS2；macOS 可用于编辑，编译与游戏内验证需在 Windows 进行
+- 菜单标题：**Cookie v1.4**（Synthetic 8 Tab + Lua 运行时）
+- 文档基准：当前 `src/base/Client/` 源码树（Synthetic UI、库存皮肤、LagComp 骨骼插值、SpreadHooks、ESP 布局预览）
+- 平台：Windows CS2 编译与注入；macOS 可编辑源码，游戏内验证需在 Windows **Release x64** 进行
 
-### 参考迁移状态（`参考/cstrike` → Cookie）
+### 实现状态摘要
 
-完整 **50 项互相对照** 见 [ReferenceChecklist.md](./ReferenceChecklist.md)；**1–24 迁移清单** 见 [1.md](./1.md)。
+| 类别 | 状态 |
+| ---- | ---- |
+| **核心战斗 / 移动 / 视觉** | Rage/Legit、AutoWall、NoSpread/SpreadHooks、LagComp、Movement、ESP + Overlay、Chams、ThirdPerson/FOV |
+| **皮肤** | SkinChangerInventory、Gloves、CustomTexture |
+| **菜单** | Synthetic 运行时（`gui_cookie.cc`）；`CookieMenu.hpp` 仅对照 |
+| **菜单打磨** | ESP 拖拽预览、DPI/模糊/通知持久化、Active Binds、Config Create/排序 |
+| **Lua** | 基础 VM + 4 个 API；扩展绑定待办见根 [README.md](./README.md) |
+| **本地工具** | `MenuSandbox`（UI 沙盒，无脚本执行） |
 
-| 状态                | 模块                                                                                                                                                                                                                                                    |
-| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **已完成**          | Hooks 主链、Rage/Legit、AutoWall、NoSpread/SpreadHooks、Hitbox V1/V2、LagComp（hitbox 录帧 + EntCache 生命周期）、Movement（含 EdgeBug/AA fix）、EnginePred、Skin 库存注入、Chams/ESP Overlay、七档 WeaponConfig、ThirdPerson/ViewModel FOV、GameEvents |
-| **有意跳过**        | teleport 空壳、CameraInput 注释、参考 multidrop                                                                                                                                                                                                         |
-| **可选 / 低优先级** | Hitbox pointbox UI、菜单 `edited::` 控件、ESP 条 Glow Shadow、D3D11 真 blur、反射式 `C::` 配置                                                                                                                                                          |
-
-> Windows 端需验证：`SpreadHooks` 签名、`HitboxNative` pattern、`NetworkClientService`、FSN stage 6 皮肤同步。
+> Windows 端需验证：`SpreadHooks` / `HitboxNative` 签名、vcpkg `lua` 链接、`NetworkClientService`、FSN stage 6 皮肤同步。
 
 ---
 

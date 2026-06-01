@@ -131,7 +131,7 @@ namespace MenuEffects
 		if ( config.menuBackgroundImage && MenuAssets::GetMenuBackgroundTexture() )
 			MenuAssets::RenderMenuBackgroundImage( draw , origin , size , config.menuBackgroundAlpha );
 
-		if ( config.blurPlaceholder )
+		if ( config.blurPlaceholder && !config.shaderBlur )
 		{
 			draw->AddRectFilled(
 				origin ,

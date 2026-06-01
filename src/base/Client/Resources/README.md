@@ -1,17 +1,17 @@
 # Cookie Client Resources
 
-Runtime assets copied from `参考/` and wired into the overlay / ESP pipeline.
+Runtime assets vendored under `Client/Resources/` and wired into the overlay / ESP pipeline (no external reference tree required at build time).
 
 ## Runtime files (`xcopy` → `OutDir\Resources\`)
 
 | Path                | Source             | Usage                           |
 | ------------------- | ------------------ | ------------------------------- |
-| `CS2GunIcons.ttf`   | 参考/cstrike       | Weapon ESP icon font (primary)  |
-| `iconscs2.ttf`      | 参考/cstrike/icons | Knife / secondary weapon glyphs |
-| `obs_icons.ttf`     | 参考/cstrike/icons | Observer / knife fallback font  |
-| `icons/*.svg`       | 参考/cstrike/icons | Reference SVG set (72 files)    |
-| `branding/cs2.png`  | 参考/cs2.png       | Menu / watermark branding       |
-| `branding/cs2.webp` | 参考/cs2.webp      | WebP variant                    |
+| `CS2GunIcons.ttf`   | vendored           | Weapon ESP icon font (primary)  |
+| `iconscs2.ttf`      | vendored           | Knife / secondary weapon glyphs |
+| `obs_icons.ttf`     | vendored           | Observer / knife fallback font  |
+| `icons/*.svg`       | vendored           | SVG icon set (72 files)         |
+| `branding/cs2.png`  | vendored           | Menu / watermark branding       |
+| `branding/cs2.webp` | vendored           | WebP variant                    |
 
 ## Embedded headers (`Resources/embedded/`)
 

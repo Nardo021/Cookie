@@ -31,3 +31,4 @@
 
 - Paint Kit 同时保留 **Combo** 与 **ID 滑条**（旧菜单为 InputInt）
 - 关闭菜单：优先 `Synthetic Watermark`（`var->c_watermark`），否则回退 `MenuEffects::config.watermark`
+- 静态 `MenuAssets` ESP 图 → P3 已改为可拖拽 **ESP Layout Preview**（见 [P3-STATUS.md](P3-STATUS.md)）

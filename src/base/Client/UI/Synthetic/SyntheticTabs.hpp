@@ -7,5 +7,6 @@ namespace SyntheticTabs
 	auto RenderMovementTab() noexcept -> void;
 	auto RenderVisualsTab() noexcept -> void;
 	auto RenderSkinsTab() noexcept -> void;
+	auto RenderLuaTab() noexcept -> void;
 	auto RenderMiscTab() noexcept -> void;
 }

@@ -220,6 +220,10 @@ namespace MenuConfig
 		writer.String( "Ragebot" );
 		writer.StartObject();
 		writer.Key( "enabled" ); writer.Bool( Ragebot::config.enabled );
+		writer.Key( "activationKey" ); writer.Int( Ragebot::config.activationKey );
+		writer.Key( "activationUseKey" ); writer.Bool( Ragebot::config.activationUseKey );
+		writer.Key( "activationKeyHold" ); writer.Bool( Ragebot::config.activationKeyHold );
+		writer.Key( "activationShowInBinds" ); writer.Bool( Ragebot::config.activationShowInBinds );
 		writer.Key( "minDamage" ); writer.Int( Ragebot::config.minDamage );
 		writer.Key( "hitchance" ); writer.Int( Ragebot::config.hitchance );
 		writer.Key( "multipointScale" ); writer.Int( Ragebot::config.multipointScale );
@@ -288,6 +292,9 @@ namespace MenuConfig
 		writer.Key( "screenFov" ); writer.Double( Aimbot::config.screenFov );
 		writer.Key( "targetHitbox" ); writer.Int( Aimbot::config.targetHitbox );
 		writer.Key( "aimKey" ); writer.Int( Aimbot::config.aimKey );
+		writer.Key( "aimKeyHold" ); writer.Bool( Aimbot::config.aimKeyHold );
+		writer.Key( "aimUseKey" ); writer.Bool( Aimbot::config.aimUseKey );
+		writer.Key( "aimShowInBinds" ); writer.Bool( Aimbot::config.aimShowInBinds );
 		writer.Key( "autoShoot" ); writer.Bool( Aimbot::config.autoShoot );
 		writer.Key( "silentAim" ); writer.Bool( Aimbot::config.silentAim );
 		writer.Key( "teamCheck" ); writer.Bool( Aimbot::config.teamCheck );
@@ -325,6 +332,8 @@ namespace MenuConfig
 		writer.Key( "enabled" ); writer.Bool( Triggerbot::config.enabled );
 		writer.Key( "key" ); writer.Int( Triggerbot::config.key );
 		writer.Key( "useKey" ); writer.Bool( Triggerbot::config.useKey );
+		writer.Key( "keyHold" ); writer.Bool( Triggerbot::config.keyHold );
+		writer.Key( "showInBinds" ); writer.Bool( Triggerbot::config.showInBinds );
 		writer.Key( "teamCheck" ); writer.Bool( Triggerbot::config.teamCheck );
 		writer.Key( "visCheck" ); writer.Bool( Triggerbot::config.visCheck );
 		writer.Key( "hitchance" ); writer.Int( Triggerbot::config.hitchance );
@@ -368,6 +377,11 @@ namespace MenuConfig
 		ConfigJson::WriteColor( writer , "textColor" , EspOverlay::config.textColor );
 		writer.Key( "boxThickness" ); writer.Double( EspOverlay::config.boxThickness );
 		writer.Key( "barThickness" ); writer.Double( EspOverlay::config.barThickness );
+		writer.Key( "nameSide" ); writer.Int( EspOverlay::config.nameSide );
+		writer.Key( "distanceSide" ); writer.Int( EspOverlay::config.distanceSide );
+		writer.Key( "healthBarSide" ); writer.Int( EspOverlay::config.healthBarSide );
+		writer.Key( "ammoBarSide" ); writer.Int( EspOverlay::config.ammoBarSide );
+		writer.Key( "flagsSide" ); writer.Int( EspOverlay::config.flagsSide );
 		writer.EndObject();
 
 		writer.String( "Chams" );
@@ -474,12 +488,18 @@ namespace MenuConfig
 		writer.String( "Menu" );
 		writer.StartObject();
 		writer.Key( "toggleKey" ); writer.Int( MenuSettings::menuToggleKey );
+		writer.Key( "dpiPercent" ); writer.Int( MenuSettings::menuDpiPercent );
+		writer.Key( "syntheticWatermark" ); writer.Bool( MenuSettings::syntheticWatermark );
+		writer.Key( "syntheticWatermarkPosition" ); writer.Int( MenuSettings::syntheticWatermarkPosition );
+		writer.Key( "syntheticNotifyPosition" ); writer.Int( MenuSettings::syntheticNotifyPosition );
+		ConfigJson::WriteString( writer , "activeLuaScript" , MenuSettings::activeLuaScript.c_str() );
 		writer.EndObject();
 
 		writer.String( "MenuEffects" );
 		writer.StartObject();
 		writer.Key( "watermark" ); writer.Bool( MenuEffects::config.watermark );
 		writer.Key( "particles" ); writer.Bool( MenuEffects::config.particles );
+		writer.Key( "shaderBlur" ); writer.Bool( MenuEffects::config.shaderBlur );
 		writer.Key( "blurPlaceholder" ); writer.Bool( MenuEffects::config.blurPlaceholder );
 		writer.Key( "menuBackgroundImage" ); writer.Bool( MenuEffects::config.menuBackgroundImage );
 		writer.Key( "menuBackgroundAlpha" ); writer.Double( MenuEffects::config.menuBackgroundAlpha );
@@ -557,6 +577,10 @@ namespace MenuConfig
 		{
 			const auto& v = root["Ragebot"];
 			ConfigJson::ReadBool( v , "enabled" , Ragebot::config.enabled );
+			ConfigJson::ReadInt( v , "activationKey" , Ragebot::config.activationKey );
+			ConfigJson::ReadBool( v , "activationUseKey" , Ragebot::config.activationUseKey );
+			ConfigJson::ReadBool( v , "activationKeyHold" , Ragebot::config.activationKeyHold );
+			ConfigJson::ReadBool( v , "activationShowInBinds" , Ragebot::config.activationShowInBinds );
 			ConfigJson::ReadInt( v , "minDamage" , Ragebot::config.minDamage );
 			ConfigJson::ReadInt( v , "hitchance" , Ragebot::config.hitchance );
 			ConfigJson::ReadInt( v , "multipointScale" , Ragebot::config.multipointScale );
@@ -640,6 +664,9 @@ namespace MenuConfig
 			ConfigJson::ReadFloat( v , "screenFov" , Aimbot::config.screenFov );
 			ConfigJson::ReadInt( v , "targetHitbox" , Aimbot::config.targetHitbox );
 			ConfigJson::ReadInt( v , "aimKey" , Aimbot::config.aimKey );
+			ConfigJson::ReadBool( v , "aimKeyHold" , Aimbot::config.aimKeyHold );
+			ConfigJson::ReadBool( v , "aimUseKey" , Aimbot::config.aimUseKey );
+			ConfigJson::ReadBool( v , "aimShowInBinds" , Aimbot::config.aimShowInBinds );
 			ConfigJson::ReadBool( v , "autoShoot" , Aimbot::config.autoShoot );
 			ConfigJson::ReadBool( v , "silentAim" , Aimbot::config.silentAim );
 			ConfigJson::ReadBool( v , "teamCheck" , Aimbot::config.teamCheck );
@@ -676,6 +703,8 @@ namespace MenuConfig
 			ConfigJson::ReadBool( v , "enabled" , Triggerbot::config.enabled );
 			ConfigJson::ReadInt( v , "key" , Triggerbot::config.key );
 			ConfigJson::ReadBool( v , "useKey" , Triggerbot::config.useKey );
+			ConfigJson::ReadBool( v , "keyHold" , Triggerbot::config.keyHold );
+			ConfigJson::ReadBool( v , "showInBinds" , Triggerbot::config.showInBinds );
 			ConfigJson::ReadBool( v , "teamCheck" , Triggerbot::config.teamCheck );
 			ConfigJson::ReadBool( v , "visCheck" , Triggerbot::config.visCheck );
 			ConfigJson::ReadInt( v , "hitchance" , Triggerbot::config.hitchance );
@@ -721,6 +750,11 @@ namespace MenuConfig
 			ConfigJson::ReadColor( v , "textColor" , EspOverlay::config.textColor );
 			ConfigJson::ReadFloat( v , "boxThickness" , EspOverlay::config.boxThickness );
 			ConfigJson::ReadFloat( v , "barThickness" , EspOverlay::config.barThickness );
+			ConfigJson::ReadInt( v , "nameSide" , EspOverlay::config.nameSide );
+			ConfigJson::ReadInt( v , "distanceSide" , EspOverlay::config.distanceSide );
+			ConfigJson::ReadInt( v , "healthBarSide" , EspOverlay::config.healthBarSide );
+			ConfigJson::ReadInt( v , "ammoBarSide" , EspOverlay::config.ammoBarSide );
+			ConfigJson::ReadInt( v , "flagsSide" , EspOverlay::config.flagsSide );
 		}
 
 		if ( root.HasMember( "Chams" ) && root["Chams"].IsObject() )
@@ -849,9 +883,17 @@ namespace MenuConfig
 
 		if ( root.HasMember( "Menu" ) && root["Menu"].IsObject() )
 		{
+			const auto& menu = root["Menu"];
 			int menuKey = MenuSettings::menuToggleKey;
-			ConfigJson::ReadInt( root["Menu"] , "toggleKey" , menuKey );
+			ConfigJson::ReadInt( menu , "toggleKey" , menuKey );
 			MenuSettings::menuToggleKey = menuKey;
+			ConfigJson::ReadInt( menu , "dpiPercent" , MenuSettings::menuDpiPercent );
+			ConfigJson::ReadBool( menu , "syntheticWatermark" , MenuSettings::syntheticWatermark );
+			ConfigJson::ReadInt( menu , "syntheticWatermarkPosition" , MenuSettings::syntheticWatermarkPosition );
+			ConfigJson::ReadInt( menu , "syntheticNotifyPosition" , MenuSettings::syntheticNotifyPosition );
+			char luaScript[128] = {};
+			ConfigJson::ReadString( menu , "activeLuaScript" , luaScript , sizeof( luaScript ) );
+			MenuSettings::activeLuaScript = luaScript;
 		}
 
 		if ( root.HasMember( "MenuEffects" ) && root["MenuEffects"].IsObject() )
@@ -859,6 +901,7 @@ namespace MenuConfig
 			const auto& v = root["MenuEffects"];
 			ConfigJson::ReadBool( v , "watermark" , MenuEffects::config.watermark );
 			ConfigJson::ReadBool( v , "particles" , MenuEffects::config.particles );
+			ConfigJson::ReadBool( v , "shaderBlur" , MenuEffects::config.shaderBlur );
 			ConfigJson::ReadBool( v , "blurPlaceholder" , MenuEffects::config.blurPlaceholder );
 			ConfigJson::ReadBool( v , "menuBackgroundImage" , MenuEffects::config.menuBackgroundImage );
 			ConfigJson::ReadFloat( v , "menuBackgroundAlpha" , MenuEffects::config.menuBackgroundAlpha );

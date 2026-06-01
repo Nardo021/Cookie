@@ -7,6 +7,7 @@
 #include <Client/Features/Combat/NoSpread.hpp>
 #include <Client/Features/Combat/Rage/Ragebot.hpp>
 #include <Client/Features/Combat/WeaponConfig.hpp>
+#include <Client/UI/Synthetic/SyntheticBinds.hpp>
 
 namespace SyntheticTabs
 {
@@ -59,16 +60,27 @@ namespace SyntheticTabs
 			return;
 		}
 
+		const SyntheticBinds::KeyBindUiState aimBind{
+			&Aimbot::config.aimKeyHold ,
+			&Aimbot::config.aimUseKey ,
+			&Aimbot::config.aimShowInBinds ,
+		};
+		const SyntheticBinds::KeyBindUiState triggerBind{
+			&Triggerbot::config.keyHold ,
+			&Triggerbot::config.useKey ,
+			&Triggerbot::config.showInBinds ,
+		};
+
 		gui->begin_group();
 		{
 			gui->begin_child( "Aimbot" );
 			{
-				if ( Checkbox( "Enable Aimbot" , &Aimbot::config.enabled ) && Aimbot::config.enabled )
+				if ( CheckboxWithKey( "Enable Aimbot" , &Aimbot::config.enabled , &Aimbot::config.aimKey , aimBind )
+					&& Aimbot::config.enabled )
 					Ragebot::config.enabled = false;
 				LegitBot::SyncFromAimbot();
 
 				Separator();
-				KeyBind( "Aim Key" , &Aimbot::config.aimKey );
 				Checkbox( "Auto Shoot" , &Aimbot::config.autoShoot );
 				Checkbox( "Silent Aim" , &Aimbot::config.silentAim );
 				Checkbox( "No Spread" , &NoSpread::config.enabled );
@@ -82,6 +94,7 @@ namespace SyntheticTabs
 				Separator();
 				static const auto fovTypes = Strings( { "Angle (Degrees)" , "Screen (Pixels)" } );
 				Combo( "FOV Mode" , &Aimbot::config.fovType , fovTypes );
+				widget->set_tooltip( "FOV Mode" , "Angle FOV is view-angle based; Screen FOV is pixel radius on screen." );
 				if ( Aimbot::config.fovType == 0 )
 					SliderFloat( "FOV" , &Aimbot::config.fov , 1.f , 180.f , 0.5f , "%.1f deg" );
 				else
@@ -121,9 +134,7 @@ namespace SyntheticTabs
 		{
 			gui->begin_child( "Trigger & Weapon" );
 			{
-				Checkbox( "Enable Triggerbot" , &Triggerbot::config.enabled );
-				KeyBind( "Trigger Key" , &Triggerbot::config.key );
-				Checkbox( "Trigger Use Key" , &Triggerbot::config.useKey );
+				CheckboxWithKey( "Enable Triggerbot" , &Triggerbot::config.enabled , &Triggerbot::config.key , triggerBind );
 				Checkbox( "Team Check (Trigger)" , &Triggerbot::config.teamCheck );
 				Checkbox( "Visible Only (Trigger)" , &Triggerbot::config.visCheck );
 				SliderInt( "Trigger Hitchance" , &Triggerbot::config.hitchance , 0 , 100 , 1 , "%d%%" );

@@ -15,6 +15,7 @@
 #include <Client/Features/Combat/Legit/WeaponConfig.hpp>
 #include <Client/Game/Game.hpp>
 #include <Client/Game/Offsets.hpp>
+#include <Client/Utils/KeyBindUtils.hpp>
 
 #include <GameClient/CL_Bypass.hpp>
 #include <GameClient/CL_Players.hpp>
@@ -139,6 +140,15 @@ namespace Ragebot
 		RageSubTick::ResetTick();
 
 		if ( !config.enabled || !Game::clientBase || !input || !cmd )
+			return;
+
+		static KeyBindUtils::KeyBindSlot s_activationSlot{};
+		if ( config.activationUseKey && config.activationKey != 0
+			&& !KeyBindUtils::IsActive(
+				static_cast<unsigned int>( config.activationKey ) ,
+				true ,
+				config.activationKeyHold ,
+				s_activationSlot ) )
 			return;
 
 		if ( Aimbot::IsMenuBlockingCombat() )

@@ -3,6 +3,7 @@
 
 #include <Client/Settings/ConfigSchema.hpp>
 #include <Client/UI/Menu/MenuConfig.hpp>
+#include <Client/UI/Synthetic/SyntheticMenu.hpp>
 #include <Client/Utils/CNotify.hpp>
 
 #include <filesystem>
@@ -38,6 +39,7 @@ auto CSettingsJson::LoadConfig( const std::string& JsonFile ) -> void
 	if ( !DocumentConfig.HasParseError() )
 	{
 		MenuConfig::ReadSettings( DocumentConfig );
+		SyntheticMenu::ApplyPersistedUiSettings();
 		GetNotify()->Push( N_TYPE_SUCCESS , ( "Config loaded: " + JsonFile ).c_str() );
 	}
 	else
@@ -61,6 +63,9 @@ auto CSettingsJson::SaveConfig( const std::string& JsonFile ) -> void
 	ConfigWriter.SetIndent( '\t' , 1 );
 	ConfigWriter.SetFormatOptions( rapidjson::PrettyFormatOptions::kFormatSingleLineArray );
 	ConfigWriter.SetMaxDecimalPlaces( 2 );
+
+	if ( SyntheticMenu::IsInitialized() )
+		SyntheticMenu::SyncUiSettingsToMenu();
 
 	ConfigWriter.StartObject();
 	{

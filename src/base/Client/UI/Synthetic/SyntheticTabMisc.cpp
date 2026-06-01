@@ -4,7 +4,6 @@
 #include <Client/Features/Misc/PlantBomb.hpp>
 #include <Client/UI/Menu/MenuEffects.hpp>
 #include <Client/UI/Menu/MenuSettings.hpp>
-
 namespace SyntheticTabs
 {
 	auto RenderMiscTab() noexcept -> void
@@ -29,7 +28,10 @@ namespace SyntheticTabs
 				Checkbox( "Menu Background Image" , &MenuEffects::config.menuBackgroundImage );
 				if ( MenuEffects::config.menuBackgroundImage )
 					SliderFloat( "Background Alpha" , &MenuEffects::config.menuBackgroundAlpha , 0.f , 1.f , 0.05f , "%.2f" );
-				Checkbox( "Blur Placeholder" , &MenuEffects::config.blurPlaceholder );
+				Checkbox( "Shader Blur" , &MenuEffects::config.shaderBlur );
+				Checkbox( "Blur Fallback (no shader)" , &MenuEffects::config.blurPlaceholder );
+				static const auto notifyPos = Strings( { "Top Left" , "Top Right" , "Bottom Left" , "Bottom Right" } );
+				Combo( "Notify Position" , &var->c_notify.notify_position , notifyPos );
 				SliderInt( "Max Particles" , &MenuEffects::config.maxParticles , 20 , 200 , 5 , "%d" );
 				SliderFloat( "Particle Link Distance" , &MenuEffects::config.particleLinkDistance , 40.f , 240.f , 5.f , "%.0f" );
 			}
@@ -52,6 +54,14 @@ namespace SyntheticTabs
 				{
 					var->c_dpi.dpi = var->c_dpi.dpi_saved / 100.f;
 					var->c_dpi.dpi_changed = true;
+					MenuSettings::menuDpiPercent = var->c_dpi.dpi_saved;
+				}
+
+				if ( IsMouseReleased( ImGuiMouseButton_Left ) )
+				{
+					MenuSettings::syntheticWatermark = var->c_watermark.watermark;
+					MenuSettings::syntheticWatermarkPosition = var->c_watermark.watermark_position;
+					MenuSettings::syntheticNotifyPosition = var->c_notify.notify_position;
 				}
 			}
 			gui->end_child();

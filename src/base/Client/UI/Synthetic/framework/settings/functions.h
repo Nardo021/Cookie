@@ -202,6 +202,8 @@ public:
 
     bool                            keybind_button(std::string_view name_id, bool* pressing);
 
+    const char*                     key_name_from_vk( int vk ) noexcept;
+
     bool                            begin_popup(std::string_view name, float size_w, const ImVec2& position = {0, 0});
 
     void                            end_popup();

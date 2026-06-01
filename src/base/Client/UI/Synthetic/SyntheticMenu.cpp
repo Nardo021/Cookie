@@ -1,6 +1,10 @@
 #include "SyntheticMenu.hpp"
 
+#include <algorithm>
+
 #include <Client/CCookieGUI.hpp>
+#include <Client/UI/Menu/MenuSettings.hpp>
+#include <Client/UI/Synthetic/SyntheticLuaRuntime.hpp>
 #include <Common/Include/Config.hpp>
 #include <framework/data/font.h>
 #include <framework/data/texture.h>
@@ -64,7 +68,16 @@ namespace SyntheticMenu
 		g_pSwapChain = swapChain;
 
 		var->c_watermark.watermark_content = { CHEAT_NAME , "FPS" , "PING" , "" };
-		var->c_selection.selection_icon = { "R" , "L" , "A" , "V" , "S" , "C" , "M" };
+		var->c_selection.selection_icon = { "R" , "L" , "A" , "V" , "S" , "C" , "U" , "M" };
+
+		SyntheticLua::Init();
+		ApplyPersistedUiSettings();
+		SyntheticLua::SyncScriptList();
+		if ( !MenuSettings::activeLuaScript.empty() )
+		{
+			var->c_lua.editable = MenuSettings::activeLuaScript;
+			SyntheticLua::LoadScriptIntoEditor( MenuSettings::activeLuaScript );
+		}
 
 		LoadFonts();
 		LoadTextures( device );
@@ -84,6 +97,8 @@ namespace SyntheticMenu
 			set->c_texture.logo->Release();
 			set->c_texture.logo = nullptr;
 		}
+
+		SyntheticLua::Shutdown();
 
 		s_initialized = false;
 		g_pd3dDevice = nullptr;
@@ -141,5 +156,30 @@ namespace SyntheticMenu
 	auto IsInitialized() noexcept -> bool
 	{
 		return s_initialized;
+	}
+
+	auto ApplyPersistedUiSettings() noexcept -> void
+	{
+		MenuSettings::menuDpiPercent = std::clamp( MenuSettings::menuDpiPercent , 100 , 200 );
+
+		const float newDpi = MenuSettings::menuDpiPercent / 100.f;
+		if ( var->c_dpi.dpi_saved != MenuSettings::menuDpiPercent || var->c_dpi.dpi != newDpi )
+			var->c_dpi.dpi_changed = true;
+
+		var->c_dpi.dpi_saved = MenuSettings::menuDpiPercent;
+		var->c_dpi.dpi = newDpi;
+		var->c_watermark.watermark = MenuSettings::syntheticWatermark;
+		var->c_watermark.watermark_position = MenuSettings::syntheticWatermarkPosition;
+		var->c_notify.notify_position = MenuSettings::syntheticNotifyPosition;
+	}
+
+	auto SyncUiSettingsToMenu() noexcept -> void
+	{
+		MenuSettings::menuDpiPercent = std::clamp( var->c_dpi.dpi_saved , 100 , 200 );
+		MenuSettings::syntheticWatermark = var->c_watermark.watermark;
+		MenuSettings::syntheticWatermarkPosition = var->c_watermark.watermark_position;
+		MenuSettings::syntheticNotifyPosition = var->c_notify.notify_position;
+		if ( !var->c_lua.editable.empty() )
+			MenuSettings::activeLuaScript = var->c_lua.editable;
 	}
 }

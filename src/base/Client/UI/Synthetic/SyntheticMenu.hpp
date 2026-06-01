@@ -10,4 +10,7 @@ namespace SyntheticMenu
 	auto OnDpiChanged() noexcept -> void;
 	auto Render() noexcept -> void;
 	auto IsInitialized() noexcept -> bool;
+
+	auto ApplyPersistedUiSettings() noexcept -> void;
+	auto SyncUiSettingsToMenu() noexcept -> void;
 }

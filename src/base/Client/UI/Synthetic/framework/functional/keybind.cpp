@@ -331,3 +331,15 @@ bool c_widget::keybind_button(std::string_view name_id, bool* pressing)
 
     return pressed;
 }
+
+const char* c_widget::key_name_from_vk( int vk ) noexcept
+{
+    if ( vk < 0 || vk > 255 )
+        return "None";
+
+    const char* name = keys[vk];
+    if ( !name || name[0] == '-' || name[0] == '\0' )
+        return "None";
+
+    return name;
+}

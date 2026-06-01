@@ -9,6 +9,7 @@
 #include <Client/Features/Combat/NoSpread.hpp>
 #include <Client/Features/Combat/Rage/Ragebot.hpp>
 #include <Client/Features/Combat/WeaponConfig.hpp>
+#include <Client/UI/Synthetic/SyntheticBinds.hpp>
 
 namespace SyntheticTabs
 {
@@ -16,11 +17,18 @@ namespace SyntheticTabs
 	{
 		using namespace SyntheticUI;
 
+		const SyntheticBinds::KeyBindUiState rageBind{
+			&Ragebot::config.activationKeyHold ,
+			&Ragebot::config.activationUseKey ,
+			&Ragebot::config.activationShowInBinds ,
+		};
+
 		gui->begin_group();
 		{
 			gui->begin_child( "Ragebot" );
 			{
-				if ( Checkbox( "Enable Ragebot" , &Ragebot::config.enabled ) && Ragebot::config.enabled )
+				if ( CheckboxWithKey( "Enable Ragebot" , &Ragebot::config.enabled , &Ragebot::config.activationKey , rageBind )
+					&& Ragebot::config.enabled )
 				{
 					Aimbot::config.enabled = false;
 					Triggerbot::config.enabled = false;
@@ -32,6 +40,9 @@ namespace SyntheticTabs
 
 				static const auto hitboxApi = Strings( { "V1 Bones" , "V2 Native" } );
 				Combo( "Hitbox API" , reinterpret_cast<int*>( &HitboxData::config.mode ) , hitboxApi );
+				widget->set_tooltip(
+					"Hitbox API" ,
+					"V1 uses studio bones; V2 uses native hitbox data when patterns are available." );
 				if ( HitboxData::config.mode == HitboxData::Mode::V2_Native && !HitboxData::IsNativeReady() )
 				{
 					draw->render_text(

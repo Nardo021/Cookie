@@ -754,6 +754,7 @@ namespace CookieUI
                 ImGui::Checkbox("Menu Background Image", &MenuEffects::config.menuBackgroundImage);
                 if ( MenuEffects::config.menuBackgroundImage )
                     ImGui::SliderFloat("Background Alpha", &MenuEffects::config.menuBackgroundAlpha, 0.f, 1.f, "%.2f");
+                ImGui::Checkbox("Shader Blur", &MenuEffects::config.shaderBlur);
                 ImGui::Checkbox("Blur Placeholder", &MenuEffects::config.blurPlaceholder);
                 ImGui::SliderInt("Max Particles", &MenuEffects::config.maxParticles, 20, 200);
                 ImGui::SliderFloat("Particle Link Distance", &MenuEffects::config.particleLinkDistance, 40.f, 240.f, "%.0f");

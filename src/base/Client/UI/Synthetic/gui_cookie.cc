@@ -2,6 +2,7 @@
 #include <Client/UI/Synthetic/SyntheticTabs.hpp>
 #include <Client/UI/Synthetic/SyntheticWatermark.hpp>
 #include <Client/UI/Menu/MenuEffects.hpp>
+#include <Client/UI/Synthetic/SyntheticBinds.hpp>
 #include <Version.hpp>
 
 #include "framework/settings/functions.h"
@@ -35,7 +36,8 @@ void c_gui::render()
 				style->ItemSpacing = SCALE(set->c_window.item_spacing);
 			}
 
-			draw_background_blur(draw_list, g_pSwapChain, g_pd3dDevice, g_pd3dDeviceContext, GetWindowPos(), GetWindowPos() + GetWindowSize(), style->WindowRounding);
+			if ( MenuEffects::config.shaderBlur )
+				draw_background_blur( draw_list , g_pSwapChain , g_pd3dDevice , g_pd3dDeviceContext , GetWindowPos() , GetWindowPos() + GetWindowSize() , style->WindowRounding );
 			
 			draw->add_rect_filled(draw_list, { pos.x, pos.y }, { pos.x + size.x, pos.y + size.y }, gui->get_clr(clr->c_window.general_layout), SCALE(set->c_window.general_rounding));
 			draw->add_rect(draw_list, { pos.x, pos.y }, { pos.x + size.x, pos.y + size.y }, gui->get_clr(clr->c_window.general_stroke), SCALE(set->c_window.general_rounding));
@@ -83,6 +85,8 @@ void c_gui::render()
 
 			gui->begin_content("content", GetContentRegionAvail() - SCALE(15, 15), { 15, 15 }, { 15, 15 });
 			{
+				SyntheticBinds::BeginFrame();
+
 				switch ( var->c_selection.selection_active )
 				{
 				case 0: SyntheticTabs::RenderRageTab(); break;
@@ -91,7 +95,8 @@ void c_gui::render()
 				case 3: SyntheticTabs::RenderVisualsTab(); break;
 				case 4: SyntheticTabs::RenderSkinsTab(); break;
 				case 5: SyntheticConfig::RenderConfigTab(); break;
-				case 6: SyntheticTabs::RenderMiscTab(); break;
+				case 6: SyntheticTabs::RenderLuaTab(); break;
+				case 7: SyntheticTabs::RenderMiscTab(); break;
 				default: break;
 				}
 			}
@@ -147,6 +152,10 @@ void c_gui::render()
 					gui->sameline();
 
 					widget->selection(var->c_selection.selection_icon[6].data(), ImVec2(74, 76), 6, var->c_selection.selection);
+
+					gui->sameline();
+
+					widget->selection(var->c_selection.selection_icon[7].data(), ImVec2(74, 76), 7, var->c_selection.selection);
 				}
 				gui->end_group();
 
@@ -155,6 +164,7 @@ void c_gui::render()
 		}
 		gui->pop_style_var(2);
 
+		SyntheticBinds::RenderOverlay();
 		SyntheticWatermark::Render();
 
 	}

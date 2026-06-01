@@ -14,6 +14,8 @@ namespace Triggerbot
 		bool enabled = false;
 		int key = VK_MENU;
 		bool useKey = true;
+		bool keyHold = true;
+		bool showInBinds = true;
 		bool teamCheck = true;
 		bool visCheck = true;
 		int delayMs = 15;

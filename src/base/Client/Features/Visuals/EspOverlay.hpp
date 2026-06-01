@@ -59,6 +59,13 @@ namespace EspOverlay
 		float textColor[4] = { 1.f , 1.f , 1.f , 1.f };
 		float boxThickness = 1.f;
 		float barThickness = 2.f;
+
+		// Drag-layout sides (AlignSide); used by Synthetic esp_preview and in-game overlay.
+		int nameSide = static_cast<int>( AlignSide::Top );
+		int distanceSide = static_cast<int>( AlignSide::Bottom );
+		int healthBarSide = static_cast<int>( AlignSide::Left );
+		int ammoBarSide = static_cast<int>( AlignSide::Bottom );
+		int flagsSide = static_cast<int>( AlignSide::Right );
 	};
 
 	inline Config config;

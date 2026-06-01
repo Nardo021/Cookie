@@ -10,7 +10,7 @@
 #include <Client/Features/Visuals/Tracers.hpp>
 #include <Client/Features/Visuals/WorldFov.hpp>
 #include <Client/Features/Visuals/WorldVisuals.hpp>
-#include <Client/UI/Menu/MenuAssets.hpp>
+#include <Client/UI/Synthetic/SyntheticEspPreview.hpp>
 #include <CS2/Hook/Hook_SetViewModelFov.hpp>
 
 namespace SyntheticTabs
@@ -21,7 +21,7 @@ namespace SyntheticTabs
 
 		gui->begin_group();
 		{
-			gui->begin_child( "ESP" );
+			gui->begin_child( "Player ESP" );
 			{
 				Checkbox( "Enable ESP" , &ESP::config.enabled );
 				if ( ESP::config.enabled )
@@ -38,11 +38,11 @@ namespace SyntheticTabs
 					Checkbox( "Health Bar" , &ESP::config.bHealthBar );
 					Checkbox( "Name" , &ESP::config.bName );
 					Checkbox( "Distance" , &ESP::config.bDistance );
+					ColorCheckbox( "Glow ESP" , &ESP::config.bGlow , ESP::config.glowColor );
 					Checkbox( "Team Check" , &ESP::config.teamCheck );
 					SliderFloat( "Max Distance" , &ESP::config.maxDistance , 100.f , 10000.f , 50.f , "%.0f" );
 					Checkbox( "Bomb Timer" , &ESP::config.bBombTimer );
 					Checkbox( "Spectator List" , &ESP::config.bSpectators );
-					ColorCheckbox( "Glow ESP" , &ESP::config.bGlow , ESP::config.glowColor );
 				}
 			}
 			gui->end_child();
@@ -76,7 +76,7 @@ namespace SyntheticTabs
 
 		gui->begin_group();
 		{
-			gui->begin_child( "Chams & World" );
+			gui->begin_child( "Chams" );
 			{
 				const bool chamsAvailable = DrawObject_o != nullptr && Chams::IsReady();
 				if ( !chamsAvailable )
@@ -107,8 +107,11 @@ namespace SyntheticTabs
 				widget->color_edit( "Chams Color" , Chams::config.color );
 				if ( Chams::config.ignoreZ )
 					widget->color_edit( "Ignore Z Color" , Chams::config.ignoreZColor );
+			}
+			gui->end_child();
 
-				Separator();
+			gui->begin_child( "World & Camera" );
+			{
 				Checkbox( "Night Mode" , &WorldVisuals::config.nightMode );
 				if ( WorldVisuals::config.nightMode )
 					SliderFloat( "Ambient Boost" , &WorldVisuals::config.nightAmbient , 0.1f , 1.5f , 0.05f , "%.2f" );
@@ -139,27 +142,16 @@ namespace SyntheticTabs
 					SliderFloat( "Distance" , &ThirdPerson::config.distance , 40.f , 400.f , 5.f , "%.0f" );
 					SliderInt( "Third Person FOV" , &ThirdPerson::config.fov , 60 , 140 , 1 , "%d" );
 				}
+			}
+			gui->end_child();
 
-				Separator();
-				const ImVec2 previewOrigin = GetCursorScreenPos();
-				const float previewH = SCALE( 140.f );
+			gui->begin_child( "ESP Layout Preview" );
+			{
+				const float previewH = SCALE( 200.f );
 				const ImVec2 previewSize( GetContentRegionAvail().x , previewH );
+				const ImVec2 previewOrigin = GetCursorScreenPos();
 				ImGui::Dummy( previewSize );
-				if ( MenuAssets::GetEspPreviewTexture() )
-					MenuAssets::RenderEspPreviewPanel( GetWindowDrawList() , previewOrigin , previewSize );
-				else
-				{
-					draw->render_text(
-						GetWindowDrawList() ,
-						set->c_font.inter_medium[0] ,
-						previewOrigin ,
-						previewOrigin + previewSize ,
-						gui->get_clr( clr->c_text.text ) ,
-						"ESP preview texture not loaded" ,
-						nullptr ,
-						nullptr ,
-						ImVec2( 0.5f , 0.5f ) );
-				}
+				SyntheticEspPreview::RenderPanel( previewOrigin , previewSize );
 			}
 			gui->end_child();
 		}

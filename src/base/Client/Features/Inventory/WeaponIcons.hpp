@@ -5,8 +5,8 @@
 #include <ImGui/imgui.h>
 
 // Font asset reference (MIT, from reference project):
-//   参考/cstrike/CS2GunIcons.ttf
-//   参考/cstrike/icons/iconscs2.ttf
+//   Client/Resources/CS2GunIcons.ttf (runtime search paths in WeaponIcons.cpp)
+//   embedded: game_icons.h, iconscs2_embedded.hpp
 inline constexpr const char* kCS2GunIconsFontPath = "src/base/Client/Resources/CS2GunIcons.ttf";
 inline constexpr const char* kIconScs2FontPath = "src/base/Client/Resources/iconscs2.ttf";
 

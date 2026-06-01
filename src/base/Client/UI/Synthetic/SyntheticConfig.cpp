@@ -5,7 +5,7 @@
 
 #include <Client/Settings/CSettingsJson.hpp>
 #include <Client/UI/Menu/MenuConfig.hpp>
-#include <Client/Utils/CNotify.hpp>
+#include <Client/UI/Synthetic/SyntheticNotifyBridge.hpp>
 #include <Common/Include/Config.hpp>
 #include <framework/settings/functions.h>
 
@@ -14,8 +14,9 @@ namespace SyntheticConfig
 	namespace
 	{
 		char s_configNameBuf[128] = "default.json";
-		int s_selectedConfigIdx = -1;
+		char s_createNameBuf[128] = {};
 		bool s_listDirty = true;
+		bool s_showCreatePopup = false;
 
 		auto EnsureExtension( std::string fileName ) -> std::string
 		{
@@ -23,6 +24,62 @@ namespace SyntheticConfig
 				fileName += ".json";
 			return fileName;
 		}
+
+		auto RenderCreatePopup() noexcept -> void
+		{
+			if ( !s_showCreatePopup )
+				return;
+
+			gui->set_next_window_size( SCALE( 310 , 80 ) );
+			gui->set_next_window_pos( GetWindowPos() + ( GetWindowSize() / 2.f - SCALE( 310 , 80 ) / 2.f ) );
+			gui->push_style_var( ImGuiStyleVar_WindowPadding , ImVec2( 0 , 0 ) );
+			gui->begin( "Create Config" , nullptr , ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground );
+			{
+				draw->add_rect_filled(
+					GetWindowDrawList() ,
+					GetWindowPos() ,
+					GetWindowPos() + GetWindowSize() ,
+					gui->get_clr( clr->c_child.layout ) ,
+					SCALE( set->c_child.rounding ) );
+				draw->add_rect(
+					GetWindowDrawList() ,
+					GetWindowPos() ,
+					GetWindowPos() + GetWindowSize() ,
+					gui->get_clr( clr->c_child.stroke ) ,
+					SCALE( set->c_child.rounding ) ,
+					0 ,
+					SCALE( 1.f ) );
+
+				gui->set_cursor_pos( SCALE( 20 , 20 ) );
+				gui->begin_group();
+				{
+					widget->text_field( "Config Name" , "M" , s_createNameBuf , sizeof( s_createNameBuf ) , SCALE( 180 , 40 ) );
+					gui->sameline();
+					ImGui::PushID( "CreateConfigConfirm" );
+					if ( widget->button( "Create" , SCALE( 75 , 40 ) ) )
+					{
+						if ( s_createNameBuf[0] != '\0' )
+						{
+							snprintf( s_configNameBuf , sizeof( s_configNameBuf ) , "%s" , s_createNameBuf );
+							const std::string fileName = EnsureExtension( s_configNameBuf );
+							GetSettingsJson()->SaveConfig( fileName );
+							InvalidateConfigList();
+							s_showCreatePopup = false;
+							s_createNameBuf[0] = '\0';
+						}
+					}
+					ImGui::PopID();
+				}
+				gui->end_group();
+
+				if ( !IsMouseHoveringRect( GetWindowPos() , GetWindowPos() + GetWindowSize() )
+					&& ( IsMouseClicked( 0 ) || IsMouseClicked( 1 ) ) )
+					s_showCreatePopup = false;
+			}
+			gui->end();
+			gui->pop_style_var();
+		}
+
 	}
 
 	auto InvalidateConfigList() noexcept -> void
@@ -60,8 +117,13 @@ namespace SyntheticConfig
 
 		widget->tool_dropdown( "Sort" , &var->c_config.sort_selection , var->c_config.sort_list , var->c_config.sort_list.size() );
 		gui->sameline();
+		if ( widget->tool_button( "Create" , "A" , SCALE( 90 , 36 ) ) )
+			s_showCreatePopup = true;
+		gui->sameline();
 		if ( widget->tool_button( "Refresh" , "R" , SCALE( 90 , 36 ) ) )
 			s_listDirty = true;
+
+		RenderCreatePopup();
 
 		gui->set_cursor_pos_y( SCALE( 80 ) );
 		widget->text_field( "Config Name" , "M" , s_configNameBuf , sizeof( s_configNameBuf ) , SCALE( GetContentRegionAvail().x , 40 ) );
@@ -87,7 +149,7 @@ namespace SyntheticConfig
 			GetSettingsJson()->DeleteConfig( fileName );
 			InvalidateConfigList();
 			SyncConfigListFromDisk();
-			GetNotify()->Push( N_TYPE_WARNING , "Config deleted" );
+			SyntheticNotifyBridge::Push( N_TYPE_WARNING , "Config deleted" );
 		}
 
 		widget->separator();
@@ -108,25 +170,23 @@ namespace SyntheticConfig
 		gui->set_cursor_pos_y( GetCursorPosY() + SCALE( 24 ) );
 
 		static int s_prevActive = -1;
+		const int count = static_cast<int>( var->c_config.data.size() );
 		gui->begin_group();
-		for ( int i = 0; i < static_cast<int>( var->c_config.data.size() ); ++i )
+		for ( int i = 0; i < count; ++i )
 		{
-			if ( widget->config_selectable( &var->c_config.data.at( i ) , i , var->c_config.active ) )
-			{
-				s_selectedConfigIdx = i;
-				snprintf( s_configNameBuf , sizeof( s_configNameBuf ) , "%s" , var->c_config.data[i].name.c_str() );
-			}
+			const int index = var->c_config.sort_selection == 0 ? i : ( count - 1 - i );
+			if ( widget->config_selectable( &var->c_config.data.at( index ) , index , var->c_config.active ) )
+				snprintf( s_configNameBuf , sizeof( s_configNameBuf ) , "%s" , var->c_config.data[index].name.c_str() );
 		}
 		gui->end_group();
 
 		if ( var->c_config.active != s_prevActive && var->c_config.active >= 0
-			&& var->c_config.active < static_cast<int>( var->c_config.data.size() ) )
+			&& var->c_config.active < count )
 		{
 			s_prevActive = var->c_config.active;
 			const std::string fileName = EnsureExtension( var->c_config.data[var->c_config.active].name );
 			GetSettingsJson()->LoadConfig( fileName );
 			snprintf( s_configNameBuf , sizeof( s_configNameBuf ) , "%s" , fileName.c_str() );
 		}
-
 	}
 }

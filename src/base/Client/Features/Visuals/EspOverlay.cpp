@@ -201,7 +201,7 @@ namespace EspOverlay
 		if ( config.showHealthBar && health > 0 )
 		{
 			BarComponent bar;
-			bar.side = AlignSide::Left;
+			bar.side = static_cast<AlignSide>( std::clamp( config.healthBarSide , 0 , 3 ) );
 			bar.progress = static_cast<float>( health ) / 100.f;
 			bar.color = ColorFromConfig( config.healthBarColor );
 			bar.thickness = config.barThickness;
@@ -211,7 +211,7 @@ namespace EspOverlay
 		if ( config.showName && name && name[0] != '\0' )
 		{
 			TextComponent text;
-			text.side = AlignSide::Top;
+			text.side = static_cast<AlignSide>( std::clamp( config.nameSide , 0 , 3 ) );
 			text.text = name;
 			text.color = ColorFromConfig( config.textColor );
 			ctx.AddText( text );
@@ -222,7 +222,7 @@ namespace EspOverlay
 			char distBuf[32];
 			snprintf( distBuf , sizeof( distBuf ) , "[ %.0fm ]" , distanceMeters );
 			TextComponent text;
-			text.side = AlignSide::Bottom;
+			text.side = static_cast<AlignSide>( std::clamp( config.distanceSide , 0 , 3 ) );
 			text.text = distBuf;
 			text.color = ColorFromConfig( config.textColor );
 			ctx.AddText( text );
@@ -241,7 +241,7 @@ namespace EspOverlay
 					if ( hasHelmet )
 					{
 						TextComponent hk;
-						hk.side = AlignSide::Right;
+						hk.side = static_cast<AlignSide>( std::clamp( config.flagsSide , 0 , 3 ) );
 						hk.text = "HK";
 						hk.color = IM_COL32( 120 , 200 , 255 , 255 );
 						ctx.AddText( hk );
@@ -249,7 +249,7 @@ namespace EspOverlay
 					else if ( hasArmor )
 					{
 						TextComponent armor;
-						armor.side = AlignSide::Right;
+						armor.side = static_cast<AlignSide>( std::clamp( config.flagsSide , 0 , 3 ) );
 						armor.text = "K";
 						armor.color = IM_COL32( 200 , 200 , 200 , 255 );
 						ctx.AddText( armor );
@@ -258,7 +258,7 @@ namespace EspOverlay
 				if ( config.showKitFlag && items->m_bHasDefuser() )
 				{
 					TextComponent kit;
-					kit.side = AlignSide::Right;
+					kit.side = static_cast<AlignSide>( std::clamp( config.flagsSide , 0 , 3 ) );
 					kit.text = "KIT";
 					kit.color = IM_COL32( 100 , 255 , 140 , 255 );
 					ctx.AddText( kit );
@@ -285,7 +285,7 @@ namespace EspOverlay
 				if ( maxClip > 0 && clip >= 0 )
 				{
 					BarComponent ammo;
-					ammo.side = AlignSide::Bottom;
+					ammo.side = static_cast<AlignSide>( std::clamp( config.ammoBarSide , 0 , 3 ) );
 					ammo.progress = static_cast<float>( clip ) / static_cast<float>( maxClip );
 					ammo.color = ColorFromConfig( config.ammoBarColor );
 					ctx.AddBar( ammo );

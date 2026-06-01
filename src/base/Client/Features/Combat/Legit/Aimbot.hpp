@@ -40,6 +40,9 @@ namespace Aimbot
         float screenFov  = 100.0f;   // For Screen FOV
         int   targetHitbox = 0;      // legacy single-hitbox fallback
         int   aimKey     = VK_LBUTTON;
+        bool  aimKeyHold = true;
+        bool  aimUseKey  = true;
+        bool  aimShowInBinds = true;
         bool  autoShoot  = false;
         bool  silentAim  = true;
         bool  teamCheck  = true;
@@ -458,10 +461,15 @@ namespace Aimbot
             bool shouldAim = false;
             if ( !menuBlocking )
             {
+                static KeyBindUtils::KeyBindSlot s_aimKeySlot{};
                 if ( config.autoShoot )
                     shouldAim = true;
-                else if ( config.aimKey != 0 )
-                    shouldAim = KeyBindUtils::IsActive( static_cast<unsigned int>( config.aimKey ) );
+                else if ( config.aimUseKey )
+                    shouldAim = KeyBindUtils::IsActive(
+                        static_cast<unsigned int>( config.aimKey ) ,
+                        true ,
+                        config.aimKeyHold ,
+                        s_aimKeySlot );
                 else
                     shouldAim = true;
             }

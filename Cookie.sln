@@ -16,6 +16,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BlackBoneLib", "BlackBoneLi
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Vac3Inhibitor", "Vac3Inhibitor.vcxproj", "{B1E2F3A4-5C6D-7E8F-9012-3456789ABCDE}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MenuSandbox", "tools\MenuSandbox\MenuSandbox.vcxproj", "{C4E8A1B2-3D5F-6789-ABCD-EF0123456789}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -37,6 +39,10 @@ Global
 		{B1E2F3A4-5C6D-7E8F-9012-3456789ABCDE}.Debug|x64.ActiveCfg = Release|Win32
 		{B1E2F3A4-5C6D-7E8F-9012-3456789ABCDE}.Release|x64.ActiveCfg = Release|Win32
 		{B1E2F3A4-5C6D-7E8F-9012-3456789ABCDE}.Release|x64.Build.0 = Release|Win32
+		{C4E8A1B2-3D5F-6789-ABCD-EF0123456789}.Debug|x64.ActiveCfg = Debug|x64
+		{C4E8A1B2-3D5F-6789-ABCD-EF0123456789}.Debug|x64.Build.0 = Debug|x64
+		{C4E8A1B2-3D5F-6789-ABCD-EF0123456789}.Release|x64.ActiveCfg = Release|x64
+		{C4E8A1B2-3D5F-6789-ABCD-EF0123456789}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

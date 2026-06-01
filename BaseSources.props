@@ -40,7 +40,14 @@
     <ClCompile Include="src\base\Client\UI\Menu\MenuAssets.cpp" />
     <ClCompile Include="src\base\Client\UI\Menu\MenuConfig.cpp" />
     <ClCompile Include="src\base\Client\UI\Synthetic\SyntheticMenu.cpp" />
+    <ClCompile Include="src\base\Client\UI\Synthetic\SyntheticBinds.cpp" />
+    <ClCompile Include="src\base\Client\UI\Synthetic\SyntheticLuaRuntime.cpp" />
+    <ClCompile Include="src\base\Client\UI\Synthetic\SyntheticTabLua.cpp" />
+    <ClCompile Include="src\base\Client\UI\Synthetic\framework\functional\lua.cpp" />
+    <ClCompile Include="src\base\Client\UI\Synthetic\framework\functional\text_editor.cpp" />
     <ClCompile Include="src\base\Client\UI\Synthetic\SyntheticWatermark.cpp" />
+    <ClCompile Include="src\base\Client\UI\Synthetic\SyntheticEspPreview.cpp" />
+    <ClCompile Include="src\base\Client\UI\Synthetic\SyntheticNotifyBridge.cpp" />
     <ClCompile Include="src\base\Client\UI\Synthetic\SyntheticConfig.cpp" />
     <ClCompile Include="src\base\Client\UI\Synthetic\SyntheticTabRage.cpp" />
     <ClCompile Include="src\base\Client\UI\Synthetic\SyntheticTabLegit.cpp" />
@@ -61,11 +68,9 @@
     <ClCompile Include="src\base\Client\UI\Synthetic\framework\functional\dropdown.cpp" />
     <ClCompile Include="src\base\Client\UI\Synthetic\framework\functional\esp_preview.cpp" />
     <ClCompile Include="src\base\Client\UI\Synthetic\framework\functional\keybind.cpp" />
-    <ClCompile Include="src\base\Client\UI\Synthetic\framework\functional\lua.cpp" />
     <ClCompile Include="src\base\Client\UI\Synthetic\framework\functional\notifications.cpp" />
     <ClCompile Include="src\base\Client\UI\Synthetic\framework\functional\selection.cpp" />
     <ClCompile Include="src\base\Client\UI\Synthetic\framework\functional\textfield.cpp" />
-    <ClCompile Include="src\base\Client\UI\Synthetic\framework\functional\text_editor.cpp" />
     <ClCompile Include="src\base\Client\Game\Trace.cpp" />
     <ClCompile Include="src\base\Client\CCookieGUI.cpp" />
     <ClCompile Include="src\base\Client\Fonts\CFont.cpp" />

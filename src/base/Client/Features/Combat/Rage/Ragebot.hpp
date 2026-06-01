@@ -14,6 +14,10 @@ namespace Ragebot
 	struct Config
 	{
 		bool  enabled = false;
+		int   activationKey = 0;
+		bool  activationUseKey = false;
+		bool  activationKeyHold = true;
+		bool  activationShowInBinds = true;
 		int   minDamage = 1;
 		int   hitchance = 50;
 		int   multipointScale = 70;

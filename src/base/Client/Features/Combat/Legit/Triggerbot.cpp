@@ -78,7 +78,12 @@ namespace Triggerbot
 		uintptr_t targetPawn = 0;
 		Game::Vector3 targetPoint{};
 
-		if ( !config.useKey || KeyBindUtils::IsActive( static_cast<unsigned int>( config.key ) ) )
+		static KeyBindUtils::KeyBindSlot s_triggerKeySlot{};
+		if ( !config.useKey || KeyBindUtils::IsActive(
+			static_cast<unsigned int>( config.key ) ,
+			true ,
+			config.keyHold ,
+			s_triggerKeySlot ) )
 		{
 			const int crosshairId = Game::Read<int>( localPawn + Offsets::m_iIDEntIndex );
 			targetPawn = ResolveCrosshairPawn( crosshairId );
