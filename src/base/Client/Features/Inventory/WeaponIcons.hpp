@@ -12,7 +12,26 @@ inline constexpr const char* kIconScs2FontPath = "src/base/Client/Resources/icon
 
 namespace WeaponIcons
 {
+	inline auto FontReady( ImFont* font ) noexcept -> bool
+	{
+		if ( !font )
+			return false;
+
+		ImFontAtlas* const atlas = ImGui::GetIO().Fonts;
+		if ( !atlas )
+			return false;
+
+		for ( ImFont* const atlasFont : atlas->Fonts )
+		{
+			if ( atlasFont == font )
+				return atlas->IsBuilt() && atlas->TexID != ImTextureID{} && font->IsLoaded();
+		}
+
+		return false;
+	}
+
 	auto Init() noexcept -> bool;
+	auto Invalidate() noexcept -> void;
 	auto GetFont() noexcept -> ImFont*;
 	auto GetKnifeFont() noexcept -> ImFont*;
 	auto GetObsFont() noexcept -> ImFont*;

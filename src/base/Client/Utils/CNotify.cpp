@@ -120,6 +120,10 @@ auto CNotify::Render() -> void
 	if ( m_notifications.empty() || !ImGui::GetCurrentContext() )
 		return;
 
+	ImFontAtlas* atlas = ImGui::GetIO().Fonts;
+	if ( !atlas || !atlas->IsBuilt() || atlas->TexID == ImTextureID{} )
+		return;
+
 	ImGuiStyle& style = ImGui::GetStyle();
 	ImGuiIO& io = ImGui::GetIO();
 	const float currentTime = GetTime();
@@ -168,10 +172,10 @@ auto CNotify::Render() -> void
 
 		if ( ImFont* iconFont = EmbeddedFonts::GetFontAwesome() )
 		{
-			if ( const char* icon = data.GetIcon() )
+			if ( EmbeddedFonts::FontReady( iconFont ) && data.GetIcon() )
 			{
 				ImGui::PushFont( iconFont );
-				ImGui::TextColored( typeColorVec , "%s" , icon );
+				ImGui::TextColored( typeColorVec , "%s" , data.GetIcon() );
 				ImGui::PopFont();
 				ImGui::SameLine();
 			}

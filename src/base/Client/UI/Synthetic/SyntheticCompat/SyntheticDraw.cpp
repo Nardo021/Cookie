@@ -1,5 +1,7 @@
 ﻿#include <framework/settings/functions.h>
 
+#include <Client/UI/Synthetic/SyntheticCompat/SyntheticUiGuard.hpp>
+
 using namespace ImGui;
 
 static inline ImDrawFlags fix_rect_corner_flag(ImDrawFlags flags)
@@ -12,7 +14,7 @@ static inline ImDrawFlags fix_rect_corner_flag(ImDrawFlags flags)
 
 void c_draw::rect_filled_multi_color(ImDrawList* draw, const ImVec2& p_min, const ImVec2& p_max, ImU32 col_upr_left, ImU32 col_upr_right, ImU32 col_bot_right, ImU32 col_bot_left, float rounding, ImDrawFlags flags)
 {
-    if (((col_upr_left | col_upr_right | col_bot_right | col_bot_left) & IM_COL32_A_MASK) == 0)
+    if ( !draw || ((col_upr_left | col_upr_right | col_bot_right | col_bot_left) & IM_COL32_A_MASK) == 0)
         return;
 
     auto fix_rect_corner_flags = [](ImDrawFlags rflags)
@@ -84,6 +86,9 @@ void c_draw::rect_filled_multi_color(ImDrawList* draw, const ImVec2& p_min, cons
 
 void set_linear_color(ImDrawList* draw_list, int vert_start_idx, int vert_end_idx, ImVec2 gradient_p0, ImVec2 gradient_p1, ImU32 col0, ImU32 col1)
 {
+    if ( !draw_list || vert_start_idx < 0 || vert_end_idx > draw_list->VtxBuffer.Size || vert_start_idx >= vert_end_idx )
+        return;
+
     ImVec2 gradient_extent = gradient_p1 - gradient_p0;
     float gradient_inv_length2 = 1.0f / ImLengthSqr(gradient_extent);
     ImDrawVert* vert_start = draw_list->VtxBuffer.Data + vert_start_idx;
@@ -107,6 +112,9 @@ void set_linear_color(ImDrawList* draw_list, int vert_start_idx, int vert_end_id
 
 void c_draw::fade_rect_filled(ImDrawList* draw, const ImVec2& pos_min, const ImVec2& pos_max, ImU32 col_one, ImU32 col_two, fade_direction direction, float rounding, ImDrawFlags flags)
 {
+    if ( !draw )
+        return;
+
     const ImVec2 fade_pos_in = (direction == fade_direction::diagonally_reversed) ? ImVec2(pos_max.x, pos_min.y) : pos_min;
 
     const ImVec2 fade_pos_out = (direction == fade_direction::vertically) ? ImVec2(pos_min.x, pos_max.y) :
@@ -122,10 +130,8 @@ void c_draw::fade_rect_filled(ImDrawList* draw, const ImVec2& pos_min, const ImV
 
 void c_draw::render_text(ImDrawList* draw_list, ImFont* font, const ImVec2& pos_min, const ImVec2& pos_max, ImU32 color, const char* text, const char* text_display_end, const ImVec2* text_size_if_known, const ImVec2& align, const ImRect* clip_rect)
 {
-    if ( !font || !draw_list )
+    if ( !draw_list || !SyntheticUi::PushFont( font ) )
         return;
-
-    gui->push_font(font);
 
     ImVec2 pos = pos_min;
     const ImVec2 text_size = text_size_if_known ? *text_size_if_known : CalcTextSize(text, text_display_end, false, 0.0f);
@@ -147,7 +153,7 @@ void c_draw::render_text(ImDrawList* draw_list, ImFont* font, const ImVec2& pos_
     {
         draw_list->AddText(NULL, 0, pos, color, text, text_display_end, 0.0f, NULL);
     }
-    gui->pop_font();
+    SyntheticUi::PopFont();
 }
 
 void c_draw::radial_gradient(ImDrawList* draw_list, const ImVec2& center, float radius, ImU32 col_in, ImU32 col_out)
@@ -176,6 +182,9 @@ void c_draw::radial_gradient(ImDrawList* draw_list, const ImVec2& center, float 
 
 void c_draw::set_linear_color_alpha(ImDrawList* draw_list, int vert_start_idx, int vert_end_idx, ImVec2 gradient_p0, ImVec2 gradient_p1, ImU32 col0, ImU32 col1)
 {
+    if ( !draw_list || vert_start_idx < 0 || vert_end_idx > draw_list->VtxBuffer.Size || vert_start_idx >= vert_end_idx )
+        return;
+
     ImVec2 gradient_extent = gradient_p1 - gradient_p0;
     float gradient_inv_length2 = 1.0f / ImLengthSqr(gradient_extent);
     ImDrawVert* vert_start = draw_list->VtxBuffer.Data + vert_start_idx;
@@ -202,7 +211,8 @@ void c_draw::set_linear_color_alpha(ImDrawList* draw_list, int vert_start_idx, i
 
 void c_draw::add_rect_filled(ImDrawList* draw_list, const ImVec2& p_min, const ImVec2& p_max, ImU32 col, float rounding, ImDrawFlags flags)
 {
-    if ((col & IM_COL32_A_MASK) == 0) return;
+    if (!draw_list || (col & IM_COL32_A_MASK) == 0)
+        return;
 
     if (rounding < 0.5f || (flags & ImDrawFlags_RoundCornersMask_) == ImDrawFlags_RoundCornersNone)
     {
@@ -218,7 +228,8 @@ void c_draw::add_rect_filled(ImDrawList* draw_list, const ImVec2& p_min, const I
 
 void c_draw::add_rect(ImDrawList* draw_list, const ImVec2& p_min, const ImVec2& p_max, ImU32 col, float rounding, ImDrawFlags flags, float thickness)
 {
-    if ((col & IM_COL32_A_MASK) == 0) return;
+    if ( !draw_list || (col & IM_COL32_A_MASK) == 0)
+        return;
     if (draw_list->Flags & ImDrawListFlags_AntiAliasedLines)  draw_list->PathRect(p_min + ImVec2(0.50f, 0.50f), p_max - ImVec2(0.50f, 0.50f), rounding, flags);
     else draw_list->PathRect(p_min + ImVec2(0.50f, 0.50f), p_max - ImVec2(0.49f, 0.49f), rounding, flags);
 
@@ -227,7 +238,8 @@ void c_draw::add_rect(ImDrawList* draw_list, const ImVec2& p_min, const ImVec2& 
 
 void c_draw::add_circle_filled(ImDrawList* draw_list, const ImVec2& center, float radius, ImU32 col, int num_segments)
 {
-    if ((col & IM_COL32_A_MASK) == 0 || radius < 0.5f) return;
+    if ( !draw_list || (col & IM_COL32_A_MASK) == 0 || radius < 0.5f)
+        return;
 
     if (num_segments <= 0)
     {
@@ -247,7 +259,8 @@ void c_draw::add_circle_filled(ImDrawList* draw_list, const ImVec2& center, floa
 
 void c_draw::add_circle(ImDrawList* draw_list, const ImVec2& center, float radius, ImU32 col, int num_segments, float thickness)
 {
-    if ((col & IM_COL32_A_MASK) == 0 || radius < 0.5f) return;
+    if ( !draw_list || (col & IM_COL32_A_MASK) == 0 || radius < 0.5f)
+        return;
 
     if (num_segments <= 0)
     {
@@ -267,14 +280,15 @@ void c_draw::add_circle(ImDrawList* draw_list, const ImVec2& center, float radiu
 
 void c_draw::add_text(ImDrawList* draw_list, const ImFont* font, float font_size, const ImVec2& pos, ImU32 col, const char* text_begin, const char* text_end, float wrap_width, const ImVec4* cpu_fine_clip_rect)
 {
-    if ((col & IM_COL32_A_MASK) == 0) return;
+    if ( !draw_list || (col & IM_COL32_A_MASK) == 0)
+        return;
     if (text_begin == text_end || text_begin[0] == 0) return;
 
     if (text_end == NULL) text_end = text_begin + strlen(text_begin);
     if (font == NULL) font = draw_list->_Data->Font;
     if (font_size == 0.0f) font_size = draw_list->_Data->FontSize;
-
-    IM_ASSERT(font->ContainerAtlas->TexID == draw_list->_CmdHeader.TextureId);
+    if ( !SyntheticUi::FontUsable( const_cast<ImFont*>( font ) ) )
+        return;
 
     ImVec4 clip_rect = draw_list->_CmdHeader.ClipRect;
     if (cpu_fine_clip_rect)
@@ -289,10 +303,8 @@ void c_draw::add_text(ImDrawList* draw_list, const ImFont* font, float font_size
 
 void c_draw::render_text(ImFont* font, ImDrawList* draw_list, const ImVec2& pos_min, const ImVec2& pos_max, ImU32 color, const char* text, const char* text_display_end, const ImVec2* text_size_if_known, const ImVec2& align, const ImRect* clip_rect)
 {
-    if ( !font || !draw_list )
+    if ( !draw_list || !SyntheticUi::PushFont( font ) )
         return;
-
-    gui->push_font(font);
 
     ImVec2 pos = pos_min;
     const ImVec2 text_size = text_size_if_known ? *text_size_if_known : CalcTextSize(text, text_display_end, false, 0.0f);
@@ -314,11 +326,14 @@ void c_draw::render_text(ImFont* font, ImDrawList* draw_list, const ImVec2& pos_
     {
         add_text(draw_list, NULL, 0, pos, color, text, text_display_end, 0.0f, NULL);
     }
-    gui->pop_font();
+    SyntheticUi::PopFont();
 }
 
 void c_draw::render_text_with_spacing(const char* text, float spacing, ImVec2 position1, ImVec2 position2, ImU32 color, bool centered)
 {
+    if ( !text || !*text || !SyntheticUi::FontUsable( SyntheticUi::ResolveFontOrFallback( ImGui::GetFont() ) ) )
+        return;
+
     ImVec2 pos = position1;
 
     float max_width = 0.0f;
@@ -361,7 +376,8 @@ void c_draw::render_text_with_spacing(const char* text, float spacing, ImVec2 po
 
 void c_draw::add_image(ImDrawList* draw_list, ImTextureID user_texture_id, const ImVec2& p_min, const ImVec2& p_max, const ImVec2& uv_min, const ImVec2& uv_max, ImU32 col)
 {
-    if ((col & IM_COL32_A_MASK) == 0) return;
+    if ( !draw_list || (col & IM_COL32_A_MASK) == 0)
+        return;
 
     const bool push_texture_id = user_texture_id != draw_list->_CmdHeader.TextureId;
     if (push_texture_id) draw_list->PushTextureID(user_texture_id);
@@ -374,7 +390,8 @@ void c_draw::add_image(ImDrawList* draw_list, ImTextureID user_texture_id, const
 
 void c_draw::add_image_rounded(ImDrawList* draw_list, ImTextureID user_texture_id, const ImVec2& p_min, const ImVec2& p_max, const ImVec2& uv_min, const ImVec2& uv_max, ImU32 col, float rounding, ImDrawFlags flags)
 {
-    if ((col & IM_COL32_A_MASK) == 0) return;
+    if ( !draw_list || (col & IM_COL32_A_MASK) == 0)
+        return;
 
     flags = fix_rect_corner_flag(flags);
     if (rounding < 0.5f || (flags & ImDrawFlags_RoundCornersMask_) == ImDrawFlags_RoundCornersNone)
@@ -397,6 +414,9 @@ void c_draw::add_image_rounded(ImDrawList* draw_list, ImTextureID user_texture_i
 
 void c_draw::add_line(ImDrawList* draw, const ImVec2& p1, const ImVec2& p2, ImU32 col, float thickness)
 {
+    if (!draw)
+        return;
+
     if ((col & IM_COL32_A_MASK) == 0) return;
 
     draw->PathLineTo(p1 + ImVec2(0.5f, 0.5f));
@@ -406,6 +426,9 @@ void c_draw::add_line(ImDrawList* draw, const ImVec2& p1, const ImVec2& p2, ImU3
 
 void c_draw::push_clip_rect(ImDrawList* draw, const ImVec2& cr_min, const ImVec2& cr_max, bool intersect_with_current_clip_rect)
 {
+    if ( !draw )
+        return;
+
     ImVec4 cr(cr_min.x, cr_min.y, cr_max.x, cr_max.y);
     if (intersect_with_current_clip_rect)
     {

@@ -109,6 +109,10 @@ namespace MenuEffects
 			CHEAT_NAME ,
 			io.Framerate );
 
+		ImFont* font = ImGui::GetFont();
+		if ( !EmbeddedFonts::FontReady( font ) )
+			return;
+
 		const ImVec2 textSize = ImGui::CalcTextSize( text );
 		const ImVec2 pos( io.DisplaySize.x - textSize.x - 12.f , 8.f );
 

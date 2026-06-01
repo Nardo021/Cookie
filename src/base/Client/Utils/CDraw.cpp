@@ -1,5 +1,7 @@
 #include "CDraw.hpp"
 
+#include <Client/Fonts/EmbeddedFonts.hpp>
+
 #include <Client/Core/CEasing.hpp>
 #include <Client/Game/Game.hpp>
 
@@ -124,7 +126,14 @@ auto CDraw::DrawText( ImDrawList* drawList , const ImFont* font , const ImVec2& 
 		font = ImGui::GetFont();
 
 	ImFont* drawFont = const_cast<ImFont*>( font );
-	drawList->PushTextureID( drawFont->ContainerAtlas->TexID );
+	if ( !EmbeddedFonts::FontReady( drawFont ) )
+		return;
+
+	ImFontAtlas* atlas = drawFont->ContainerAtlas;
+	if ( !atlas )
+		return;
+
+	drawList->PushTextureID( atlas->TexID );
 
 	if ( flags & DRAW_TEXT_DROPSHADOW )
 		drawList->AddText( drawFont , drawFont->FontSize , position + ImVec2( thickness , thickness ) , outlineColor , text , nullptr );

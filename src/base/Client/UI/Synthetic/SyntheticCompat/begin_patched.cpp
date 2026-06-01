@@ -1,5 +1,6 @@
 ﻿#include <framework/settings/functions.h>
 #include <Client/UI/Synthetic/SyntheticCompat/SyntheticScrollPatch.hpp>
+#include <Client/UI/Synthetic/SyntheticCompat/SyntheticUiGuard.hpp>
 
 bool scrollbar_ex(const ImRect& bb_frame, ImGuiID id, ImGuiAxis axis, ImS64* p_scroll_v, ImS64 size_avail_v, ImS64 size_contents_v, ImDrawFlags flags)
 {
@@ -71,7 +72,8 @@ bool scrollbar_ex(const ImRect& bb_frame, ImGuiID id, ImGuiAxis axis, ImS64* p_s
      else
          grab_rect = ImRect(bb.Min.x + (style.ScrollbarSize / 2.8f), ImLerp(bb.Min.y + GetStyle().WindowPadding.y, bb.Max.y, grab_v_norm), bb.Max.x - (style.ScrollbarSize / 2.8f), ImLerp(bb.Min.y - GetStyle().WindowPadding.y, bb.Max.y, grab_v_norm) + grab_h_pixels);
     
-     draw->add_rect_filled(window->DrawList, grab_rect.Min - SCALE(4, 0), grab_rect.Max - SCALE(4, 0), gui->get_clr(*state), SCALE(30.f));
+     if ( window && window->DrawList )
+         draw->add_rect_filled(window->DrawList, grab_rect.Min - SCALE(4, 0), grab_rect.Max - SCALE(4, 0), gui->get_clr(*state), SCALE(30.f));
     
     return{ held };
 }
@@ -1307,7 +1309,14 @@ bool c_gui::begin(std::string_view name, bool* p_open, ImGuiWindowFlags flags)
 
         // Setup draw list and outer clipping rectangle
         IM_ASSERT(window->DrawList->CmdBuffer.Size == 1 && window->DrawList->CmdBuffer[0].ElemCount == 0);
-        window->DrawList->PushTextureID(g.Font->ContainerAtlas->TexID);
+        if ( window->DrawList )
+        {
+            if ( ImFont* const drawFont = SyntheticUi::ResolveFontOrFallback( g.Font ) )
+            {
+                if ( SyntheticUi::FontUsable( drawFont ) )
+                    window->DrawList->PushTextureID( SyntheticUi::FontAtlasTexture( drawFont ) );
+            }
+        }
         PushClipRect(host_rect.Min, host_rect.Max, false);
 
         // Child windows can render their decoration (bg color, border, scrollbars, etc.) within their parent to save a draw call (since 1.71)
@@ -1321,11 +1330,11 @@ bool c_gui::begin(std::string_view name, bool* p_open, ImGuiWindowFlags flags)
                 // - We disable this when the parent window has zero vertices, which is a common pattern leading to laying out multiple overlapping childs
                 ImGuiWindow* previous_child = parent_window->DC.ChildWindows.Size >= 2 ? parent_window->DC.ChildWindows[parent_window->DC.ChildWindows.Size - 2] : NULL;
                 bool previous_child_overlapping = previous_child ? previous_child->Rect().Overlaps(window->Rect()) : false;
-                bool parent_is_empty = (parent_window->DrawList->VtxBuffer.Size == 0);
+                bool parent_is_empty = parent_window->DrawList && (parent_window->DrawList->VtxBuffer.Size == 0);
                 if (window->DrawList->CmdBuffer.back().ElemCount == 0 && !parent_is_empty && !previous_child_overlapping)
                     render_decorations_in_parent = true;
             }
-            if (render_decorations_in_parent)
+            if (render_decorations_in_parent && parent_window->DrawList )
                 window->DrawList = parent_window->DrawList;
 
             // Handle title bar, scrollbar, resize grips and resize borders

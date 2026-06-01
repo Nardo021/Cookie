@@ -25,7 +25,7 @@ namespace EmbeddedFonts
 
 	auto InitFontAwesome( float sizePixels ) noexcept -> ImFont*
 	{
-		if ( s_fontAwesome )
+		if ( FontReady( s_fontAwesome ) )
 			return s_fontAwesome;
 
 		ImFontConfig config{};
@@ -49,7 +49,7 @@ namespace EmbeddedFonts
 
 	auto InitSmallestPixel( float sizePixels ) noexcept -> ImFont*
 	{
-		if ( s_smallestPixel )
+		if ( FontReady( s_smallestPixel ) )
 			return s_smallestPixel;
 
 		ImFontConfig config{};
@@ -73,7 +73,7 @@ namespace EmbeddedFonts
 
 	auto InitLexendBold( float sizePixels ) noexcept -> ImFont*
 	{
-		if ( s_lexendBold )
+		if ( FontReady( s_lexendBold ) )
 			return s_lexendBold;
 
 		ImFontConfig config{};
@@ -93,5 +93,12 @@ namespace EmbeddedFonts
 	auto GetLexendBold() noexcept -> ImFont*
 	{
 		return s_lexendBold;
+	}
+
+	auto Invalidate() noexcept -> void
+	{
+		s_fontAwesome = nullptr;
+		s_smallestPixel = nullptr;
+		s_lexendBold = nullptr;
 	}
 }

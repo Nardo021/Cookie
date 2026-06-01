@@ -299,10 +299,13 @@ namespace EspOverlay
 		{
 			ImFont* iconFont = WeaponIcons::GetFont();
 			const bool isKnife = weaponDefIndex >= 500 || ( weaponDefIndex >= 59 && weaponDefIndex <= 63 );
-			if ( isKnife && WeaponIcons::GetKnifeFont() )
-				iconFont = WeaponIcons::GetKnifeFont();
+			if ( isKnife )
+			{
+				if ( ImFont* knifeFont = WeaponIcons::GetKnifeFont(); WeaponIcons::FontReady( knifeFont ) )
+					iconFont = knifeFont;
+			}
 
-			if ( iconFont )
+			if ( WeaponIcons::FontReady( iconFont ) )
 			{
 				char iconUtf8[8]{};
 				ImTextCharToUtf8( iconUtf8 , WeaponIcons::GetWeaponIconChar( weaponDefIndex ) );

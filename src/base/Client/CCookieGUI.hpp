@@ -27,6 +27,8 @@ public:
 
 public:
 	auto InitFont() -> void;
+	auto ReloadCookieFonts() -> void;
+	auto RebuildFontDeviceObjects() -> void;
 
 private:
 	auto SetIndigoStyle() -> void;

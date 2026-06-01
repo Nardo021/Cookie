@@ -25,6 +25,7 @@
 #include <Client/Features/Combat/LagComp.hpp>
 #include <Client/UI/Menu/MenuEffects.hpp>
 #include <Client/UI/Synthetic/SyntheticMenu.hpp>
+#include <Client/UI/Synthetic/SyntheticCompat/SyntheticUiGuard.hpp>
 #include <Client/UI/Synthetic/SyntheticWatermark.hpp>
 #include <framework/settings/functions.h>
 #include <Client/Features/Misc/PlantBomb.hpp>
@@ -128,10 +129,13 @@ auto CCookieClient::OnRender() -> void
 	if ( SkinChanger::NeedsTick() )
 		SkinChanger::Tick();
 
-	SyntheticWatermark::RenderOverlay();
+	if ( SyntheticUi::AtlasReady() && SyntheticUi::MenuFontsReady() )
+	{
+		SyntheticWatermark::RenderOverlay();
 
-	if ( gui->IsVisible() && SyntheticMenu::IsInitialized() )
-		SyntheticMenu::Render();
+		if ( gui->IsVisible() && SyntheticMenu::IsInitialized() && SyntheticUi::MenuFontsReady() )
+			SyntheticMenu::Render();
+	}
 
 	GetInputSystem()->Update();
 

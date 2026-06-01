@@ -1,5 +1,7 @@
 ﻿#include <framework/settings/functions.h>
 
+#include <Client/UI/Synthetic/SyntheticCompat/SyntheticUiGuard.hpp>
+
 void esp_preview::fill_box(const ImVec2& pos, const ImVec2& size)
 {
     box.position = pos;
@@ -47,27 +49,32 @@ void esp_preview::initialize_preview(const ImVec2& pos, const ImVec2& size, bool
 
 void esp_preview::render_box(int type)
 {
-    const ImVec2 box_pos = box.position;
-    ImGuiWindow* window = ImGui::GetCurrentWindow();
+    ImDrawList* draw_list = ImGui::GetWindowDrawList();
+    if ( !draw_list )
+        return;
 
-    draw->add_line(GetWindowDrawList(), box.position, box.position + ImVec2(0, box.size.y / 3), gui->get_clr(clr->c_other_clr.white_clr));
-    draw->add_line(GetWindowDrawList(), box.position, box.position + ImVec2(box.size.x / 3, 0), gui->get_clr(clr->c_other_clr.white_clr));
+    draw->add_line(draw_list, box.position, box.position + ImVec2(0, box.size.y / 3), gui->get_clr(clr->c_other_clr.white_clr));
+    draw->add_line(draw_list, box.position, box.position + ImVec2(box.size.x / 3, 0), gui->get_clr(clr->c_other_clr.white_clr));
 
-    draw->add_line(GetWindowDrawList(), box.position + ImVec2(box.size.x * 2 / 3, 0), box.position + ImVec2(box.size.x, 0), gui->get_clr(clr->c_other_clr.white_clr));
-    draw->add_line(GetWindowDrawList(), box.position + ImVec2(box.size.x, 0), box.position + ImVec2(box.size.x, box.size.y / 3), gui->get_clr(clr->c_other_clr.white_clr));
+    draw->add_line(draw_list, box.position + ImVec2(box.size.x * 2 / 3, 0), box.position + ImVec2(box.size.x, 0), gui->get_clr(clr->c_other_clr.white_clr));
+    draw->add_line(draw_list, box.position + ImVec2(box.size.x, 0), box.position + ImVec2(box.size.x, box.size.y / 3), gui->get_clr(clr->c_other_clr.white_clr));
 
-    draw->add_line(GetWindowDrawList(), box.position + ImVec2(box.size.x, box.size.y * 2 / 3), box.position + box.size, gui->get_clr(clr->c_other_clr.white_clr));
-    draw->add_line(GetWindowDrawList(), box.position + box.size, box.position + box.size - ImVec2(box.size.x / 3, 0), gui->get_clr(clr->c_other_clr.white_clr));
+    draw->add_line(draw_list, box.position + ImVec2(box.size.x, box.size.y * 2 / 3), box.position + box.size, gui->get_clr(clr->c_other_clr.white_clr));
+    draw->add_line(draw_list, box.position + box.size, box.position + box.size - ImVec2(box.size.x / 3, 0), gui->get_clr(clr->c_other_clr.white_clr));
 
-    draw->add_line(GetWindowDrawList(), box.position + ImVec2(box.size.x / 3, box.size.y), ImVec2(box.position.x, box.position.y + box.size.y), gui->get_clr(clr->c_other_clr.white_clr));
-    draw->add_line(GetWindowDrawList(), ImVec2(box.position.x, box.position.y + box.size.y), box.position + ImVec2(0, box.size.y * 2 / 3), gui->get_clr(clr->c_other_clr.white_clr));
+    draw->add_line(draw_list, box.position + ImVec2(box.size.x / 3, box.size.y), ImVec2(box.position.x, box.position.y + box.size.y), gui->get_clr(clr->c_other_clr.white_clr));
+    draw->add_line(draw_list, ImVec2(box.position.x, box.position.y + box.size.y), box.position + ImVec2(0, box.size.y * 2 / 3), gui->get_clr(clr->c_other_clr.white_clr));
 }
 
 void esp_preview::render_text(item_state& state)
 {
+    ImGuiWindow* window = ImGui::GetCurrentWindow();
+    ImDrawList* draw_list = SyntheticUi::WidgetDrawList( window );
+    if ( !draw_list )
+        return;
+
     const ImVec2 text_size = ImGui::CalcTextSize(state.name.c_str());
     const ImVec2 box_pos = box.position - ImGui::GetWindowPos();
-    ImGuiWindow* window = ImGui::GetCurrentWindow();
 
     ImVec2 pos_offset[]
     {
@@ -104,7 +111,7 @@ void esp_preview::render_text(item_state& state)
 
     if (state.active)
     {
-        draw->add_text(window->DrawList, 0, 0, ImGui::GetMousePos() - ImVec2(text_size.x / 2, text_size.y / 2), ImGui::GetColorU32(state.color), state.name.c_str());
+        draw->add_text(draw_list, 0, 0, ImGui::GetMousePos() - ImVec2(text_size.x / 2, text_size.y / 2), ImGui::GetColorU32(state.color), state.name.c_str());
 
         for (auto& stored : text) {
             if (stored.name == state.name || stored.position != state.position || stored.swapped)
@@ -133,15 +140,19 @@ void esp_preview::render_text(item_state& state)
         }
     }
 
-    draw->add_text(window->DrawList, 0, 0, rect.Min, ImGui::GetColorU32(state.color), state.name.c_str());
+    draw->add_text(draw_list, 0, 0, rect.Min, ImGui::GetColorU32(state.color), state.name.c_str());
 
 }
 
 void esp_preview::render_bar(item_state& state)
 {
+    ImGuiWindow* window = ImGui::GetCurrentWindow();
+    ImDrawList* draw_list = SyntheticUi::WidgetDrawList( window );
+    if ( !draw_list )
+        return;
+
     const float bar_size = 3.f;
     const ImVec2 box_pos = box.position - ImGui::GetWindowPos();
-    ImGuiWindow* window = ImGui::GetCurrentWindow();
 
     ImVec2 pos_offset[]
     {
@@ -186,7 +197,7 @@ void esp_preview::render_bar(item_state& state)
 
     if (state.active)
     {
-        draw->add_rect_filled(window->DrawList, ImGui::GetMousePos() - ImVec2(rect.GetWidth() / 2, rect.GetHeight() / 2), ImGui::GetMousePos() + ImVec2(rect.GetWidth() / 2, rect.GetHeight() / 2), ImGui::GetColorU32(state.color));
+        draw->add_rect_filled(draw_list, ImGui::GetMousePos() - ImVec2(rect.GetWidth() / 2, rect.GetHeight() / 2), ImGui::GetMousePos() + ImVec2(rect.GetWidth() / 2, rect.GetHeight() / 2), ImGui::GetColorU32(state.color));
 
         for (auto& stored : bar) {
             if (stored.name == state.name || stored.position != state.position || stored.swapped) continue;
@@ -214,7 +225,7 @@ void esp_preview::render_bar(item_state& state)
         }
     }
 
-    draw->add_rect_filled(window->DrawList, rect.Min, rect.Max, ImGui::GetColorU32(state.color));
+    draw->add_rect_filled(draw_list, rect.Min, rect.Max, ImGui::GetColorU32(state.color));
 
 }
 

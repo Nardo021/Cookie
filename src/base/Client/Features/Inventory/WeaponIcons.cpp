@@ -88,9 +88,17 @@ namespace WeaponIcons
 		}
 	}
 
+	auto Invalidate() noexcept -> void
+	{
+		s_gunIconsFont = nullptr;
+		s_knifeIconsFont = nullptr;
+		s_obsIconsFont = nullptr;
+		s_initAttempted = false;
+	}
+
 	auto Init() noexcept -> bool
 	{
-		if ( s_gunIconsFont )
+		if ( FontReady( s_gunIconsFont ) || FontReady( s_knifeIconsFont ) || FontReady( s_obsIconsFont ) )
 			return true;
 
 		if ( s_initAttempted )

@@ -3,6 +3,7 @@
 
 #include <Client/UI/Synthetic/SyntheticLuaRuntime.hpp>
 #include <Client/UI/Synthetic/SyntheticNotifyBridge.hpp>
+#include <Client/UI/Synthetic/SyntheticCompat/SyntheticUiGuard.hpp>
 
 namespace SyntheticTabs
 {
@@ -32,10 +33,17 @@ namespace SyntheticTabs
 			gui->set_next_window_size( SCALE( 310 , 80 ) );
 			gui->set_next_window_pos( GetWindowPos() + ( GetWindowSize() / 2.f - SCALE( 310 , 80 ) / 2.f ) );
 			gui->push_style_var( ImGuiStyleVar_WindowPadding , ImVec2( 0 , 0 ) );
-			gui->begin( "Create Lua" , nullptr , ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground );
+			if ( !gui->begin( "Create Lua" , nullptr , ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground ) )
 			{
-				draw->add_rect_filled( GetWindowDrawList() , GetWindowPos() , GetWindowPos() + GetWindowSize() , gui->get_clr( clr->c_child.layout ) , SCALE( set->c_child.rounding ) );
-				draw->add_rect( GetWindowDrawList() , GetWindowPos() , GetWindowPos() + GetWindowSize() , gui->get_clr( clr->c_child.stroke ) , SCALE( set->c_child.rounding ) , 0 , SCALE( 1.f ) );
+				gui->pop_style_var();
+			}
+			else
+			{
+				if ( ImDrawList* dl = SyntheticUi::WindowDrawList() )
+				{
+					draw->add_rect_filled( dl , GetWindowPos() , GetWindowPos() + GetWindowSize() , gui->get_clr( clr->c_child.layout ) , SCALE( set->c_child.rounding ) );
+					draw->add_rect( dl , GetWindowPos() , GetWindowPos() + GetWindowSize() , gui->get_clr( clr->c_child.stroke ) , SCALE( set->c_child.rounding ) , 0 , SCALE( 1.f ) );
+				}
 
 				gui->set_cursor_pos( SCALE( 20 , 20 ) );
 				gui->begin_group();
@@ -65,9 +73,10 @@ namespace SyntheticTabs
 				if ( !IsMouseHoveringRect( GetWindowPos() , GetWindowPos() + GetWindowSize() )
 					&& ( IsMouseClicked( 0 ) || IsMouseClicked( 1 ) ) )
 					var->c_lua.create = false;
+
+				gui->end();
+				gui->pop_style_var();
 			}
-			gui->end();
-			gui->pop_style_var();
 		}
 
 		gui->set_cursor_pos_y( SCALE( 80 ) );
@@ -92,16 +101,23 @@ namespace SyntheticTabs
 			gui->set_next_window_size( SCALE( 500 , 520 ) );
 			gui->set_next_window_pos( pos + ImVec2( size.x + SCALE( 20 ) , 0 ) );
 			gui->push_style_var( ImGuiStyleVar_WindowPadding , ImVec2( 0 , 0 ) );
-			gui->begin( "Lua Editor" , nullptr , ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground );
+			if ( !gui->begin( "Lua Editor" , nullptr , ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground ) )
 			{
-				draw->add_rect_filled( GetWindowDrawList() , GetWindowPos() , GetWindowPos() + GetWindowSize() , gui->get_clr( clr->c_window.general_layout ) , SCALE( set->c_window.general_rounding ) );
-				draw->add_rect( GetWindowDrawList() , GetWindowPos() , GetWindowPos() + GetWindowSize() , gui->get_clr( clr->c_window.general_stroke ) , SCALE( set->c_window.general_rounding ) , 0 , SCALE( 1.f ) );
-				draw->add_line( GetWindowDrawList() , GetWindowPos() + SCALE( 0 , 40 ) , GetWindowPos() + ImVec2( GetWindowSize().x , SCALE( 40 ) ) , gui->get_clr( clr->c_window.general_stroke ) , SCALE( 1.f ) );
-				draw->add_line( GetWindowDrawList() , GetWindowPos() + ImVec2( 0 , GetWindowSize().y - SCALE( 40 ) ) , GetWindowPos() + ImVec2( GetWindowSize().x , GetWindowSize().y - SCALE( 40 ) ) , gui->get_clr( clr->c_window.general_stroke ) , SCALE( 1.f ) );
+				gui->pop_style_var();
+			}
+			else
+			{
+				if ( ImDrawList* dl = SyntheticUi::WindowDrawList() )
+				{
+					draw->add_rect_filled( dl , GetWindowPos() , GetWindowPos() + GetWindowSize() , gui->get_clr( clr->c_window.general_layout ) , SCALE( set->c_window.general_rounding ) );
+					draw->add_rect( dl , GetWindowPos() , GetWindowPos() + GetWindowSize() , gui->get_clr( clr->c_window.general_stroke ) , SCALE( set->c_window.general_rounding ) , 0 , SCALE( 1.f ) );
+					draw->add_line( dl , GetWindowPos() + SCALE( 0 , 40 ) , GetWindowPos() + ImVec2( GetWindowSize().x , SCALE( 40 ) ) , gui->get_clr( clr->c_window.general_stroke ) , SCALE( 1.f ) );
+					draw->add_line( dl , GetWindowPos() + ImVec2( 0 , GetWindowSize().y - SCALE( 40 ) ) , GetWindowPos() + ImVec2( GetWindowSize().x , GetWindowSize().y - SCALE( 40 ) ) , gui->get_clr( clr->c_window.general_stroke ) , SCALE( 1.f ) );
 
-				const std::string title = std::string( "Lua Editor - " ) + var->c_lua.editable;
-				draw->render_text( GetWindowDrawList() , set->c_font.inter_medium[0] , GetWindowPos() + SCALE( 40 , 0 ) , GetWindowPos() + ImVec2( GetWindowWidth() , SCALE( 40 ) ) , gui->get_clr( clr->c_text.text_active ) , title.c_str() , nullptr , nullptr , ImVec2( 0.f , 0.5f ) );
-				draw->render_text( GetWindowDrawList() , set->c_font.icon[4] , GetWindowPos() + SCALE( 15 , 1 ) , GetWindowPos() + ImVec2( GetWindowWidth() , SCALE( 40 ) ) , gui->get_clr( clr->c_other_clr.accent_clr ) , "B" , nullptr , nullptr , ImVec2( 0.f , 0.5f ) );
+					const std::string title = std::string( "Lua Editor - " ) + var->c_lua.editable;
+					draw->render_text( dl , set->c_font.inter_medium[0] , GetWindowPos() + SCALE( 40 , 0 ) , GetWindowPos() + ImVec2( GetWindowWidth() , SCALE( 40 ) ) , gui->get_clr( clr->c_text.text_active ) , title.c_str() , nullptr , nullptr , ImVec2( 0.f , 0.5f ) );
+					draw->render_text( dl , set->c_font.icon[4] , GetWindowPos() + SCALE( 15 , 1 ) , GetWindowPos() + ImVec2( GetWindowWidth() , SCALE( 40 ) ) , gui->get_clr( clr->c_other_clr.accent_clr ) , "B" , nullptr , nullptr , ImVec2( 0.f , 0.5f ) );
+				}
 
 				gui->set_cursor_pos( ImVec2( GetWindowWidth() - SCALE( 30 ) , 13 ) );
 				if ( widget->lua_tool_button( "E" , "Close Button" ) )
@@ -129,9 +145,10 @@ namespace SyntheticTabs
 					else
 						SyntheticNotifyBridge::Push( N_TYPE_WARNING , SyntheticLua::GetLastError().c_str() );
 				}
+
+				gui->end();
+				gui->pop_style_var();
 			}
-			gui->end();
-			gui->pop_style_var();
 		}
 	}
 }

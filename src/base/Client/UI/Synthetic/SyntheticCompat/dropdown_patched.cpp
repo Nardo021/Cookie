@@ -1,5 +1,7 @@
 ﻿#include <framework/settings/functions.h>
 
+#include <Client/UI/Synthetic/SyntheticCompat/SyntheticUiGuard.hpp>
+
 static float calc_combo_size(int items_count, float item_size)
 {
     ImGuiContext& g = *GImGui;
@@ -133,14 +135,19 @@ bool dropdown_list(std::string_view label, std::string_view preview_value, int v
     gui->set_next_window_pos(open_combo.GetBL() + ImVec2(0, state->offset));
     gui->set_next_window_size(ImVec2(open_combo.GetWidth(), calc_combo_size(val, rect_size)));
 
-    gui->begin(label, NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoMove);
+    if ( !gui->begin(label, NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoMove) )
     {
-        gui->begin_group();
-        state->hovered = IsWindowHovered();
-
-        if (!multi)
-            if (IsWindowHovered() && g.IO.MouseClicked[0]) state->combo_opened = false;
+        gui->pop_style_color(1);
+        gui->pop_style_var(5);
+        return false;
     }
+
+    gui->begin_group();
+    state->hovered = IsWindowHovered();
+
+    if (!multi)
+        if (IsWindowHovered() && g.IO.MouseClicked[0]) state->combo_opened = false;
+
     return true;
 }
 
@@ -287,14 +294,19 @@ bool tool_dropdown_list(std::string_view label, std::string_view preview_value, 
     gui->set_next_window_pos(rect.GetBL() + ImVec2(0, state->offset));
     gui->set_next_window_size(ImVec2(rect.GetWidth(), calc_combo_size(val, SCALE(30.f))));
 
-    gui->begin(label, NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoMove);
+    if ( !gui->begin(label, NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoMove) )
     {
-        gui->begin_group();
-        state->hovered = IsWindowHovered();
-
-        if (!multi)
-            if (IsWindowHovered() && g.IO.MouseClicked[0]) state->combo_opened = false;
+        gui->pop_style_color(1);
+        gui->pop_style_var(5);
+        return false;
     }
+
+    gui->begin_group();
+    state->hovered = IsWindowHovered();
+
+    if (!multi)
+        if (IsWindowHovered() && g.IO.MouseClicked[0]) state->combo_opened = false;
+
     return true;
 }
 

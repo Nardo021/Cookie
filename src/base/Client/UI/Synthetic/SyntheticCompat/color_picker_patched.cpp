@@ -462,9 +462,9 @@ bool c_widget::color_edit(std::string_view label, float col[4], ImGuiColorEditFl
         gui->push_style_color(ImGuiCol_PopupBg, gui->get_clr(clr->c_child.layout));
         gui->push_style_color(ImGuiCol_Border, gui->get_clr(clr->c_child.stroke));
 
-        if (state->alpha >= 0.01f);
+        if (state->alpha >= 0.01f)
         {
-            gui->begin((std::stringstream{} << "picker_window" << GetID(label.data())).str(), NULL, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysUseWindowPadding | ImGuiWindowFlags_Tooltip | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_AlwaysAutoResize);
+            if (gui->begin((std::stringstream{} << "picker_window" << GetID(label.data())).str(), NULL, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysUseWindowPadding | ImGuiWindowFlags_Tooltip | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_AlwaysAutoResize))
             {
                 if (state->active)
                     SetWindowFocus();
@@ -480,8 +480,8 @@ bool c_widget::color_edit(std::string_view label, float col[4], ImGuiColorEditFl
 
                 gui->end_group();
 
+                gui->end();
             }
-            gui->end();
         }
         gui->pop_style_var(3);
         gui->pop_style_color(2);

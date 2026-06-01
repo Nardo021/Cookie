@@ -1,5 +1,7 @@
 ﻿#include <framework/settings/functions.h>
 
+#include <Client/UI/Synthetic/SyntheticCompat/SyntheticUiGuard.hpp>
+
 void c_notify::add_notify(std::string_view text, float notify_delay, notify_position type)
 {
     notifications.push_back({ notify_count++, text, notify_delay, 0.f, 0.f, 0.f, true, type });
@@ -7,7 +9,7 @@ void c_notify::add_notify(std::string_view text, float notify_delay, notify_posi
 
 void c_notify::setup_notify()
 {
-    if ( !set->c_font.inter_medium[1] )
+    if ( !SyntheticUi::FontUsable( set->c_font.inter_medium[1] ) )
         return;
 
     const float speed = 4.f;
@@ -35,11 +37,11 @@ void c_notify::setup_notify()
 
 void c_notify::render_notify(int notification_index, float notification_alpha, float notification_offset, float notification_duration, float notification_delay, std::string_view notification_text, notify_position notification_position)
 {
-    ImFont* const font = set->c_font.inter_medium[1];
+    ImFont* const font = SyntheticUi::MenuFont( 1 );
     if ( !font )
         return;
 
-    float font_width = font->CalcTextSizeA(font->FontSize, FLT_MAX, -1, notification_text.data()).x;
+    float font_width = font->CalcTextSizeA( font->FontSize , FLT_MAX , -1 , notification_text.data() ).x;
     float percent_remaining = (notification_duration / notification_delay) * 100;
 
     int padding_x = SCALE(20);
@@ -74,11 +76,23 @@ void c_notify::render_notify(int notification_index, float notification_alpha, f
 
     gui->push_style_var(ImGuiStyleVar_Alpha, notification_alpha);
 
-    gui->begin((std::stringstream() << "notify" << notification_index).str(), nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoMove);
+    if ( !gui->begin((std::stringstream() << "notify" << notification_index).str(), nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoMove) )
+    {
+        gui->pop_style_var();
+        return;
+    }
+
     {
         const ImVec2 position = ImGui::GetWindowPos();
         const ImVec2 content_region = ImGui::GetContentRegionMax();
         ImDrawList* draw_list = ImGui::GetWindowDrawList();
+        if ( !draw_list )
+        {
+            gui->end();
+            gui->pop_style_var();
+            return;
+        }
+
         ImGuiStyle* gui_style = &ImGui::GetStyle();
 
         { // style

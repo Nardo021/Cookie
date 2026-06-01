@@ -6,9 +6,11 @@
 
 #include <framework/settings/functions.h>
 
+#include <Client/UI/Synthetic/SyntheticCompat/SyntheticUiGuard.hpp>
+
 void c_gui::render()
 {
-	if ( !SyntheticMenu::IsInitialized() || !set->c_font.inter_medium[0] || !set->c_font.inter_medium[1] )
+	if ( !SyntheticMenu::IsInitialized() || !SyntheticUi::MenuFontsReady() )
 		return;
 
 	{
@@ -16,12 +18,20 @@ void c_gui::render()
 
 		gui->set_next_window_size(SCALE(set->c_window.window_size));
 
-		gui->begin({ "Cookie" }, { 0 }, set->c_window.window_flags);
+		if ( !gui->begin({ "Cookie" }, { 0 }, set->c_window.window_flags) )
+			return;
+
 		{
 			const ImVec2 pos = GetWindowPos();
 			const ImVec2 size = GetWindowSize();
 
 			ImDrawList* draw_list = GetWindowDrawList();
+			if ( !draw_list )
+			{
+				gui->end();
+				return;
+			}
+
 			ImGuiStyle* style = &GetStyle();
 
 			{
@@ -47,8 +57,7 @@ void c_gui::render()
 
 			draw->render_text(draw_list, set->c_font.icon[2], { pos.x, pos.y }, { pos.x + SCALE(110), pos.y + size.y }, gui->get_clr(clr->c_other_clr.accent_clr), "B", 0, 0, { 0.5, 0.5 });
 
-			if ( set->c_font.name )
-				gui->push_font( set->c_font.name );
+			const bool pushedNameFont = SyntheticUi::PushFont( set->c_font.name );
 
 			const int vtx_start_one = draw_list->VtxBuffer.Size;
 			gui->rotate_start();
@@ -62,8 +71,8 @@ void c_gui::render()
 			const int vtx_end_two = draw_list->VtxBuffer.Size;
 			draw->set_linear_color_alpha(draw_list, vtx_start_two, vtx_end_two, pos + ImVec2(0, size.y / 2), pos + ImVec2(0, size.y / 2 + size.y / 3), gui->get_clr(clr->c_other_clr.accent_clr), gui->get_clr(clr->c_other_clr.accent_clr, 0.f));
 
-			if ( set->c_font.name )
-				gui->pop_font();
+			if ( pushedNameFont )
+				SyntheticUi::PopFont();
 
 			gui->set_cursor_pos(SCALE(110, 15));
 
@@ -100,7 +109,12 @@ void c_gui::render()
 		gui->push_style_var(ImGuiStyleVar_ItemSpacing, SCALE(4, 0));
 		{
 			gui->set_next_window_pos(SCALE(20, 20));
-			gui->begin({ "SELECTION" }, { 0 }, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_AlwaysAutoResize);
+			if ( !gui->begin({ "SELECTION" }, { 0 }, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_AlwaysAutoResize) )
+			{
+				gui->pop_style_var(2);
+				return;
+			}
+
 			{
 				const ImVec2 pos = GetWindowPos();
 				const ImVec2 size = GetWindowSize();

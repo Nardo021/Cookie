@@ -17,6 +17,7 @@
 #include <Client/Fonts/EmbeddedFonts.hpp>
 #include <Client/UI/Menu/MenuAssets.hpp>
 #include <Client/UI/Synthetic/SyntheticMenu.hpp>
+#include <Client/UI/Synthetic/SyntheticCompat/SyntheticUiGuard.hpp>
 #include <Client/UI/Menu/MenuConfig.hpp>
 #include <Client/UI/Menu/MenuSettings.hpp>
 #include <Client/Utils/CInputSystem.hpp>
@@ -81,6 +82,10 @@ auto CCookieGUI::OnInit( IDXGISwapChain* pSwapChain ) -> void
 	UpdateStyle();
 	MenuAssets::Init( m_pDevice );
 	SyntheticMenu::Init( m_pDevice , m_pDeviceContext , pSwapChain );
+	RebuildFontDeviceObjects();
+
+	if ( m_pFreeType_Font )
+		m_pFreeType_Font->WantRebuild = false;
 
 	m_WndProc_o = (WNDPROC)SetWindowLongPtrA( m_hCS2Window , GWLP_WNDPROC , (LONG_PTR)GUI_WndProc );
 
@@ -135,9 +140,38 @@ auto CCookieGUI::InitFont() -> void
 	WeaponIcons::Init();
 	EmbeddedFonts::InitFontAwesome( 14.f );
 	EmbeddedFonts::InitLexendBold( 15.f );
+}
 
-	io.Fonts->Build();
+auto CCookieGUI::ReloadCookieFonts() -> void
+{
+	if ( !m_pImGuiContext )
+		return;
+
+	ImGui::SetCurrentContext( m_pImGuiContext );
+
+	WeaponIcons::Invalidate();
+	EmbeddedFonts::Invalidate();
+	InitFont();
+	RebuildFontDeviceObjects();
+}
+
+auto CCookieGUI::RebuildFontDeviceObjects() -> void
+{
+	if ( !m_pImGuiContext )
+		return;
+
+	ImGui::SetCurrentContext( m_pImGuiContext );
+
+	ImFontAtlas* fontAtlas = ImGui::GetIO().Fonts;
+	if ( !fontAtlas )
+		return;
+
+	fontAtlas->Build();
+	ImGui_ImplDX11_InvalidateDeviceObjects();
 	ImGui_ImplDX11_CreateDeviceObjects();
+
+	SyntheticMenu::RefreshDefaultUiFont();
+	SyntheticUi::ResetContextFonts();
 }
 
 void CCookieGUI::OnPresent( IDXGISwapChain* pSwapChain )
@@ -163,81 +197,86 @@ void CCookieGUI::OnRender( IDXGISwapChain* pSwapChain )
 {
 	if ( m_pFreeType_Font && m_pFreeType_Font->PreNewFrame() )
 	{
+		ImGui::SetCurrentContext( m_pImGuiContext );
 		ImGui_ImplDX11_InvalidateDeviceObjects();
 		ImGui_ImplDX11_CreateDeviceObjects();
+		SyntheticMenu::RefreshDefaultUiFont();
+		SyntheticUi::ResetContextFonts();
 	}
-	else
+
+	if ( !m_pRenderTargetView )
 	{
-		if ( !m_pRenderTargetView )
+		ID3D11Texture2D* pBackBuffer = nullptr;
+
+		if ( FAILED( pSwapChain->GetBuffer( 0 , IID_PPV_ARGS( &pBackBuffer ) ) ) || !pBackBuffer )
+			return;
+
+		D3D11_TEXTURE2D_DESC bbDesc{};
+		pBackBuffer->GetDesc( &bbDesc );
+
+		D3D11_RENDER_TARGET_VIEW_DESC rtvDesc{};
+		rtvDesc.Format = bbDesc.Format;
+		if ( bbDesc.SampleDesc.Count > 1 )
+			rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DMS;
+		else
 		{
-			ID3D11Texture2D* pBackBuffer = nullptr;
+			rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+			rtvDesc.Texture2D.MipSlice = 0;
+		}
 
-			if ( FAILED( pSwapChain->GetBuffer( 0 , IID_PPV_ARGS( &pBackBuffer ) ) ) || !pBackBuffer )
-				return;
-
-			D3D11_TEXTURE2D_DESC bbDesc{};
-			pBackBuffer->GetDesc( &bbDesc );
-
-			D3D11_RENDER_TARGET_VIEW_DESC rtvDesc{};
-			rtvDesc.Format = bbDesc.Format;
-			if ( bbDesc.SampleDesc.Count > 1 )
-				rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DMS;
-			else
-			{
-				rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-				rtvDesc.Texture2D.MipSlice = 0;
-			}
-
-			if ( FAILED( m_pDevice->CreateRenderTargetView( pBackBuffer , &rtvDesc , &m_pRenderTargetView ) ) )
-			{
-				pBackBuffer->Release();
-				return;
-			}
-
+		if ( FAILED( m_pDevice->CreateRenderTargetView( pBackBuffer , &rtvDesc , &m_pRenderTargetView ) ) )
+		{
 			pBackBuffer->Release();
+			return;
 		}
 
-		if ( !m_pRenderTargetView )
-			return;
-
-		ImGui::SetCurrentContext( m_pImGuiContext );
-
-		ImFontAtlas* fontAtlas = ImGui::GetIO().Fonts;
-		if ( !fontAtlas || !fontAtlas->IsBuilt() )
-			return;
-
-		if ( m_needRecreateDeviceObjects )
-		{
-			ImGui_ImplDX11_CreateDeviceObjects();
-			MenuAssets::Init( m_pDevice );
-			if ( auto* swapChain = pSwapChain )
-			{
-				SyntheticMenu::Shutdown();
-				SyntheticMenu::Init( m_pDevice , m_pDeviceContext , swapChain );
-			}
-			m_needRecreateDeviceObjects = false;
-		}
-
-		m_pDeviceContext->OMGetRenderTargets( 1 , &m_pMainRenderTarget , 0 );
-		m_pDeviceContext->OMSetRenderTargets( 1 , &m_pRenderTargetView , 0 );
-
-		ImGui_ImplDX11_NewFrame();
-		ImGui_ImplWin32_NewFrame();
-
-		ImGui::NewFrame();
-
-		GetCookieClient()->OnRender();
-
-		if ( m_bInit )
-			GetNotify()->Render();
-
-		ImGui::EndFrame();
-		ImGui::Render();
-
-		ImGui_ImplDX11_RenderDrawData( ImGui::GetDrawData() );
-
-		m_pDeviceContext->OMSetRenderTargets( 1 , &m_pMainRenderTarget , 0 );
+		pBackBuffer->Release();
 	}
+
+	if ( !m_pRenderTargetView )
+		return;
+
+	ImGui::SetCurrentContext( m_pImGuiContext );
+
+	ImFontAtlas* fontAtlas = ImGui::GetIO().Fonts;
+	if ( !fontAtlas || !fontAtlas->IsBuilt() || !SyntheticUi::MenuFontsReady() )
+		return;
+
+	if ( m_needRecreateDeviceObjects )
+	{
+		ImGui_ImplDX11_InvalidateDeviceObjects();
+		MenuAssets::Init( m_pDevice );
+		if ( auto* swapChain = pSwapChain )
+		{
+			SyntheticMenu::Shutdown();
+			SyntheticMenu::Init( m_pDevice , m_pDeviceContext , swapChain );
+			ReloadCookieFonts();
+		}
+		m_needRecreateDeviceObjects = false;
+	}
+
+	m_pDeviceContext->OMGetRenderTargets( 1 , &m_pMainRenderTarget , 0 );
+	m_pDeviceContext->OMSetRenderTargets( 1 , &m_pRenderTargetView , 0 );
+
+	ImGui_ImplDX11_NewFrame();
+	ImGui_ImplWin32_NewFrame();
+
+	SyntheticMenu::FlushPendingDpiIfNeeded();
+
+	ImGui::NewFrame();
+
+	GetCookieClient()->OnRender();
+
+	if ( m_bInit && SyntheticUi::AtlasReady() && SyntheticUi::MenuFont( 0 ) )
+		GetNotify()->Render();
+
+	ImGui::EndFrame();
+	ImGui::Render();
+
+	if ( ImDrawData* drawData = ImGui::GetDrawData() )
+		ImGui_ImplDX11_RenderDrawData( drawData );
+
+	m_pDeviceContext->OMSetRenderTargets( 1 , &m_pMainRenderTarget , 0 );
 }
 
 auto CCookieGUI::OnReopenGUI() -> void

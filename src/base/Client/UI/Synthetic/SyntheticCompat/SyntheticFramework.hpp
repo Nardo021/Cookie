@@ -108,7 +108,7 @@ public:
 
     void                            pop_style_var(int count = 1);
 
-    void                            push_font(ImFont* font);
+    bool                            push_font(ImFont* font);
 
     void                            pop_font();
 

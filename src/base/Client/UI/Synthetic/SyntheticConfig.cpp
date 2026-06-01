@@ -9,6 +9,8 @@
 #include <Common/Include/Config.hpp>
 #include <framework/settings/functions.h>
 
+#include <Client/UI/Synthetic/SyntheticCompat/SyntheticUiGuard.hpp>
+
 namespace SyntheticConfig
 {
 	namespace
@@ -33,22 +35,31 @@ namespace SyntheticConfig
 			gui->set_next_window_size( SCALE( 310 , 80 ) );
 			gui->set_next_window_pos( GetWindowPos() + ( GetWindowSize() / 2.f - SCALE( 310 , 80 ) / 2.f ) );
 			gui->push_style_var( ImGuiStyleVar_WindowPadding , ImVec2( 0 , 0 ) );
-			gui->begin( "Create Config" , nullptr , ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground );
+			if ( !gui->begin( "Create Config" , nullptr , ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground ) )
+			{
+				gui->pop_style_var();
+				return;
+			}
+
+			if ( ImDrawList* dl = SyntheticUi::WindowDrawList() )
 			{
 				draw->add_rect_filled(
-					GetWindowDrawList() ,
+					dl ,
 					GetWindowPos() ,
 					GetWindowPos() + GetWindowSize() ,
 					gui->get_clr( clr->c_child.layout ) ,
 					SCALE( set->c_child.rounding ) );
 				draw->add_rect(
-					GetWindowDrawList() ,
+					dl ,
 					GetWindowPos() ,
 					GetWindowPos() + GetWindowSize() ,
 					gui->get_clr( clr->c_child.stroke ) ,
 					SCALE( set->c_child.rounding ) ,
 					0 ,
 					SCALE( 1.f ) );
+			}
+
+			{
 
 				gui->set_cursor_pos( SCALE( 20 , 20 ) );
 				gui->begin_group();
@@ -76,6 +87,7 @@ namespace SyntheticConfig
 					&& ( IsMouseClicked( 0 ) || IsMouseClicked( 1 ) ) )
 					s_showCreatePopup = false;
 			}
+
 			gui->end();
 			gui->pop_style_var();
 		}

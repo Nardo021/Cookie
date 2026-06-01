@@ -9,6 +9,7 @@
 #define CONFIG_FILE					"config.json"
 
 #define CHEAT_NAME					"Cookie"
+// Must match src/Version.h (COOKIE_VER_MAJOR / COOKIE_VER_MINOR).
 #define CHEAT_VERSION				COOKIE_VER_STRING
 
 #define DISABLE_PROTOBUF			0

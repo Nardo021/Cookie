@@ -117,15 +117,15 @@ patterns/               签名
 | Skins    | S   | 手套、PaintKit、自定义纹理                          |
 | Config   | C   | JSON 配置 Save / Load / Delete / Create / 排序 |
 | Lua      | U   | 脚本列表、编辑器、运行（`<dll_dir>/lua/*.lua`）         |
-| Misc     | M   | HUD（可拖动）、通知位置、DPI、菜单按键                      |
-
+| Misc     | M   | HUD（可拖动）、通知位置、DPI、菜单按键                     |
 
 
 | 配置段 `MenuEffects` | 仅旧版 `CookieMenu.hpp` 使用（粒子/模糊等）；**Synthetic 菜单不读取**。游戏内 HUD 用 `Menu` 段 + `var->c_watermark`。 |
 
+
 | 入口           | 说明                                                                                                               |
 | ------------ | ---------------------------------------------------------------------------------------------------------------- |
-| 游戏内          | `CookieDll` → `SyntheticMenu` + `gui_cookie.cc`；HUD 由 `SyntheticWatermark::RenderOverlay()` 绘制（菜单开/关均可拖动） |
+| 游戏内          | `CookieDll` → `SyntheticMenu` + `gui_cookie.cc`；HUD 由 `SyntheticWatermark::RenderOverlay()` 绘制（菜单开/关均可拖动）        |
 | 独立沙盒         | `**MenuSandbox`** — 见 [菜单沙盒](#菜单沙盒-menusandbox) 与 [tools/MenuSandbox/README.md](tools/MenuSandbox/README.md)     |
 | UI 结构        | [src/base/Client/UI/README.md](src/base/Client/UI/README.md)                                                     |
 | framework 同步 | [src/base/Client/UI/Synthetic/FRAMEWORK-SYNC.md](src/base/Client/UI/Synthetic/FRAMEWORK-SYNC.md)                 |
@@ -143,7 +143,7 @@ patterns/               签名
 | ----- | --------------------------------- | ------------------------------------------------------------------ |
 | 运行方式  | 注入 CS2                            | 直接运行 `MenuSandbox.exe`                                             |
 | 依赖    | SDK、Hook、功能模块等                    | 仅 UI + DX11 + ImGui                                                |
-| 菜单逻辑  | `gui_cookie.cc` + `SyntheticTab*` | `tools/MenuSandbox/gui_demo.cc`（自 `framework/gui.cc` 演示块 vendored） |
+| 菜单逻辑  | `gui_cookie.cc` + `SyntheticTab`* | `tools/MenuSandbox/gui_demo.cc`（自 `framework/gui.cc` 演示块 vendored） |
 | Lua   | 有运行时（需 vcpkg `lua`）               | **无** Lua VM；Lua 页仅为编辑器壳演示                                         |
 | 配置持久化 | `CSettingsJson` / 磁盘 JSON         | `config_demo.cpp` 内存列表，不写配置目录                                      |
 
@@ -169,8 +169,4 @@ msbuild tools\MenuSandbox\MenuSandbox.vcxproj /p:Configuration=Release /p:Platfo
 ```
 
 实现上与 `CookieDll` 共用 Synthetic 的 **ImGui 1.91** 与 `SyntheticCompat/` 补丁源（`include_shim`、`global_compat_min.hpp` 等），详见 `tools/MenuSandbox/MenuSandbox.vcxproj`。
-
-## TODO
-
-- **Lua API 扩展**：Trigger、Movement、配置读写等更多 `cookie.`* 绑定。
 

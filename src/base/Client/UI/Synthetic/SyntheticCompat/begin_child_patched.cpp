@@ -1,5 +1,7 @@
 ﻿#include <framework/settings/functions.h>
 
+#include <Client/UI/Synthetic/SyntheticCompat/SyntheticUiGuard.hpp>
+
 bool begin_child_ex(const char* name, ImGuiID id, const ImVec2& size_arg, ImGuiChildFlags child_flags, ImGuiWindowFlags window_flags)
 {
     struct c_child
@@ -42,8 +44,11 @@ bool begin_child_ex(const char* name, ImGuiID id, const ImVec2& size_arg, ImGuiC
 
     gui->set_next_window_size(size);
 
-    draw->add_rect_filled(parent_window->DrawList, parent_window->DC.CursorPos, parent_window->DC.CursorPos + size, gui->get_clr(clr->c_child.layout), SCALE(set->c_child.rounding));
-    draw->add_rect(parent_window->DrawList, parent_window->DC.CursorPos, parent_window->DC.CursorPos + size, gui->get_clr(clr->c_child.stroke), SCALE(set->c_child.rounding));
+    if ( ImDrawList* parentDrawList = SyntheticUi::WidgetDrawList( parent_window ) )
+    {
+        draw->add_rect_filled(parentDrawList, parent_window->DC.CursorPos, parent_window->DC.CursorPos + size, gui->get_clr(clr->c_child.layout), SCALE(set->c_child.rounding));
+        draw->add_rect(parentDrawList, parent_window->DC.CursorPos, parent_window->DC.CursorPos + size, gui->get_clr(clr->c_child.stroke), SCALE(set->c_child.rounding));
+    }
 
     const char* temp_window_name;
 

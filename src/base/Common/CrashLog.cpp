@@ -1,6 +1,8 @@
 #include "CrashLog.hpp"
 #include "DllLauncher.hpp"
 
+#include <Version.h>
+
 #include <Psapi.h>
 
 static CCrashLog g_CCrashLog{};
@@ -117,7 +119,10 @@ auto WINAPI CCrashLog::VectoredExceptionHandler( PEXCEPTION_POINTERS pExceptionI
             GetCrashLog()->OpenCrashLogFile();
 
             GetCrashLog()->WriteCrashLogFile( XorStr( "Cheat Name: %s\n" ) , CHEAT_NAME );
-            GetCrashLog()->WriteCrashLogFile( XorStr( "Cheat Version: %s\n" ) , CHEAT_VERSION );
+            GetCrashLog()->WriteCrashLogFile(
+                XorStr( "Cheat Version: %d.%d\n" ) ,
+                COOKIE_VER_MAJOR ,
+                COOKIE_VER_MINOR );
             GetCrashLog()->WriteCrashLogFile( XorStr( "Cheat Hinstance: %p\n\n" ) , CheatHinstance );
 
             char CrashModuleNameTmp[MAX_PATH] = { 0 };

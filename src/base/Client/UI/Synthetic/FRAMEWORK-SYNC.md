@@ -26,6 +26,11 @@
 - 绘制实现：`SyntheticCompat/base_elements_patched.cpp` → `c_gui::water_mark(..., watermark_layout*)`（勿在 `framework/functional/base_elements.cpp` 恢复）
 - 游戏 HUD：`SyntheticWatermark::Render()` → 委托 `water_mark`；入口 `SyntheticWatermark::RenderOverlay()`（`CCookieClient`）
 - 状态：`var->c_watermark`（`use_custom_position` / `custom_position`）；持久化经 `MenuSettings` ↔ `SyntheticMenu::ApplyPersistedUiSettings` / `SyncUiSettingsToMenu`
+- 字体防护：`SyntheticCompat/SyntheticUiGuard.hpp`（`AtlasReady` / `MenuFontsReady` / `PushFont`）
+
+## 包含路径
+
+`include_shim/` 将 `#include <framework/settings/functions.h>` 等重定向到 `SyntheticFramework.hpp` / `SyntheticVariables.hpp`。勿在 `SyntheticCompat/` 下再放重复的 shim 头文件。
 
 ## 与外部 Synthetic 上游
 

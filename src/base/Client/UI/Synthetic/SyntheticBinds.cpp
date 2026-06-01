@@ -4,6 +4,8 @@
 
 #include <framework/settings/functions.h>
 
+#include <Client/UI/Synthetic/SyntheticCompat/SyntheticUiGuard.hpp>
+
 namespace SyntheticBinds
 {
 	namespace
@@ -46,7 +48,7 @@ namespace SyntheticBinds
 				++visible;
 		}
 
-		if ( visible == 0 )
+		if ( visible == 0 || !SyntheticUi::MenuFontsReady() )
 			return;
 
 		const ImVec2 display = ImGui::GetIO().DisplaySize;
@@ -58,9 +60,21 @@ namespace SyntheticBinds
 		gui->set_next_window_pos( ImVec2( display.x - panelW - SCALE( 24.f ) , SCALE( 24.f ) ) , ImGuiCond_Always );
 		gui->set_next_window_size( ImVec2( panelW , panelH ) , ImGuiCond_Always );
 		gui->push_style_var( ImGuiStyleVar_WindowPadding , SCALE( 10 , 8 ) );
-		gui->begin( "Active Binds" , nullptr , ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize );
+		if ( !gui->begin( "Active Binds" , nullptr , ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize ) )
+		{
+			gui->pop_style_var();
+			return;
+		}
+
 		{
 			ImDrawList* dl = GetWindowDrawList();
+			if ( !dl )
+			{
+				gui->end();
+				gui->pop_style_var();
+				return;
+			}
+
 			const ImVec2 pos = GetWindowPos();
 			const ImVec2 size = GetWindowSize();
 

@@ -9,7 +9,9 @@ UI/
 │   ├── MenuEffects.*
 │   └── ...
 └── Synthetic/            运行时菜单（gui_cookie.cc + SyntheticTab*）
-    └── framework/        Synthetic 控件库（含 lua.cpp / text_editor.cpp，未链接）
+    ├── SyntheticCompat/  ImGui 1.91 补丁实现（工程链接 *_patched.cpp）
+    ├── include_shim/     头文件重定向
+    └── framework/        上游控件源（对照；生产用 SyntheticCompat）
 ```
 
 ## Lua（Tab U）

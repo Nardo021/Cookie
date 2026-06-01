@@ -1,18 +1,21 @@
 ﻿#include <framework/settings/functions.h>
 
+#include <Client/UI/Synthetic/SyntheticCompat/SyntheticUiGuard.hpp>
+
 void c_widget::text_colored(ImFont* font, const ImU32 col, std::string text)
 {
-    if (!font)
+    if (!SyntheticUi::PushFont(font))
         return;
 
-    gui->push_font(font);
     TextColored(ImColor(col), text.data());
-    gui->pop_font();
+    SyntheticUi::PopFont();
 }
 
 bool c_widget::begin_popup(std::string_view name, float size_w, const ImVec2& position)
 {
     ImGuiWindow* window = GetCurrentWindow();
+    if ( !window )
+        return false;
 
     const ImGuiID id = window->GetID(name.data());
     const ImVec2 pos = window->DC.CursorPos;
@@ -42,7 +45,12 @@ bool c_widget::begin_popup(std::string_view name, float size_w, const ImVec2& po
     gui->set_next_window_pos(g.LastItemData.Rect.GetBL() + position);
     gui->set_next_window_size(ImVec2(SCALE(size_w), content_size.y));
 
-    gui->begin((std::stringstream{} << id << " - popup").str().c_str(), nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollWithMouse);
+    if ( !gui->begin((std::stringstream{} << id << " - popup").str().c_str(), nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollWithMouse) )
+    {
+        gui->pop_style_var(3);
+        gui->pop_style_color(2);
+        return false;
+    }
 
     state->hovered = IsMouseHoveringRect(GetWindowPos(), GetWindowPos() + GetWindowSize());
     content_size = GetContentRegionAvail();
@@ -93,27 +101,29 @@ bool c_widget::set_tooltip(std::string_view tooltip_id, std::string_view tooltip
     gui->set_next_window_pos(ImGui::GetMousePos() + SCALE(20, 20));
     gui->set_next_window_size(ImVec2(CalcTextSize(tooltip_text.data()).x + SCALE(30), content_size.y));
 
-    gui->begin((std::stringstream{} << id << " - popup").str().c_str(), nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollWithMouse);
+    if ( !gui->begin((std::stringstream{} << id << " - popup").str().c_str(), nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollWithMouse) )
     {
-
-        state->hovered = IsMouseHoveringRect(GetWindowPos(), GetWindowPos() + GetWindowSize());
-        content_size = GetContentRegionAvail();
-
-        text_colored(set->c_font.icon[0], gui->get_clr(clr->c_other_clr.white_clr), "L");
-
-        gui->sameline(0, 10);
-
-        text_colored(set->c_font.inter_medium[0], gui->get_clr(clr->c_text.text_active), tooltip_id.data());
-
-        widget->separator();
-
-        text_colored(set->c_font.inter_medium[0], gui->get_clr(clr->c_text.text), tooltip_text.data());
-
         gui->pop_style_var(3);
         gui->pop_style_color(2);
-
+        return false;
     }
+
+    state->hovered = IsMouseHoveringRect(GetWindowPos(), GetWindowPos() + GetWindowSize());
+    content_size = GetContentRegionAvail();
+
+    text_colored(set->c_font.icon[0], gui->get_clr(clr->c_other_clr.white_clr), "L");
+
+    gui->sameline(0, 10);
+
+    text_colored(set->c_font.inter_medium[0], gui->get_clr(clr->c_text.text_active), tooltip_id.data());
+
+    widget->separator();
+
+    text_colored(set->c_font.inter_medium[0], gui->get_clr(clr->c_text.text), tooltip_text.data());
+
     gui->end();
+    gui->pop_style_var(3);
+    gui->pop_style_color(2);
 
     return state->show_tooltip;
 }
@@ -138,32 +148,19 @@ void item_hande_shortcut(ImGuiID id)
     NavHighlightActivated(id);
 }
 
-static ImFont* resolve_font_or_fallback(ImFont* font)
-{
-    if ( font )
-        return font;
-
-    if ( ImFont* defaultFont = ImGui::GetDefaultFont() )
-        return defaultFont;
-
-    ImFontAtlas* atlas = ImGui::GetIO().Fonts;
-    if ( atlas && atlas->Fonts.Size > 0 )
-        return atlas->Fonts[0];
-
-    return nullptr;
-}
-
-void c_gui::push_font(ImFont* font)
+bool c_gui::push_font(ImFont* font)
 {
     ImGuiContext& g = *GImGui;
-    font = resolve_font_or_fallback( font );
-    if ( !font || !font->ContainerAtlas || !font->ContainerAtlas->IsBuilt() )
-        return;
+    font = SyntheticUi::ResolveFontOrFallback( font );
+    if ( !SyntheticUi::FontUsable( font ) )
+        return false;
 
     SetCurrentFont( font );
     g.FontStack.push_back( font );
-    if ( g.CurrentWindow )
-        g.CurrentWindow->DrawList->PushTextureID( font->ContainerAtlas->TexID );
+    if ( g.CurrentWindow && g.CurrentWindow->DrawList )
+        g.CurrentWindow->DrawList->PushTextureID( SyntheticUi::FontAtlasTexture( font ) );
+
+    return true;
 }
 
 void c_gui::pop_font()
@@ -172,12 +169,12 @@ void c_gui::pop_font()
     if ( g.FontStack.Size == 0 )
         return;
 
-    if ( g.CurrentWindow )
+    if ( g.CurrentWindow && g.CurrentWindow->DrawList )
         g.CurrentWindow->DrawList->PopTextureID();
     g.FontStack.pop_back();
 
-    ImFont* restored = g.FontStack.empty() ? resolve_font_or_fallback( nullptr ) : g.FontStack.back();
-    if ( restored )
+    ImFont* restored = g.FontStack.empty() ? SyntheticUi::ResolveFontOrFallback( nullptr ) : g.FontStack.back();
+    if ( SyntheticUi::FontUsable( restored ) )
         SetCurrentFont( restored );
 }
 
@@ -410,13 +407,14 @@ void c_gui::end_group()
 
 void c_widget::separator()
 {
-    draw->add_line(GetWindowDrawList(), GetCursorScreenPos(), GetCursorScreenPos() + ImVec2(GetContentRegionAvail().x, 0), gui->get_clr(clr->c_element.separator), 1.f);
+    if (ImDrawList* drawList = GetWindowDrawList())
+        draw->add_line(drawList, GetCursorScreenPos(), GetCursorScreenPos() + ImVec2(GetContentRegionAvail().x, 0), gui->get_clr(clr->c_element.separator), 1.f);
     gui->spacing();
 }
 
 void c_gui::water_mark(std::string name, std::vector<std::string> function, watermark_position type, bool* visible, watermark_layout* layout)
 {
-    if (!set->c_font.inter_medium[0])
+    if (!visible || !SyntheticUi::MenuFontsReady() || !SyntheticUi::AtlasReady())
         return;
 
     static ImVec2 content_size;
@@ -482,40 +480,43 @@ void c_gui::water_mark(std::string name, std::vector<std::string> function, wate
         SetNextWindowPos(state->current_pos, ImGuiCond_Always);
         const ImGuiWindowFlags wm_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize
             | ImGuiWindowFlags_NoSavedSettings;
-        gui->begin(name.c_str(), nullptr, wm_flags);
+        if (gui->begin(name.c_str(), nullptr, wm_flags))
         {
             ImDrawList* draw_list = ImGui::GetWindowDrawList();
-
-            for (int i = 0; i < static_cast<int>(function.size()); i++)
+            if (draw_list)
             {
-                if (function[i].empty())
-                    continue;
+                for (int i = 0; i < static_cast<int>(function.size()); i++)
+                {
+                    if (function[i].empty())
+                        continue;
 
-                widget->text_colored(set->c_font.inter_medium[0], gui->get_clr(i == 0 ? clr->c_text.text_active : clr->c_text.text), function[i]);
-                gui->sameline();
-                draw->add_rect_filled(draw_list, ImGui::GetCursorScreenPos() - SCALE(12, 0), ImGui::GetCursorScreenPos() + SCALE(-9, 14), gui->get_clr(clr->c_child.stroke), 10.f);
-                gui->sameline();
+                    widget->text_colored(set->c_font.inter_medium[0], gui->get_clr(i == 0 ? clr->c_text.text_active : clr->c_text.text), function[i]);
+                    gui->sameline();
+                    draw->add_rect_filled(draw_list, ImGui::GetCursorScreenPos() - SCALE(12, 0), ImGui::GetCursorScreenPos() + SCALE(-9, 14), gui->get_clr(clr->c_child.stroke), 10.f);
+                    gui->sameline();
+                }
+
+                content_size = ImGui::GetContentRegionMax() + SCALE(20, 20);
+                state->current_pos = ImGui::GetWindowPos();
+
+                if (layout && layout->draggable
+                    && ImGui::IsWindowHovered(ImGuiHoveredFlags_RootAndChildWindows)
+                    && ImGui::IsMouseDragging(ImGuiMouseButton_Left, 0.f))
+                {
+                    state->current_pos.x += ImGui::GetIO().MouseDelta.x;
+                    state->current_pos.y += ImGui::GetIO().MouseDelta.y;
+                    layout->use_custom_pos = true;
+                    layout->custom_pos = state->current_pos;
+                    ImGui::SetWindowPos(state->current_pos);
+                }
+
+                if (layout && layout->draggable && layout->use_custom_pos
+                    && ImGui::IsMouseReleased(ImGuiMouseButton_Left))
+                    layout->request_settings_sync = true;
             }
 
-            content_size = ImGui::GetContentRegionMax() + SCALE(20, 20);
-            state->current_pos = ImGui::GetWindowPos();
-
-            if (layout && layout->draggable
-                && ImGui::IsWindowHovered(ImGuiHoveredFlags_RootAndChildWindows)
-                && ImGui::IsMouseDragging(ImGuiMouseButton_Left, 0.f))
-            {
-                state->current_pos.x += ImGui::GetIO().MouseDelta.x;
-                state->current_pos.y += ImGui::GetIO().MouseDelta.y;
-                layout->use_custom_pos = true;
-                layout->custom_pos = state->current_pos;
-                ImGui::SetWindowPos(state->current_pos);
-            }
-
-            if (layout && layout->draggable && layout->use_custom_pos
-                && ImGui::IsMouseReleased(ImGuiMouseButton_Left))
-                layout->request_settings_sync = true;
+            gui->end();
         }
-        gui->end();
 
         gui->pop_style_var(3);
         gui->pop_style_color(1);
@@ -544,28 +545,37 @@ std::string c_gui::get_current_date()
 int rotation_start_index;
 void c_gui::rotate_start()
 {
-    rotation_start_index = ImGui::GetWindowDrawList()->VtxBuffer.Size;
+    ImDrawList* drawList = ImGui::GetWindowDrawList();
+    rotation_start_index = drawList ? drawList->VtxBuffer.Size : 0;
 }
 
 ImVec2 rotate_center()
 {
-    ImVec2 l(FLT_MAX, FLT_MAX), u(-FLT_MAX, -FLT_MAX); // bounds
+    ImDrawList* drawList = ImGui::GetWindowDrawList();
+    if (!drawList || rotation_start_index >= drawList->VtxBuffer.Size)
+        return ImVec2{};
 
-    const auto& buf = ImGui::GetWindowDrawList()->VtxBuffer;
+    ImVec2 l(FLT_MAX, FLT_MAX), u(-FLT_MAX, -FLT_MAX);
+
+    const auto& buf = drawList->VtxBuffer;
     for (int i = rotation_start_index; i < buf.Size; i++)
         l = ImMin(l, buf[i].pos), u = ImMax(u, buf[i].pos);
 
-    return ImVec2((l.x + u.x) / 2, (l.y + u.y) / 2); // or use _ClipRectStack?
+    return ImVec2((l.x + u.x) / 2, (l.y + u.y) / 2);
 }
 
 void c_gui::rotate_end(float rad, ImVec2 center)
 {
+    ImDrawList* drawList = ImGui::GetWindowDrawList();
+    if (!drawList || rotation_start_index >= drawList->VtxBuffer.Size)
+        return;
+
     if (center.x == 0 && center.y == 0) center = rotate_center();
 
     float s = sin(rad), c = cos(rad);
     center = ImRotate(center, s, c) - center;
 
-    auto& buf = ImGui::GetWindowDrawList()->VtxBuffer;
+    auto& buf = drawList->VtxBuffer;
     for (int i = rotation_start_index; i < buf.Size; i++)
         buf[i].pos = ImRotate(buf[i].pos, s, c) - center;
 }
