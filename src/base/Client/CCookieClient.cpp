@@ -24,6 +24,9 @@
 #include <Client/Features/Combat/Legit/LegitBot.hpp>
 #include <Client/Features/Combat/LagComp.hpp>
 #include <Client/UI/Menu/MenuEffects.hpp>
+#include <Client/UI/Synthetic/SyntheticMenu.hpp>
+#include <Client/UI/Synthetic/SyntheticWatermark.hpp>
+#include <framework/settings/functions.h>
 #include <Client/Features/Misc/PlantBomb.hpp>
 #include <Client/Features/Combat/Rage/Ragebot.hpp>
 #include <Client/Features/Inventory/SkinChanger.hpp>
@@ -34,7 +37,6 @@
 #include <Client/Core/CLog.hpp>
 #include <Client/Game/Game.hpp>
 #include <Client/Game/Trace.hpp>
-#include <Client/UI/Menu/CookieMenu.hpp>
 #include <Client/Utils/CInputSystem.hpp>
 #include <DllLauncher.hpp>
 
@@ -127,7 +129,11 @@ auto CCookieClient::OnRender() -> void
 		SkinChanger::Tick();
 
 	if ( gui->IsVisible() )
-		CookieUI::RenderMenu();
+		SyntheticMenu::Render();
+	else if ( SyntheticMenu::IsInitialized() && var->c_watermark.watermark )
+		SyntheticWatermark::Render();
+	else
+		MenuEffects::RenderWatermark();
 
 	GetInputSystem()->Update();
 
@@ -135,7 +141,6 @@ auto CCookieClient::OnRender() -> void
 	EspOverlay::RenderAll();
 	Aimbot::RenderFOV();
 	LagComp::RenderDebug();
-	MenuEffects::RenderWatermark();
 	BulletTracer::Render();
 
 	GetFontManager()->FirstInitFonts();

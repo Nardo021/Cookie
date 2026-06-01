@@ -73,7 +73,8 @@ namespace ThirdPerson
 			const float minProgress = 40.f / targetDistance;
 			s_smoothProgress = std::clamp( s_smoothProgress + frameTime * speed , minProgress , 1.f );
 
-			return targetDistance * SmoothStepBezier( s_smoothProgress );
+			const float eased = config.noInterp ? s_smoothProgress : SmoothStepBezier( s_smoothProgress );
+			return targetDistance * eased;
 		}
 	}
 

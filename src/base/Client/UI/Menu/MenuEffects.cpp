@@ -120,13 +120,13 @@ namespace MenuEffects
 		draw->AddText( pos , IM_COL32( 255 , 255 , 255 , 230 ) , text );
 	}
 
-	auto RenderMenuBackground( ImVec2 size ) -> void
+	auto RenderMenuBackground( ImVec2 size , const ImVec2* originOverride ) -> void
 	{
 		ImDrawList* draw = ImGui::GetWindowDrawList();
 		if ( !draw )
 			return;
 
-		const ImVec2 origin = ImGui::GetWindowPos();
+		const ImVec2 origin = originOverride ? *originOverride : ImGui::GetWindowPos();
 
 		if ( config.menuBackgroundImage && MenuAssets::GetMenuBackgroundTexture() )
 			MenuAssets::RenderMenuBackgroundImage( draw , origin , size , config.menuBackgroundAlpha );

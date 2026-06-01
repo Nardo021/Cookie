@@ -293,8 +293,13 @@ namespace Chams
 			if ( isEnemy && config.enemy )
 				return true;
 
-			if ( !isEnemy && !isLocal && config.teammate )
-				return true;
+			if ( !isEnemy && !isLocal )
+			{
+				if ( config.hideTeammateVanilla )
+					return false;
+				if ( config.teammate )
+					return true;
+			}
 
 			return false;
 		}
@@ -377,7 +382,7 @@ namespace Chams
 
 			const ChamsMaterialPair& materials = *ResolveChamsMaterial();
 
-			if ( config.ignoreZ && materials.ignoreZ )
+			if ( !config.skipOccludePass && config.ignoreZ && materials.ignoreZ )
 			{
 				arrMaterialData->m_material = materials.ignoreZ;
 				SetMaterialColor( arrMaterialData , config.ignoreZColor );

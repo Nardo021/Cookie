@@ -29,7 +29,10 @@ void CEntityCache::OnAddEntity( CEntityInstance* pInst , CHandle handle )
 		CachedBoxEntity.m_Type = GetEntityType( pBaseEntity );
 
 		if ( CachedBoxEntity.m_Type != CachedEntity_t::UNKNOWN )
+		{
 			m_CachedEntity.emplace_back( CachedBoxEntity );
+			DispatchLifeCallbacks( handle , true );
+		}
 	}
 	else
 	{
@@ -52,6 +55,8 @@ void CEntityCache::OnRemoveEntity( CEntityInstance* pInst , CHandle handle )
 
 	if ( it != m_CachedEntity.end() )
 	{
+		DispatchLifeCallbacks( handle , false );
+
 		it->m_bDraw = false;
 		it->m_Type = CachedEntity_t::UNKNOWN;
 
@@ -76,6 +81,24 @@ auto CEntityCache::GetEntityType( C_BaseEntity* pBaseEntity ) -> CachedEntity_t:
 		return CachedEntity_t::GRENADE_PROJECTILE;
 
 	return CachedEntity_t::UNKNOWN;
+}
+
+auto CEntityCache::RegisterLifeCallback( LifeCallbackFn callback ) noexcept -> bool
+{
+	if ( !callback || m_lifeCallbackCount >= kMaxLifeCallbacks )
+		return false;
+
+	m_lifeCallbacks[m_lifeCallbackCount++] = callback;
+	return true;
+}
+
+void CEntityCache::DispatchLifeCallbacks( CHandle handle , bool added ) noexcept
+{
+	for ( std::size_t i = 0; i < m_lifeCallbackCount; ++i )
+	{
+		if ( m_lifeCallbacks[i] )
+			m_lifeCallbacks[i]( handle , added );
+	}
 }
 
 auto GetEntityCache() -> CEntityCache*

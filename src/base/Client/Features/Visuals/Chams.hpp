@@ -23,6 +23,8 @@ namespace Chams
 		bool          enemy = true;
 		bool          local = false;
 		bool          teammate = false;
+		bool          hideTeammateVanilla = false;
+		bool          skipOccludePass = false;
 		bool          weapon = false;
 		bool          hands = false;
 		MaterialStyle materialStyle = MaterialStyle::Glow;

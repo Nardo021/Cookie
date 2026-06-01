@@ -376,6 +376,8 @@ namespace MenuConfig
 		writer.Key( "enemy" ); writer.Bool( Chams::config.enemy );
 		writer.Key( "local" ); writer.Bool( Chams::config.local );
 		writer.Key( "teammate" ); writer.Bool( Chams::config.teammate );
+		writer.Key( "hideTeammateVanilla" ); writer.Bool( Chams::config.hideTeammateVanilla );
+		writer.Key( "skipOccludePass" ); writer.Bool( Chams::config.skipOccludePass );
 		writer.Key( "weapon" ); writer.Bool( Chams::config.weapon );
 		writer.Key( "hands" ); writer.Bool( Chams::config.hands );
 		writer.Key( "materialStyle" ); writer.Int( static_cast<int>( Chams::config.materialStyle ) );
@@ -463,6 +465,7 @@ namespace MenuConfig
 		writer.StartObject();
 		writer.Key( "enabled" ); writer.Bool( ThirdPerson::config.enabled );
 		writer.Key( "smoothCamera" ); writer.Bool( ThirdPerson::config.smoothCamera );
+		writer.Key( "noInterp" ); writer.Bool( ThirdPerson::config.noInterp );
 		writer.Key( "distance" ); writer.Double( ThirdPerson::config.distance );
 		writer.Key( "fov" ); writer.Int( ThirdPerson::config.fov );
 		writer.Key( "smoothSpeed" ); writer.Double( ThirdPerson::config.smoothSpeed );
@@ -727,6 +730,8 @@ namespace MenuConfig
 			ConfigJson::ReadBool( v , "enemy" , Chams::config.enemy );
 			ConfigJson::ReadBool( v , "local" , Chams::config.local );
 			ConfigJson::ReadBool( v , "teammate" , Chams::config.teammate );
+			ConfigJson::ReadBool( v , "hideTeammateVanilla" , Chams::config.hideTeammateVanilla );
+			ConfigJson::ReadBool( v , "skipOccludePass" , Chams::config.skipOccludePass );
 			ConfigJson::ReadBool( v , "weapon" , Chams::config.weapon );
 			ConfigJson::ReadBool( v , "hands" , Chams::config.hands );
 			int matStyle = static_cast<int>( Chams::config.materialStyle );
@@ -787,6 +792,7 @@ namespace MenuConfig
 			const auto& v = root["ThirdPerson"];
 			ConfigJson::ReadBool( v , "enabled" , ThirdPerson::config.enabled );
 			ConfigJson::ReadBool( v , "smoothCamera" , ThirdPerson::config.smoothCamera );
+			ConfigJson::ReadBool( v , "noInterp" , ThirdPerson::config.noInterp );
 			ConfigJson::ReadFloat( v , "distance" , ThirdPerson::config.distance );
 			ConfigJson::ReadInt( v , "fov" , ThirdPerson::config.fov );
 			ConfigJson::ReadFloat( v , "smoothSpeed" , ThirdPerson::config.smoothSpeed );

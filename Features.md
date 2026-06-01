@@ -38,15 +38,15 @@
 
 ### 生命周期
 
-| 阶段 | 入口 | 说明 |
-|------|------|------|
-| 初始化 | `CCookieClient::OnInit` | 加载 client/engine、Trace、ConVar、SigScan、SpreadHooks detour、Chams、RageSubTick 种子表、配置 |
-| 每帧渲染 | `CCookieClient::OnRender` | SkinChanger（库存路径跳过 fallback tick）、菜单、EspOverlay、FOV 圈、Watermark、子弹轨迹 |
-| 每 tick 输入 | `CCookieClient::OnCreateMove` | **NetworkFullUpdate**（皮肤）、战斗 → AntiAim → Movement → PlantBomb |
-| 帧阶段 | `Hook_FrameStageNotify` | 手套 + **SkinChangerInventory**（stage 6）、PlantBomb、LagComp 录制（stage 3） |
-| 游戏事件 | `Hook_HandleGameEvents` / `FireEventClientSide` | round_start、player_death → GameEvents |
-| Subtick | `Hook_InputParser` | Silent / RapidFire 写 input_history |
-| 卸载 | `CCookieClient::OnShutdown` | Chams、ThirdPerson、Gloves、**SkinChangerInventory**、AntiAim Hook 等 |
+| 阶段         | 入口                                            | 说明                                                                                            |
+| ------------ | ----------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| 初始化       | `CCookieClient::OnInit`                         | 加载 client/engine、Trace、ConVar、SigScan、SpreadHooks detour、Chams、RageSubTick 种子表、配置 |
+| 每帧渲染     | `CCookieClient::OnRender`                       | SkinChanger（库存路径跳过 fallback tick）、菜单、EspOverlay、FOV 圈、Watermark、子弹轨迹        |
+| 每 tick 输入 | `CCookieClient::OnCreateMove`                   | **NetworkFullUpdate**（皮肤）、战斗 → AntiAim → Movement → PlantBomb                            |
+| 帧阶段       | `Hook_FrameStageNotify`                         | 手套 + **SkinChangerInventory**（stage 6）、PlantBomb、LagComp 录制（stage 3）                  |
+| 游戏事件     | `Hook_HandleGameEvents` / `FireEventClientSide` | round_start、player_death → GameEvents                                                          |
+| Subtick      | `Hook_InputParser`                              | Silent / RapidFire 写 input_history                                                             |
+| 卸载         | `CCookieClient::OnShutdown`                     | Chams、ThirdPerson、Gloves、**SkinChangerInventory**、AntiAim Hook 等                           |
 
 ### CreateMove 调用顺序
 
@@ -63,18 +63,18 @@ EnginePred::End
 
 ### 核心文件位置
 
-| 类别 | 路径 |
-|------|------|
-| 功能模块 | `src/base/Client/Features/`（见 `Features/README.md`） |
-| 皮肤库存 | `Inventory/SkinChangerInventory.*`、`Gloves.*`、`SkinChangerSetModel.*` |
-| 按武器配置 | `Combat/Legit/WeaponConfig.*` |
-| Subtick 战斗 | `Combat/Rage/RageSubTick.*` |
-| 资源 / 字体 | `src/base/Client/Resources/`、`Fonts/EmbeddedFonts.*` |
-| 菜单 UI | `src/base/Client/UI/Menu/CookieMenu.hpp` |
-| 配置序列化 | `src/base/Client/UI/Menu/MenuConfig.cpp` |
-| Hook | `src/base/CS2/Hook/` |
-| 输入绕过 / Subtick | `src/base/GameClient/CL_Bypass.hpp` |
-| 客户端入口 | `src/base/Client/CCookieClient.cpp` |
+| 类别               | 路径                                                                    |
+| ------------------ | ----------------------------------------------------------------------- |
+| 功能模块           | `src/base/Client/Features/`（见 `Features/README.md`）                  |
+| 皮肤库存           | `Inventory/SkinChangerInventory.*`、`Gloves.*`、`SkinChangerSetModel.*` |
+| 按武器配置         | `Combat/Legit/WeaponConfig.*`                                           |
+| Subtick 战斗       | `Combat/Rage/RageSubTick.*`                                             |
+| 资源 / 字体        | `src/base/Client/Resources/`、`Fonts/EmbeddedFonts.*`                   |
+| 菜单 UI            | `src/base/Client/UI/Menu/CookieMenu.hpp`                                |
+| 配置序列化         | `src/base/Client/UI/Menu/MenuConfig.cpp`                                |
+| Hook               | `src/base/CS2/Hook/`                                                    |
+| 输入绕过 / Subtick | `src/base/GameClient/CL_Bypass.hpp`                                     |
+| 客户端入口         | `src/base/Client/CCookieClient.cpp`                                     |
 
 ---
 
@@ -82,12 +82,12 @@ EnginePred::End
 
 ### 菜单 Tab
 
-| Tab | 内容 |
-|-----|------|
-| **Rage** | Ragebot + Legit Aimbot + Triggerbot（Rage 启用时 Legit 区域禁用） |
+| Tab         | 内容                                                                       |
+| ----------- | -------------------------------------------------------------------------- |
+| **Rage**    | Ragebot + Legit Aimbot + Triggerbot（Rage 启用时 Legit 区域禁用）          |
 | **Visuals** | ESP、ESP Overlay、Bhop、第三人称、Anti-Aim、Chams、Movement 高级、菜单特效 |
-| **Skins** | 手套、刀模、全武器 PaintKit、自定义纹理 |
-| **Config** | JSON 配置保存 / 加载 / 删除 / 列表刷新 |
+| **Skins**   | 手套、刀模、全武器 PaintKit、自定义纹理                                    |
+| **Config**  | JSON 配置保存 / 加载 / 删除 / 列表刷新                                     |
 
 ### 配置持久化
 
@@ -98,10 +98,10 @@ EnginePred::End
 
 ### 快捷键
 
-| 按键 | 功能 |
-|------|------|
-| `INSERT`（默认） | 开关菜单 |
-| `END` | 卸载 DLL |
+| 按键                  | 功能                                             |
+| --------------------- | ------------------------------------------------ |
+| `INSERT`（默认）      | 开关菜单                                         |
+| `END`                 | 卸载 DLL                                         |
 | `F10` / `F11` / `F12` | 自定义纹理 Browse 模式（上一张 / 下一张 / 锁定） |
 
 ### KeyBind 系统
@@ -120,53 +120,53 @@ Rage 启用时自动关闭 Legit Aimbot 与 Triggerbot。
 
 ### 功能
 
-| 功能 | 说明 |
-|------|------|
-| 多 Hitbox 扫描 | Head / Neck / Chest / Pelvis / Stomach / Arms / Legs 可独立开关 |
-| Multipoint | 自适应 multipoint 采样，缩放由 `multipointScale` 控制 |
-| Hitchance | 基于散布模拟的命中率过滤 |
-| Auto Stop | 开火前减速；支持 Slow（反向移动）与 Early（硬停） |
-| Early Auto Stop | 扫描阶段提前停步（`earlyAutoStop`） |
-| Penetration | 调用 AutoWall 评估穿墙伤害 |
-| Safe Point | 要求命中点通过额外安全校验 |
-| Adaptive Weapon | 按当前武器类型自动调整扫描参数 |
-| Backtrack | 结合 LagComp **骨骼 tick 插值**（优先）+ origin 回退 |
-| Sticky Target | 锁定上一帧目标，减少 flick |
-| Rapid Fire | RageSubTick 连发 |
-| Delay Aim | 开火前延迟（ms） |
-| Auto Scope | 狙击自动开镜 |
-| Per-Weapon | WeaponConfig 按武器类型覆盖 hitbox / hitchance / removeSpread 等 |
-| Round Events | round_start / player_death 重置目标与 tick |
-| Auto Shoot | 自动 `+attack` |
-| Silent Aim | 仅写入 input_history，不改客户端可见视角 |
-| No Spread | 与 NoSpread 模块联动 |
-| Target Select | 最高伤害 / 最低 FOV / 最近距离 |
-| Hitscan Mode | Normal / Lethal / Lethal+ / Prefer Lethal |
-| Scan Mode | Single Point / Adaptive Multipoint |
-| Team Check | 跳过队友 |
+| 功能            | 说明                                                             |
+| --------------- | ---------------------------------------------------------------- |
+| 多 Hitbox 扫描  | Head / Neck / Chest / Pelvis / Stomach / Arms / Legs 可独立开关  |
+| Multipoint      | 自适应 multipoint 采样，缩放由 `multipointScale` 控制            |
+| Hitchance       | 基于散布模拟的命中率过滤                                         |
+| Auto Stop       | 开火前减速；支持 Slow（反向移动）与 Early（硬停）                |
+| Early Auto Stop | 扫描阶段提前停步（`earlyAutoStop`）                              |
+| Penetration     | 调用 AutoWall 评估穿墙伤害                                       |
+| Safe Point      | 要求命中点通过额外安全校验                                       |
+| Adaptive Weapon | 按当前武器类型自动调整扫描参数                                   |
+| Backtrack       | 结合 LagComp **骨骼 tick 插值**（优先）+ origin 回退             |
+| Sticky Target   | 锁定上一帧目标，减少 flick                                       |
+| Rapid Fire      | RageSubTick 连发                                                 |
+| Delay Aim       | 开火前延迟（ms）                                                 |
+| Auto Scope      | 狙击自动开镜                                                     |
+| Per-Weapon      | WeaponConfig 按武器类型覆盖 hitbox / hitchance / removeSpread 等 |
+| Round Events    | round_start / player_death 重置目标与 tick                       |
+| Auto Shoot      | 自动 `+attack`                                                   |
+| Silent Aim      | 仅写入 input_history，不改客户端可见视角                         |
+| No Spread       | 与 NoSpread 模块联动                                             |
+| Target Select   | 最高伤害 / 最低 FOV / 最近距离                                   |
+| Hitscan Mode    | Normal / Lethal / Lethal+ / Prefer Lethal                        |
+| Scan Mode       | Single Point / Adaptive Multipoint                               |
+| Team Check      | 跳过队友                                                         |
 
 ### 配置项
 
-| 字段 | 类型 | 默认 | 说明 |
-|------|------|------|------|
-| `enabled` | bool | false | 总开关 |
-| `minDamage` | int | 1 | 最小伤害阈值 |
-| `hitchance` | int | 50 | 命中率 % |
-| `multipointScale` | int | 70 | Multipoint 范围 % |
-| `autoStop` | bool | true | 开火前停步 |
-| `earlyAutoStop` | bool | true | 扫描阶段提前停步 |
-| `penetration` | bool | true | 穿墙 |
-| `safePoint` | bool | false | 安全点 |
-| `adaptiveWeapon` | bool | true | 武器自适应 |
-| `autoShoot` | bool | true | 自动开火 |
-| `silentAim` | bool | false | 静默瞄准 |
-| `backtrack` | bool | true | 回溯 |
-| `teamCheck` | bool | true | 队伍过滤 |
-| `hitscanMode` | enum | Normal | 命中扫描策略 |
-| `scanMode` | enum | Adaptive | 单点 / 自适应 |
-| `stopMode` | enum | Slow | Slow / Early |
-| `targetSelect` | enum | Damage | 目标优先级 |
-| `hitboxHead` … `hitboxLegs` | bool | 见源码 | 各部位开关 |
+| 字段                        | 类型 | 默认     | 说明              |
+| --------------------------- | ---- | -------- | ----------------- |
+| `enabled`                   | bool | false    | 总开关            |
+| `minDamage`                 | int  | 1        | 最小伤害阈值      |
+| `hitchance`                 | int  | 50       | 命中率 %          |
+| `multipointScale`           | int  | 70       | Multipoint 范围 % |
+| `autoStop`                  | bool | true     | 开火前停步        |
+| `earlyAutoStop`             | bool | true     | 扫描阶段提前停步  |
+| `penetration`               | bool | true     | 穿墙              |
+| `safePoint`                 | bool | false    | 安全点            |
+| `adaptiveWeapon`            | bool | true     | 武器自适应        |
+| `autoShoot`                 | bool | true     | 自动开火          |
+| `silentAim`                 | bool | false    | 静默瞄准          |
+| `backtrack`                 | bool | true     | 回溯              |
+| `teamCheck`                 | bool | true     | 队伍过滤          |
+| `hitscanMode`               | enum | Normal   | 命中扫描策略      |
+| `scanMode`                  | enum | Adaptive | 单点 / 自适应     |
+| `stopMode`                  | enum | Slow     | Slow / Early      |
+| `targetSelect`              | enum | Damage   | 目标优先级        |
+| `hitboxHead` … `hitboxLegs` | bool | 见源码   | 各部位开关        |
 
 ### 依赖
 
@@ -188,59 +188,59 @@ Rage 未启用时使用 Legit 管线；`LegitBot::SyncToAimbot` 保持配置一�
 
 ### Legit Aimbot
 
-| 功能 | 说明 |
-|------|------|
-| FOV 限制 | Angle（角度）或 Screen（像素距准星）两种模式 |
-| Hitbox | Head / Neck / Chest / Pelvis |
-| Aim Key | 按住瞄准；`autoShoot` 开启时无需按键 |
-| Visible Only | `TraceShape` 视线检测 |
-| Penetration | visCheck 失败时用 AutoWall 评估是否可穿墙命中 |
-| Recoil Control | 补偿 aim punch（2×） |
-| Silent Aim | input_history 静默写角 |
-| No Spread | 散布补偿 + SpreadHooks 零 spread detour |
-| Per-Weapon | WeaponConfig 覆盖 smooth / RCS / trigger / removeSpread |
-| Delay Aim | 瞄准延迟（ms） |
-| In Smoke | 配置项（enum 已预留，逻辑待补） |
-| Auto Shoot | 有目标时自动开火 |
-| Team Check | 跳过队友 |
-| FOV 圈 | 背景 ImGui 绘制当前 FOV 范围 |
-| Menu Block | 菜单打开 / 鼠标捕获时暂停战斗逻辑 |
+| 功能           | 说明                                                    |
+| -------------- | ------------------------------------------------------- |
+| FOV 限制       | Angle（角度）或 Screen（像素距准星）两种模式            |
+| Hitbox         | Head / Neck / Chest / Pelvis                            |
+| Aim Key        | 按住瞄准；`autoShoot` 开启时无需按键                    |
+| Visible Only   | `TraceShape` 视线检测                                   |
+| Penetration    | visCheck 失败时用 AutoWall 评估是否可穿墙命中           |
+| Recoil Control | 补偿 aim punch（2×）                                    |
+| Silent Aim     | input_history 静默写角                                  |
+| No Spread      | 散布补偿 + SpreadHooks 零 spread detour                 |
+| Per-Weapon     | WeaponConfig 覆盖 smooth / RCS / trigger / removeSpread |
+| Delay Aim      | 瞄准延迟（ms）                                          |
+| In Smoke       | 配置项（enum 已预留，逻辑待补）                         |
+| Auto Shoot     | 有目标时自动开火                                        |
+| Team Check     | 跳过队友                                                |
+| FOV 圈         | 背景 ImGui 绘制当前 FOV 范围                            |
+| Menu Block     | 菜单打开 / 鼠标捕获时暂停战斗逻辑                       |
 
 ### Triggerbot
 
-| 功能 | 说明 |
-|------|------|
-| 准星下敌人自动开火 | 基于 crosshair entity |
-| Trigger Key | 可选 Hold 键（默认 Alt） |
-| Team Check | 跳过队友 |
-| Delay | 0–200 ms 延迟 |
+| 功能               | 说明                     |
+| ------------------ | ------------------------ |
+| 准星下敌人自动开火 | 基于 crosshair entity    |
+| Trigger Key        | 可选 Hold 键（默认 Alt） |
+| Team Check         | 跳过队友                 |
+| Delay              | 0–200 ms 延迟            |
 
 ### 配置项（Aimbot）
 
-| 字段 | 类型 | 默认 |
-|------|------|------|
-| `enabled` | bool | false |
-| `fovType` | int | 0（Angle） |
-| `fov` | float | 5.0 |
-| `screenFov` | float | 100.0 |
-| `targetHitbox` | int | 0 |
-| `aimKey` | int | VK_LBUTTON |
-| `autoShoot` | bool | false |
-| `silentAim` | bool | true |
-| `teamCheck` | bool | true |
-| `visCheck` | bool | true |
-| `penetration` | bool | false |
-| `recoilControl` | bool | false |
+| 字段            | 类型  | 默认       |
+| --------------- | ----- | ---------- |
+| `enabled`       | bool  | false      |
+| `fovType`       | int   | 0（Angle） |
+| `fov`           | float | 5.0        |
+| `screenFov`     | float | 100.0      |
+| `targetHitbox`  | int   | 0          |
+| `aimKey`        | int   | VK_LBUTTON |
+| `autoShoot`     | bool  | false      |
+| `silentAim`     | bool  | true       |
+| `teamCheck`     | bool  | true       |
+| `visCheck`      | bool  | true       |
+| `penetration`   | bool  | false      |
+| `recoilControl` | bool  | false      |
 
 ### 配置项（Triggerbot）
 
-| 字段 | 类型 | 默认 |
-|------|------|------|
-| `enabled` | bool | false |
-| `key` | int | VK_MENU |
-| `useKey` | bool | true |
-| `teamCheck` | bool | true |
-| `delayMs` | int | 15 |
+| 字段        | 类型 | 默认    |
+| ----------- | ---- | ------- |
+| `enabled`   | bool | false   |
+| `key`       | int  | VK_MENU |
+| `useKey`    | bool | true    |
+| `teamCheck` | bool | true    |
+| `delayMs`   | int  | 15      |
 
 ---
 
@@ -265,10 +265,10 @@ Rage 未启用时使用 Legit 管线；`LegitBot::SyncToAimbot` 保持配置一�
 **文件：** `RageSubTick.hpp` / `RageSubTick.cpp`  
 **Hook：** `Hook_InputParser`
 
-| 功能 | 说明 |
-|------|------|
-| Silent Aim | 写 `InputHistoryEntry` 视角，不改客户端可见角 |
-| Rapid Fire | Subtick 连发序列 |
+| 功能       | 说明                                                |
+| ---------- | --------------------------------------------------- |
+| Silent Aim | 写 `InputHistoryEntry` 视角，不改客户端可见角       |
+| Rapid Fire | Subtick 连发序列                                    |
 | Seed Table | 启动时 `BuildSeedTable()` 预建 255 组 spread 随机对 |
 
 Ragebot 在瞄准后调用 `SetSilentAim` / `SetRapidFire`；`ResetTick` 在 round_start / player_death 触发。
@@ -281,10 +281,10 @@ Ragebot 在瞄准后调用 `SetSilentAim` / `SetRapidFire`；`ResetTick` 在 rou
 
 ### 功能
 
-| API | 说明 |
-|-----|------|
-| `FireBullet` | 模拟弹道穿透，输出伤害与有效性 |
-| `ScaleDamage` | 按 HitGroup、护甲、ConVar（`mp_damage_scale_*`）缩放 |
+| API            | 说明                                                  |
+| -------------- | ----------------------------------------------------- |
+| `FireBullet`   | 模拟弹道穿透，输出伤害与有效性                        |
+| `ScaleDamage`  | 按 HitGroup、护甲、ConVar（`mp_damage_scale_*`）缩放  |
 | `CanPenetrate` | 简化接口，返回 `PenetrationResult { canHit, damage }` |
 
 ### HitGroup
@@ -310,11 +310,11 @@ Generic、Head、Chest、Stomach、LeftArm、RightArm、LeftLeg、RightLeg、Nec
 
 ### SpreadHooks（零散布 Detour）
 
-| 阶段 | 行为 |
-|------|------|
-| SigScan | 扫描 `GetSpread` / `GetInaccuracy`（`Patterns.hpp`） |
-| Install | 签名就绪后 MinHook detour，`FeatureInit::Init` 自动安装 |
-| 运行时 | `NoSpread::config.enabled` 或 `SetZeroSpreadActive(true)` 时 hook 返回 `0.f` |
+| 阶段    | 行为                                                                         |
+| ------- | ---------------------------------------------------------------------------- |
+| SigScan | 扫描 `GetSpread` / `GetInaccuracy`（`Patterns.hpp`）                         |
+| Install | 签名就绪后 MinHook detour，`FeatureInit::Init` 自动安装                      |
+| 运行时  | `NoSpread::config.enabled` 或 `SetZeroSpreadActive(true)` 时 hook 返回 `0.f` |
 
 > 参考项目中的 `WeaponAccuracySpreadClientSide` 无可用 pattern；Cookie 采用已验证的 GetSpread/GetInaccuracy 路径。游戏更新后若 detour 失败，仍回退到 NoSpread 角度补偿。
 
@@ -331,18 +331,18 @@ Generic、Head、Chest、Stomach、LeftArm、RightArm、LeftLeg、RightLeg、Nec
 
 ### 功能
 
-| API | 说明 |
-|-----|------|
-| `RecordPlayers` | FrameStage 3：录制 origin、**128 骨骼**、`simulationTime` |
-| `GetBacktrackTicks` | 根据 interp + latency 计算回溯 tick |
-| `GetBacktrackOriginInterpolated` | 按 tick 在两条记录间 **线性插值** origin |
-| `GetBacktrackBoneInterpolated` | 按 tick 在两条记录间 **线性插值** 单骨位置 |
-| `GetBacktrackPos` / `GetBacktrackBone` | 对外查询（bone 优先走插值 API） |
-| `Clear` | round_start / 换图清空 |
+| API                                    | 说明                                                      |
+| -------------------------------------- | --------------------------------------------------------- |
+| `RecordPlayers`                        | FrameStage 3：录制 origin、**128 骨骼**、`simulationTime` |
+| `GetBacktrackTicks`                    | 根据 interp + latency 计算回溯 tick                       |
+| `GetBacktrackOriginInterpolated`       | 按 tick 在两条记录间 **线性插值** origin                  |
+| `GetBacktrackBoneInterpolated`         | 按 tick 在两条记录间 **线性插值** 单骨位置                |
+| `GetBacktrackPos` / `GetBacktrackBone` | 对外查询（bone 优先走插值 API）                           |
+| `Clear`                                | round_start / 换图清空                                    |
 
 ### 扫描侧用法
 
-RageScan 在 backtrack 开启时：先解析 hitbox 对应 bone index → `GetBacktrackBoneInterpolated`；失败则 origin  delta 回退。
+RageScan 在 backtrack 开启时：先解析 hitbox 对应 bone index → `GetBacktrackBoneInterpolated`；失败则 origin delta 回退。
 
 ### 参数
 
@@ -362,10 +362,10 @@ RageScan 在 backtrack 开启时：先解析 hitbox 对应 bone index → `GetBa
 
 ### 模式
 
-| 模式 | 说明 |
-|------|------|
-| Static | 固定 pitch + 相对 yaw 偏移 |
-| Spin | pitch 固定 + 持续旋转 fake yaw |
+| 模式   | 说明                           |
+| ------ | ------------------------------ |
+| Static | 固定 pitch + 相对 yaw 偏移     |
+| Spin   | pitch 固定 + 持续旋转 fake yaw |
 
 ### 功能
 
@@ -376,13 +376,13 @@ RageScan 在 backtrack 开启时：先解析 hitbox 对应 bone index → `GetBa
 
 ### 配置项
 
-| 字段 | 类型 | 默认 |
-|------|------|------|
-| `enabled` | bool | false |
-| `mode` | int | Static |
-| `pitch` | float | 89 |
-| `yaw` | float | 180 |
-| `spinSpeed` | float | 50 |
+| 字段        | 类型  | 默认   |
+| ----------- | ----- | ------ |
+| `enabled`   | bool  | false  |
+| `mode`      | int   | Static |
+| `pitch`     | float | 89     |
+| `yaw`       | float | 180    |
+| `spinSpeed` | float | 50     |
 
 ---
 
@@ -392,23 +392,23 @@ RageScan 在 backtrack 开启时：先解析 hitbox 对应 bone index → `GetBa
 
 **文件：** `Bhop.hpp` / `Bhop.cpp`
 
-| 功能 | 说明 |
-|------|------|
-| Bunny Hop | 地面跳起、空中松 jump；仅操纵 usercmd，不 force +jump 内存 |
-| Hold Space | `requireSpace`：必须按住空格才 bhop |
-| Edge Jump | 离开平台边缘自动跳 |
-| Jump Bug | Subtick 落地帧 duck + jump 时序（`CL_Bypass::ApplyJumpBug`） |
-| Hop Chance | 概率跳（非 100% 触发 bhop） |
-| Auto Forward | 无 W/S 输入时自动 +forward |
-| 地面检测 | `EnginePred::IsOnGround()`，预测激活时用 predicted flags |
+| 功能         | 说明                                                         |
+| ------------ | ------------------------------------------------------------ |
+| Bunny Hop    | 地面跳起、空中松 jump；仅操纵 usercmd，不 force +jump 内存   |
+| Hold Space   | `requireSpace`：必须按住空格才 bhop                          |
+| Edge Jump    | 离开平台边缘自动跳                                           |
+| Jump Bug     | Subtick 落地帧 duck + jump 时序（`CL_Bypass::ApplyJumpBug`） |
+| Hop Chance   | 概率跳（非 100% 触发 bhop）                                  |
+| Auto Forward | 无 W/S 输入时自动 +forward                                   |
+| 地面检测     | `EnginePred::IsOnGround()`，预测激活时用 predicted flags     |
 
-| 配置项 | 默认 |
-|--------|------|
-| `enabled` | false |
-| `edgeJump` | false |
-| `jumpBug` | true |
-| `autoForward` | true |
-| `requireSpace` | true |
+| 配置项         | 默认  |
+| -------------- | ----- |
+| `enabled`      | false |
+| `edgeJump`     | false |
+| `jumpBug`      | true  |
+| `autoForward`  | true  |
+| `requireSpace` | true  |
 
 > Bhop **不再** 自带 Auto Strafe；空中转向统一由 Movement 处理。
 
@@ -431,49 +431,49 @@ RageScan 在 backtrack 开启时：先解析 hitbox 对应 bone index → `GetBa
 
 #### Edge Bug
 
-| 项 | 说明 |
-|----|------|
-| Keybind | `edgeBugKey`（默认侧键1），`edgeBugUseKey` 可关闭 |
-| 预测 | `m_hPredictedPawn`、`m_bInLanding`、128 点环形向下 Trace |
-| 检测 | 64-tick 环检测 `z_velocity == -7` |
-| Cvar | 激活时 `sv_min_jump_landing_sound = 63464578`，否则恢复 260 |
-| Duck | 命中时清零 move、强制 duck、地面时松 jump |
+| 项      | 说明                                                        |
+| ------- | ----------------------------------------------------------- |
+| Keybind | `edgeBugKey`（默认侧键1），`edgeBugUseKey` 可关闭           |
+| 预测    | `m_hPredictedPawn`、`m_bInLanding`、128 点环形向下 Trace    |
+| 检测    | 64-tick 环检测 `z_velocity == -7`                           |
+| Cvar    | 激活时 `sv_min_jump_landing_sound = 63464578`，否则恢复 260 |
+| Duck    | 命中时清零 move、强制 duck、地面时松 jump                   |
 
 #### Auto Strafe
 
-| 模式 | 说明 |
-|------|------|
-| Off | 关闭 |
-| Legit | WASD assist + 速度角 ideal 修正 |
-| Rage | Legit 基础上 smoothing × 0.5，偏视角 strafe |
+| 模式  | 说明                                        |
+| ----- | ------------------------------------------- |
+| Off   | 关闭                                        |
+| Legit | WASD assist + 速度角 ideal 修正             |
+| Rage  | Legit 基础上 smoothing × 0.5，偏视角 strafe |
 
-| 配置项 | 说明 |
-|--------|------|
-| `strafeSmooth` | 0–100 平滑度 |
+| 配置项         | 说明                  |
+| -------------- | --------------------- |
+| `strafeSmooth` | 0–100 平滑度          |
 | `strafeAssist` | WASD 按键历史辅助方向 |
 
 #### Movement Fix / Correction / Validate
 
-| 功能 | 说明 |
-|------|------|
-| Movement Fix | AntiAim 后矩阵移动方向修正（`movment_fix` 对齐参考） |
+| 功能                | 说明                                                                            |
+| ------------------- | ------------------------------------------------------------------------------- |
+| Movement Fix        | AntiAim 后矩阵移动方向修正（`movment_fix` 对齐参考）                            |
 | Movement Correction | 逐条 input_history 按 base 视角修正 forward/left/up（原始 move 快照，避免累积） |
-| Validate Angles | clamp pitch/yaw、同步 move 按钮、反算 mousedx/mousedy |
-| Auto Stop | Rage 专用：`Slow` 反向减速 / `Early` 硬停 |
+| Validate Angles     | clamp pitch/yaw、同步 move 按钮、反算 mousedx/mousedy                           |
+| Auto Stop           | Rage 专用：`Slow` 反向减速 / `Early` 硬停                                       |
 
 #### 配置项
 
-| 字段 | 默认 |
-|------|------|
-| `movementFix` | true |
-| `movementCorrection` | true |
-| `validateAngles` | true |
-| `edgeBug` | false |
-| `edgeBugUseKey` | true |
-| `edgeBugKey` | VK_XBUTTON1 |
-| `strafeMode` | Off |
-| `strafeSmooth` | 50 |
-| `strafeAssist` | true |
+| 字段                 | 默认        |
+| -------------------- | ----------- |
+| `movementFix`        | true        |
+| `movementCorrection` | true        |
+| `validateAngles`     | true        |
+| `edgeBug`            | false       |
+| `edgeBugUseKey`      | true        |
+| `edgeBugKey`         | VK_XBUTTON1 |
+| `strafeMode`         | Off         |
+| `strafeSmooth`       | 50          |
+| `strafeAssist`       | true        |
 
 ---
 
@@ -509,36 +509,36 @@ RageScan 在 backtrack 开启时：先解析 hitbox 对应 bone index → `GetBa
 
 ### 功能
 
-| 功能 | 说明 |
-|------|------|
-| Box | Normal / Corners 两种框 |
-| Skeleton | 骨骼连线 |
-| Health Bar | 左侧渐变血条 |
-| Name | 玩家名 |
-| Distance | 米制距离 |
-| Team Check | 仅敌人 |
-| Max Distance | 最大绘制距离 |
-| Glow ESP | 写入 entity glow 属性（outline） |
-| Bomb Timer | 已 plant C4 倒计时 |
-| Spectator List | 观战本地玩家的名单 |
+| 功能           | 说明                             |
+| -------------- | -------------------------------- |
+| Box            | Normal / Corners 两种框          |
+| Skeleton       | 骨骼连线                         |
+| Health Bar     | 左侧渐变血条                     |
+| Name           | 玩家名                           |
+| Distance       | 米制距离                         |
+| Team Check     | 仅敌人                           |
+| Max Distance   | 最大绘制距离                     |
+| Glow ESP       | 写入 entity glow 属性（outline） |
+| Bomb Timer     | 已 plant C4 倒计时               |
+| Spectator List | 观战本地玩家的名单               |
 
 ### 配置项
 
-| 字段 | 默认 |
-|------|------|
-| `enabled` | true |
-| `bBox` | true |
-| `boxMode` | 0 |
-| `bSkeleton` | false |
-| `bHealthBar` | true |
-| `bName` | true |
-| `bDistance` | true |
-| `teamCheck` | true |
-| `maxDistance` | 3000 |
+| 字段                                       | 默认   |
+| ------------------------------------------ | ------ |
+| `enabled`                                  | true   |
+| `bBox`                                     | true   |
+| `boxMode`                                  | 0      |
+| `bSkeleton`                                | false  |
+| `bHealthBar`                               | true   |
+| `bName`                                    | true   |
+| `bDistance`                                | true   |
+| `teamCheck`                                | true   |
+| `maxDistance`                              | 3000   |
 | `boxColor` / `skeletonColor` / `glowColor` | 见源码 |
-| `bBombTimer` | false |
-| `bGlow` | false |
-| `bSpectators` | false |
+| `bBombTimer`                               | false  |
+| `bGlow`                                    | false  |
+| `bSpectators`                              | false  |
 
 ---
 
@@ -550,11 +550,11 @@ RageScan 在 backtrack 开启时：先解析 hitbox 对应 bone index → `GetBa
 
 ### 组件
 
-| 组件 | 说明 |
-|------|------|
-| `BoxComponent` | 框 + 描边 + 可选填充 |
-| `BarComponent` | 四边对齐血条 |
-| `TextComponent` | 四边 + 方向对齐文字 |
+| 组件             | 说明                   |
+| ---------------- | ---------------------- |
+| `BoxComponent`   | 框 + 描边 + 可选填充   |
+| `BarComponent`   | 四边对齐血条           |
+| `TextComponent`  | 四边 + 方向对齐文字    |
 | `OverlayContext` | 自动 side padding 布局 |
 
 ### 功能
@@ -567,15 +567,15 @@ RageScan 在 backtrack 开启时：先解析 hitbox 对应 bone index → `GetBa
 
 ### 配置项
 
-| 字段 | 默认 |
-|------|------|
-| `enabled` | true |
-| `useComponents` | true |
-| `showHealthBar` | true |
-| `showName` | true |
-| `showDistance` | true |
-| `showWeaponIcon` | true |
-| `showAmmoBar` | 见菜单 |
+| 字段                 | 默认   |
+| -------------------- | ------ |
+| `enabled`            | true   |
+| `useComponents`      | true   |
+| `showHealthBar`      | true   |
+| `showName`           | true   |
+| `showDistance`       | true   |
+| `showWeaponIcon`     | true   |
+| `showAmmoBar`        | 见菜单 |
 | `showHK` / `showKIT` | 见菜单 |
 
 ---
@@ -593,18 +593,18 @@ RageScan 在 backtrack 开启时：先解析 hitbox 对应 bone index → `GetBa
 
 ### 配置项
 
-| 字段 | 默认 |
-|------|------|
-| `enabled` | false |
-| `enemy` | true |
-| `local` | false |
-| `teammate` | false |
-| `weapon` | false |
-| `hands` | false |
-| `materialStyle` | Glow |
-| `ignoreZ` | false |
-| `ignoreZColor` | 独立 X-Ray 颜色 |
-| `color` | RGBA |
+| 字段            | 默认            |
+| --------------- | --------------- |
+| `enabled`       | false           |
+| `enemy`         | true            |
+| `local`         | false           |
+| `teammate`      | false           |
+| `weapon`        | false           |
+| `hands`         | false           |
+| `materialStyle` | Glow            |
+| `ignoreZ`       | false           |
+| `ignoreZColor`  | 独立 X-Ray 颜色 |
+| `color`         | RGBA            |
 
 ### 状态提示
 
@@ -628,12 +628,12 @@ RageScan 在 backtrack 开启时：先解析 hitbox 对应 bone index → `GetBa
 **文件：** `ThirdPerson.hpp` / `ThirdPerson.cpp`  
 **Hook：** `OverrideView`、`GetRenderFov`、`SetViewModelFov`
 
-| 功能 | 说明 |
-|------|------|
-| 第三人称 | 设置 `CCSGOInput::m_bInThirdPerson` |
-| 相机距离 | 40–400，带碰撞 Trace 缩短 |
-| FOV | 60–140，Hook 渲染 FOV |
-| ViewModel | 第三人称时调整 viewmodel FOV |
+| 功能      | 说明                                |
+| --------- | ----------------------------------- |
+| 第三人称  | 设置 `CCSGOInput::m_bInThirdPerson` |
+| 相机距离  | 40–400，带碰撞 Trace 缩短           |
+| FOV       | 60–140，Hook 渲染 FOV               |
+| ViewModel | 第三人称时调整 viewmodel FOV        |
 
 ### World FOV
 
@@ -647,10 +647,10 @@ RageScan 在 backtrack 开启时：先解析 hitbox 对应 bone index → `GetBa
 
 **文件：** `MenuEffects.hpp` / `MenuEffects.cpp`
 
-| 功能 | 说明 |
-|------|------|
-| Watermark | 屏幕水印 |
-| Particles | 菜单背景粒子连线动画 |
+| 功能             | 说明                     |
+| ---------------- | ------------------------ |
+| Watermark        | 屏幕水印                 |
+| Particles        | 菜单背景粒子连线动画     |
 | Blur Placeholder | 高斯模糊占位（WIP 视觉） |
 
 ---
@@ -661,28 +661,28 @@ RageScan 在 backtrack 开启时：先解析 hitbox 对应 bone index → `GetBa
 
 ### 主路径：Loadout / Inventory 注入（对齐参考）
 
-| 步骤 | 说明 |
-|------|------|
-| 创建物品 | `CEconItem::Create` → 填 defIndex / paint / wear / seed / StatTrak |
-| SOC 注入 | `CCSPlayerInventory::AddEconItem` |
-| 装备 | `EquipItemInLoadout`（CT/T 双队） |
-| 运行时同步 | **FSN stage 6** 遍历 owned 武器，复制 loadout item view → 实体、SetModel、MeshGroup 2 |
-| ViewModel | `Hook_SetModel` 按 managed loadout 模型覆盖（防高 ping 刀闪） |
-| Killfeed 刀名 | `player_death` 时本地刀杀改写 event `weapon` 字符串 |
-| 回合刷新 | `round_start` / Force Update → `NetworkClientService::Update()`（deltaTick = -1） |
-| 追踪 | `s_addedItemIds` 白名单；`Shutdown` 移除假物品 |
+| 步骤          | 说明                                                                                  |
+| ------------- | ------------------------------------------------------------------------------------- |
+| 创建物品      | `CEconItem::Create` → 填 defIndex / paint / wear / seed / StatTrak                    |
+| SOC 注入      | `CCSPlayerInventory::AddEconItem`                                                     |
+| 装备          | `EquipItemInLoadout`（CT/T 双队）                                                     |
+| 运行时同步    | **FSN stage 6** 遍历 owned 武器，复制 loadout item view → 实体、SetModel、MeshGroup 2 |
+| ViewModel     | `Hook_SetModel` 按 managed loadout 模型覆盖（防高 ping 刀闪）                         |
+| Killfeed 刀名 | `player_death` 时本地刀杀改写 event `weapon` 字符串                                   |
+| 回合刷新      | `round_start` / Force Update → `NetworkClientService::Update()`（deltaTick = -1）     |
+| 追踪          | `s_addedItemIds` 白名单；`Shutdown` 移除假物品                                        |
 
 `SkinChanger::Tick` 在库存路径激活时**不再**走 RegenerateWeaponSkins fallback；仅在无 inventory 时保留旧内存覆写逻辑。
 
 ### 菜单功能
 
-| 功能 | 说明 |
-|------|------|
-| 全武器 PaintKit | 按 defIndex 配置 paintKit / wear / seed / StatTrak |
-| PaintKit 浏览器 | 稀有度过滤 + 名称搜索 + 自定义 ID |
-| Knife Changer | 20+ 刀型 + 库存 equip |
-| Force Update | `forceUpdate` → `SyncFromConfig` + **NetworkFullUpdate** |
-| Clear / Randomize | 批量清除或随机皮肤 |
+| 功能              | 说明                                                     |
+| ----------------- | -------------------------------------------------------- |
+| 全武器 PaintKit   | 按 defIndex 配置 paintKit / wear / seed / StatTrak       |
+| PaintKit 浏览器   | 稀有度过滤 + 名称搜索 + 自定义 ID                        |
+| Knife Changer     | 20+ 刀型 + 库存 equip                                    |
+| Force Update      | `forceUpdate` → `SyncFromConfig` + **NetworkFullUpdate** |
+| Clear / Randomize | 批量清除或随机皮肤                                       |
 
 ### SkinConfig 字段
 
@@ -704,26 +704,26 @@ RageScan 在 backtrack 开启时：先解析 hitbox 对应 bone index → `GetBa
 
 ### 功能
 
-| 功能 | 说明 |
-|------|------|
-| 手套模型 | 从 `g_GlovesNames` 列表选择 |
-| PaintKit / Wear / Seed | 完整 econ 属性 |
-| Loadout Team | T（2）/ CT（3） |
-| Apply Gloves | 手动触发应用 |
-| 材质刷新 | `material_magic_number` + `invalidate_glove_material` |
-| 帧更新 | `OnGlove` @ FrameStage |
-| 回合重置 | `ResetRound` |
+| 功能                   | 说明                                                  |
+| ---------------------- | ----------------------------------------------------- |
+| 手套模型               | 从 `g_GlovesNames` 列表选择                           |
+| PaintKit / Wear / Seed | 完整 econ 属性                                        |
+| Loadout Team           | T（2）/ CT（3）                                       |
+| Apply Gloves           | 手动触发应用                                          |
+| 材质刷新               | `material_magic_number` + `invalidate_glove_material` |
+| 帧更新                 | `OnGlove` @ FrameStage                                |
+| 回合重置               | `ResetRound`                                          |
 
 ### 配置项
 
-| 字段 | 默认 |
-|------|------|
-| `enabled` | false |
-| `modelIndex` | 0 |
-| `paintKit` | 0 |
-| `wear` | 0.001 |
-| `seed` | 0 |
-| `team` | 3 |
+| 字段         | 默认  |
+| ------------ | ----- |
+| `enabled`    | false |
+| `modelIndex` | 0     |
+| `paintKit`   | 0     |
+| `wear`       | 0.001 |
+| `seed`       | 0     |
+| `team`       | 3     |
 
 ---
 
@@ -744,7 +744,7 @@ RageScan 在 backtrack 开启时：先解析 hitbox 对应 bone index → `GetBa
 
 **文件：** `PlantBomb.hpp` / `PlantBomb.cpp`
 
-- 持 C4 时将 `m_bInBombZone`  spoof 为 true
+- 持 C4 时将 `m_bInBombZone` spoof 为 true
 - CreateMove + FrameStage（NET_UPDATE_END）双路径应用
 
 ---
@@ -754,10 +754,10 @@ RageScan 在 backtrack 开启时：先解析 hitbox 对应 bone index → `GetBa
 **文件：** `GameEvents.hpp` / `GameEvents.cpp`  
 **Hook：** `Hook_HandleGameEvents`、`Hook_FireEventClientSide`
 
-| 事件 | 行为 |
-|------|------|
-| `round_start` | 清空 LagComp、重置 Gloves 回合状态、Rage/Legit round 回调、**SkinChangerInventory::SyncFromConfig**、**RequestNetworkFullUpdate** |
-| `player_death` | **Killfeed 刀名**、Rage/Legit 死亡回调、RageSubTick reset |
+| 事件           | 行为                                                                                                                              |
+| -------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| `round_start`  | 清空 LagComp、重置 Gloves 回合状态、Rage/Legit round 回调、**SkinChangerInventory::SyncFromConfig**、**RequestNetworkFullUpdate** |
+| `player_death` | **Killfeed 刀名**、Rage/Legit 死亡回调、RageSubTick reset                                                                         |
 
 ---
 
@@ -765,13 +765,13 @@ RageScan 在 backtrack 开启时：先解析 hitbox 对应 bone index → `GetBa
 
 **目录：** `src/base/Client/Resources/`（构建时 xcopy 到 `OutDir\Resources\`）
 
-| 组件 | 说明 |
-|------|------|
-| **WeaponIcons** | 磁盘 TTF → 内嵌 `game_icons` / `iconscs2_embedded` fallback |
+| 组件              | 说明                                                         |
+| ----------------- | ------------------------------------------------------------ |
+| **WeaponIcons**   | 磁盘 TTF → 内嵌 `game_icons` / `iconscs2_embedded` fallback  |
 | **EmbeddedFonts** | Font Awesome Solid（`CNotify` 图标）、smallest_pixel（可选） |
-| **icons/*.svg** | 73 个参考 SVG |
-| **branding/** | cs2.png / cs2.webp |
-| **embedded/** | fa_solid_900、Bgs.h、ui_icons、font.h 等 |
+| **icons/\*.svg**  | 73 个参考 SVG                                                |
+| **branding/**     | cs2.png / cs2.webp                                           |
+| **embedded/**     | fa_solid_900、Bgs.h、ui_icons、font.h 等                     |
 
 详见 `src/base/Client/Resources/README.md`。
 
@@ -809,14 +809,14 @@ WndProc 键位数组、Hold/Toggle 模式。
 
 ### CL_Bypass（Subtick 操控）
 
-| API | 用途 |
-|-----|------|
-| `SetViewAngles` | 写 base / input_history 视角 |
-| `SetAttack` / `SetDontAttack` | 开火控制 + Subtick |
-| `SetButton` | 任意按钮 + 可选 Subtick when |
-| `ApplyJumpBug` | Jump bug subtick 序列 |
-| `AddSubtickStrafeStep` | Subtick 视角步进 |
-| `SpoofCrc` | CRC 同步 |
+| API                           | 用途                         |
+| ----------------------------- | ---------------------------- |
+| `SetViewAngles`               | 写 base / input_history 视角 |
+| `SetAttack` / `SetDontAttack` | 开火控制 + Subtick           |
+| `SetButton`                   | 任意按钮 + 可选 Subtick when |
+| `ApplyJumpBug`                | Jump bug subtick 序列        |
+| `AddSubtickStrafeStep`        | Subtick 视角步进             |
+| `SpoofCrc`                    | CRC 同步                     |
 
 ### Protobuf
 
@@ -838,29 +838,29 @@ ConVar Setup 等敏感调用可选 spoof。
 
 ## Hook 清单
 
-| Hook | DLL | 用途 |
-|------|-----|------|
-| Present / ResizeBuffers / CreateSwapChain | gameoverlayrenderer64 | ImGui 渲染 |
-| CreateMove | client | 功能主循环 |
-| FrameStageNotify | client | 手套 / **SkinChangerInventory** / LagComp / PlantBomb |
-| InputParser | client | **RageSubTick** Silent / RapidFire |
-| HandleGameEvents | client | **GameEvents** round_start / player_death |
-| OverrideView | client | 第三人称相机 |
-| GetRenderFov / SetViewModelFov | client | FOV / **WorldFov** |
-| DrawObject | scenesystem | **Chams 核心** |
-| DrawGlow | client | Glow 相关 |
-| SetModel | client | **库存皮肤** viewmodel / 武器模型 |
-| PredictionSimulation | client | 引擎预测 |
-| SOCacheSubscribed | client | 库存（透传） |
-| EquipItemInLoadout / IsLoadoutAllowed | client | Loadout / 皮肤 equip |
-| LevelInit / LevelShutdown | client | 地图切换清理 |
-| OnAddEntity / OnRemoveEntity | client | 实体生命周期 |
-| GetMatricesForView | client | 视图矩阵 |
-| FireEventClientSide | client | 游戏事件 |
-| MouseInputEnabled / IsRelativeMouseMode | client / inputsystem | 菜单鼠标 |
-| OnClientOutput / CDemoRecorder | engine2 | 输出 / Demo |
-| SerializePartialToArray | client | Protobuf 输入 |
-| AntiTamper | client | 反篡改绕过 |
+| Hook                                      | DLL                   | 用途                                                  |
+| ----------------------------------------- | --------------------- | ----------------------------------------------------- |
+| Present / ResizeBuffers / CreateSwapChain | gameoverlayrenderer64 | ImGui 渲染                                            |
+| CreateMove                                | client                | 功能主循环                                            |
+| FrameStageNotify                          | client                | 手套 / **SkinChangerInventory** / LagComp / PlantBomb |
+| InputParser                               | client                | **RageSubTick** Silent / RapidFire                    |
+| HandleGameEvents                          | client                | **GameEvents** round_start / player_death             |
+| OverrideView                              | client                | 第三人称相机                                          |
+| GetRenderFov / SetViewModelFov            | client                | FOV / **WorldFov**                                    |
+| DrawObject                                | scenesystem           | **Chams 核心**                                        |
+| DrawGlow                                  | client                | Glow 相关                                             |
+| SetModel                                  | client                | **库存皮肤** viewmodel / 武器模型                     |
+| PredictionSimulation                      | client                | 引擎预测                                              |
+| SOCacheSubscribed                         | client                | 库存（透传）                                          |
+| EquipItemInLoadout / IsLoadoutAllowed     | client                | Loadout / 皮肤 equip                                  |
+| LevelInit / LevelShutdown                 | client                | 地图切换清理                                          |
+| OnAddEntity / OnRemoveEntity              | client                | 实体生命周期                                          |
+| GetMatricesForView                        | client                | 视图矩阵                                              |
+| FireEventClientSide                       | client                | 游戏事件                                              |
+| MouseInputEnabled / IsRelativeMouseMode   | client / inputsystem  | 菜单鼠标                                              |
+| OnClientOutput / CDemoRecorder            | engine2               | 输出 / Demo                                           |
+| SerializePartialToArray                   | client                | Protobuf 输入                                         |
+| AntiTamper                                | client                | 反篡改绕过                                            |
 
 > 标记 `SkipIfNotFound` 的 Hook（DrawObject、SetModel、LevelInit 等）签名失效时跳过，不影响其他功能。
 
@@ -868,16 +868,16 @@ ConVar Setup 等敏感调用可选 spoof。
 
 ## 模块互斥与优先级
 
-| 规则 | 行为 |
-|------|------|
-| Ragebot ↔ Legit | Rage 开启时禁用 Aimbot / Triggerbot UI 与逻辑 |
-| 战斗 ↔ AntiAim | `blockAntiAim == true` 时跳过 AntiAim |
-| Movement Fix | AntiAim 启用且战斗未占用视角时，`FixMovementPost` 修正移动 |
-| EnginePred | CreateMove 外层 Start/End 包裹 Movement；Rage 内部独立嵌套 |
-| Chams | 依赖 DrawObject + 材质双向就绪，否则仅 Glow/ESP 可用 |
-| 菜单打开 | Aimbot 战斗阻塞（`IsMenuBlockingCombat`） |
-| 皮肤 | 库存注入（SkinChangerInventory）为主；无 inventory 时 SkinChanger fallback |
-| Spread | Sig 失效时 SpreadHooks detour 跳过，NoSpread 角度补偿仍可用 |
+| 规则            | 行为                                                                       |
+| --------------- | -------------------------------------------------------------------------- |
+| Ragebot ↔ Legit | Rage 开启时禁用 Aimbot / Triggerbot UI 与逻辑                              |
+| 战斗 ↔ AntiAim  | `blockAntiAim == true` 时跳过 AntiAim                                      |
+| Movement Fix    | AntiAim 启用且战斗未占用视角时，`FixMovementPost` 修正移动                 |
+| EnginePred      | CreateMove 外层 Start/End 包裹 Movement；Rage 内部独立嵌套                 |
+| Chams           | 依赖 DrawObject + 材质双向就绪，否则仅 Glow/ESP 可用                       |
+| 菜单打开        | Aimbot 战斗阻塞（`IsMenuBlockingCombat`）                                  |
+| 皮肤            | 库存注入（SkinChangerInventory）为主；无 inventory 时 SkinChanger fallback |
+| Spread          | Sig 失效时 SpreadHooks detour 跳过，NoSpread 角度补偿仍可用                |
 
 ---
 
@@ -889,14 +889,16 @@ ConVar Setup 等敏感调用可选 spoof。
 
 ### 参考迁移状态（`参考/cstrike` → Cookie）
 
-| 状态 | 模块 |
-|------|------|
-| **已完成** | Hooks 主链、Rage/Legit、AutoWall、NoSpread/SpreadHooks、LagComp 骨骼插值、Movement（含 EdgeBug）、EnginePred、Skin 库存注入 + killfeed + network update、Chams/ESP Overlay、Resources/字体、GameEvents |
-| **有意跳过** | 空 lagcomp 壳、post_processing WIP、callstack 空、CameraInput 注释、teleport 空壳 |
-| **可选 / 低优先级** | Chams 第三材质、`texture.h` ESP 预览图、菜单 `Bgs.h`/`font.h` 背景、`Hook_GetMatricesForView` bounding box 缓存、Legit 部分高级 target/trigger HC 细节 |
+完整 **50 项互相对照** 见 [ReferenceChecklist.md](./ReferenceChecklist.md)；**1–24 迁移清单** 见 [1.md](./1.md)。
 
-> Windows 端需验证：`SpreadHooks` 签名、`NetworkClientService` 接口、FSN stage 6 皮肤同步。
+| 状态                | 模块                                                                                                                                                                                                                                                    |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **已完成**          | Hooks 主链、Rage/Legit、AutoWall、NoSpread/SpreadHooks、Hitbox V1/V2、LagComp（hitbox 录帧 + EntCache 生命周期）、Movement（含 EdgeBug/AA fix）、EnginePred、Skin 库存注入、Chams/ESP Overlay、七档 WeaponConfig、ThirdPerson/ViewModel FOV、GameEvents |
+| **有意跳过**        | teleport 空壳、CameraInput 注释、参考 multidrop                                                                                                                                                                                                         |
+| **可选 / 低优先级** | Hitbox pointbox UI、菜单 `edited::` 控件、ESP 条 Glow Shadow、D3D11 真 blur、反射式 `C::` 配置                                                                                                                                                          |
+
+> Windows 端需验证：`SpreadHooks` 签名、`HitboxNative` pattern、`NetworkClientService`、FSN stage 6 皮肤同步。
 
 ---
 
-*完整构建与资源说明见根目录 [README.md](./README.md)。*
+_完整构建与资源说明见根目录 [README.md](./README.md)。_

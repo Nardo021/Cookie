@@ -79,4 +79,5 @@ namespace LagComp
 
 	auto RenderDebug() noexcept -> void;
 	auto Clear() noexcept -> void;
+	auto RemoveRecordsForHandle( uint32_t entityHandle ) noexcept -> void;
 }

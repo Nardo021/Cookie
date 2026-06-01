@@ -18,6 +18,7 @@
 #include <Client/Features/Inventory/WeaponIcons.hpp>
 #include <Client/Fonts/EmbeddedFonts.hpp>
 #include <Client/UI/Menu/MenuAssets.hpp>
+#include <Client/UI/Synthetic/SyntheticMenu.hpp>
 #include <Client/UI/Menu/MenuConfig.hpp>
 #include <Client/UI/Menu/MenuSettings.hpp>
 #include <Client/Utils/CInputSystem.hpp>
@@ -67,6 +68,7 @@ auto CCookieGUI::OnInit( IDXGISwapChain* pSwapChain ) -> void
 	InitFont();
 	UpdateStyle();
 	MenuAssets::Init( m_pDevice );
+	SyntheticMenu::Init( m_pDevice , m_pDeviceContext , pSwapChain );
 
 	m_WndProc_o = (WNDPROC)SetWindowLongPtrA( m_hCS2Window , GWLP_WNDPROC , (LONG_PTR)GUI_WndProc );
 
@@ -80,6 +82,7 @@ auto CCookieGUI::OnDestroy() -> void
 	m_bVisible = false;
 
 	MenuAssets::Shutdown();
+	SyntheticMenu::Shutdown();
 
 	if ( m_pFreeType_Font )
 	{
@@ -188,6 +191,11 @@ void CCookieGUI::OnRender( IDXGISwapChain* pSwapChain )
 		{
 			ImGui_ImplDX11_CreateDeviceObjects();
 			MenuAssets::Init( m_pDevice );
+			if ( auto* swapChain = pSwapChain )
+			{
+				SyntheticMenu::Shutdown();
+				SyntheticMenu::Init( m_pDevice , m_pDeviceContext , swapChain );
+			}
 			m_needRecreateDeviceObjects = false;
 		}
 

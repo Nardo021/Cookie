@@ -58,7 +58,7 @@
   <PropertyGroup>
     <BaseRoot>$(ProjectDir)src\base</BaseRoot>
     <BaseInclude>$(BaseRoot);$(BaseRoot)\Common\Include</BaseInclude>
-    <CookieInclude>$(BaseRoot)\Client\Features\Combat\Rage;$(BaseRoot)\Client\Features\Combat\Legit;$(BaseRoot)\Client\Features\Combat;$(BaseRoot)\Client\Features\Visuals;$(BaseRoot)\Client\Features\Movement;$(BaseRoot)\Client\Features\Inventory;$(BaseRoot)\Client\Features\Misc;$(BaseRoot)\Client\Features\Events;$(BaseRoot)\Client\Features\Init;$(BaseRoot)\Client\UI\Menu;$(BaseRoot)\Client\Game;$(BaseRoot)\Client\Utils;$(BaseRoot)\Client\Core;$(BaseRoot)\Client\Fonts;$(BaseRoot)\Client\Resources\embedded</CookieInclude>
+    <CookieInclude>$(BaseRoot)\Client\UI\Synthetic\SyntheticCompat;$(BaseRoot)\Client\UI\Synthetic;$(BaseRoot)\Client\UI\Synthetic\framework\settings;$(BaseRoot)\Client\Features\Combat\Rage;$(BaseRoot)\Client\Features\Combat\Legit;$(BaseRoot)\Client\Features\Combat;$(BaseRoot)\Client\Features\Visuals;$(BaseRoot)\Client\Features\Movement;$(BaseRoot)\Client\Features\Inventory;$(BaseRoot)\Client\Features\Misc;$(BaseRoot)\Client\Features\Events;$(BaseRoot)\Client\Features\Init;$(BaseRoot)\Client\UI\Menu;$(BaseRoot)\Client\Game;$(BaseRoot)\Client\Utils;$(BaseRoot)\Client\Core;$(BaseRoot)\Client\Fonts;$(BaseRoot)\Client\Resources\embedded</CookieInclude>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -79,7 +79,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalLibraryDirectories>$(ProjectDir)vcpkg_installed\x64-windows-static\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>d3d11.lib;dxgi.lib;d3dcompiler.lib;dwmapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;dxgi.lib;d3dcompiler.lib;dwmapi.lib;windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /E /I /Y "$(ProjectDir)src\base\Client\Resources" "$(OutDir)Resources\"</Command>
@@ -109,7 +109,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <EnableUAC>false</EnableUAC>
       <AdditionalLibraryDirectories>$(ProjectDir)vcpkg_installed\x64-windows-static\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>d3d11.lib;dxgi.lib;d3dcompiler.lib;dwmapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;dxgi.lib;d3dcompiler.lib;dwmapi.lib;windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /E /I /Y "$(ProjectDir)src\base\Client\Resources" "$(OutDir)Resources\"</Command>

@@ -20,6 +20,7 @@
 #include <Client/Game/Game.hpp>
 #include <Client/Game/Offsets.hpp>
 
+#include <GameClient/CEntityCache/CEntityCache.hpp>
 #include <GameClient/CL_Players.hpp>
 
 namespace LagComp
@@ -29,6 +30,22 @@ namespace LagComp
 		using RecordDeque = std::deque<LagRecord>;
 
 		std::unordered_map<uint32_t , RecordDeque> s_recordsByHandle;
+		bool s_entityCallbacksRegistered = false;
+
+		auto OnEntityLife( CHandle handle , bool added ) noexcept -> void
+		{
+			if ( !added && handle.IsValid() )
+				RemoveRecordsForHandle( handle.m_Index );
+		}
+
+		auto EnsureEntityCallbacks() noexcept -> void
+		{
+			if ( s_entityCallbacksRegistered )
+				return;
+
+			if ( auto* cache = GetEntityCache() )
+				s_entityCallbacksRegistered = cache->RegisterLifeCallback( OnEntityLife );
+		}
 
 		struct BoneConnection { int bone1; int bone2; };
 		constexpr BoneConnection kDebugBones[] = {
@@ -304,6 +321,8 @@ namespace LagComp
 
 	auto RecordPlayers() noexcept -> void
 	{
+		EnsureEntityCallbacks();
+
 		if ( !Game::clientBase )
 			return;
 
@@ -686,5 +705,11 @@ namespace LagComp
 	auto Clear() noexcept -> void
 	{
 		s_recordsByHandle.clear();
+	}
+
+	auto RemoveRecordsForHandle( uint32_t entityHandle ) noexcept -> void
+	{
+		if ( entityHandle != 0 )
+			s_recordsByHandle.erase( entityHandle );
 	}
 }

@@ -15,6 +15,7 @@ namespace ThirdPerson
 
 		bool  enabled = false;
 		bool  smoothCamera = false;
+		bool  noInterp = true;
 		int   fov = kFovDefault;
 		float distance = kDistanceDefault;
 		float smoothSpeed = kSmoothSpeedDefault;

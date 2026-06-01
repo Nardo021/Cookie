@@ -39,6 +39,6 @@ namespace MenuEffects
 	};
 
 	auto RenderWatermark() -> void;
-	auto RenderMenuBackground( ImVec2 size ) -> void;
+	auto RenderMenuBackground( ImVec2 size , const ImVec2* originOverride = nullptr ) -> void;
 
 } // namespace MenuEffects

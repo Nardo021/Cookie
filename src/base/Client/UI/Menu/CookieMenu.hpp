@@ -632,6 +632,9 @@ namespace CookieUI
                 if ( ThirdPerson::config.enabled )
                 {
                     ImGui::Checkbox("Smooth Camera", &ThirdPerson::config.smoothCamera);
+                    ImGui::Checkbox("No Interp (instant distance)", &ThirdPerson::config.noInterp);
+                    if ( ImGui::IsItemHovered() )
+                        ImGui::SetTooltip( "Smooth Camera on: skip bezier easing and use linear distance blend." );
                     if ( ThirdPerson::config.smoothCamera )
                     {
                         ImGui::SliderFloat( "Smooth Speed" , &ThirdPerson::config.smoothSpeed , 1.f , 20.f , "%.1f" );
@@ -710,6 +713,8 @@ namespace CookieUI
                 ImGui::Checkbox("Enemy Chams", &Chams::config.enemy);
                 ImGui::Checkbox("Local Chams", &Chams::config.local);
                 ImGui::Checkbox("Teammate Chams", &Chams::config.teammate);
+                ImGui::Checkbox("Hide Teammate Chams (vanilla draw)", &Chams::config.hideTeammateVanilla);
+                ImGui::Checkbox("Skip Occlude Pass (no Ignore Z draw)", &Chams::config.skipOccludePass);
                 ImGui::Checkbox("Weapon Chams", &Chams::config.weapon);
                 ImGui::Checkbox("Hands / ViewModel", &Chams::config.hands);
                 const char* chamsMaterials[] = { "Flat", "Glow", "White", "Default", "Illum" };
@@ -724,7 +729,9 @@ namespace CookieUI
                 ImGui::Text("Movement Advanced");
                 ImGui::Checkbox("Movement Fix", &Movement::config.movementFix);
                 ImGui::Checkbox("Movement Correction", &Movement::config.movementCorrection);
-                ImGui::Checkbox("Validate Angles", &Movement::config.validateAngles);
+                ImGui::Checkbox("Validate Angles (Anti-Untrusted)", &Movement::config.validateAngles);
+                if ( ImGui::IsItemHovered() )
+                    ImGui::SetTooltip( "Clamp pitch/yaw and sync move buttons to stay within trusted ranges." );
                 ImGui::Checkbox("Edge Bug", &Movement::config.edgeBug);
                 if ( Movement::config.edgeBug )
                 {
