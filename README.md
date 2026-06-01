@@ -62,6 +62,7 @@ BlackBoneLib.vcxproj    编译 BlackBone 静态库
 bin/                    最终可执行文件（Release / Debug）
 src/launcher/           注入 UI、injector、ImGui、BlackBone 链接
 src/base/               SDK、Hook、功能、菜单
+src/base/Client/Resources/  字体、SVG、内嵌资产（构建时复制到 OutDir）
 external/BlackBone/     BlackBone 源码（git clone）
 obj/                    dll 与编译中间文件
 sdk/                    cs2-dumper 偏移
@@ -70,9 +71,26 @@ patterns/               签名
 
 **入口链**：`Cookie.exe` → LoadLibrary → `CookieBootstrap` → `CCookieClient`
 
+功能与模块说明见 **[Features.md](./Features.md)**。
+
+## 资源资产
+
+构建时 `CookieDll` 会将 `src/base/Client/Resources/` 整目录复制到输出目录的 `Resources\`（PostBuild `xcopy`），供运行时加载字体与图标：
+
+| 类型 | 路径 | 用途 |
+|------|------|------|
+| 字体 | `CS2GunIcons.ttf`、`iconscs2.ttf`、`obs_icons.ttf` | ESP 武器图标 |
+| SVG | `icons/*.svg` | 参考图标集（73 个） |
+| 品牌 | `branding/cs2.png` / `.webp` | 水印 / 品牌图 |
+| 内嵌 | `Resources/embedded/` | FA 字体、game_icons、Bgs 等编译进 DLL 的 fallback |
+
+详细清单与集成点见 `src/base/Client/Resources/README.md`。
+
 ## 游戏更新后
 
 1. `sdk/offsets.hpp`、`sdk/buttons.hpp`
 2. `src/base/Client/Game/Offsets.hpp`
 3. `patterns/pattern.txt` → `src/base/Client/Game/Patterns.hpp`
 4. `src/base/CS2/SDK/Update/Offsets.hpp`、FunctionList 签名（若失效）
+5. `SpreadHooks` / `GetSpread` / `GetInaccuracy` 签名（NoSpread 零散布 detour）
+6. 验证 `Resources\` 是否随构建正常复制（字体缺失时走内嵌 fallback）

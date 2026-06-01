@@ -9,6 +9,7 @@ namespace SDK::VMT_Index
 	};
 	enum IVEngineClient2 : uint32_t
 	{
+		GetNetChannelInfo = 34 ,
 		GetScreenSize = 60 ,
 	};
 	enum CGameSceneNode : uint32_t

@@ -1,6 +1,10 @@
 #include "CSettingsJson.hpp"
 #include "DllLauncher.hpp"
 
+#include <Client/Settings/ConfigSchema.hpp>
+#include <Client/UI/Menu/MenuConfig.hpp>
+#include <Client/Utils/CNotify.hpp>
+
 #include <filesystem>
 #include <fstream>
 
@@ -33,7 +37,8 @@ auto CSettingsJson::LoadConfig( const std::string& JsonFile ) -> void
 
 	if ( !DocumentConfig.HasParseError() )
 	{
-
+		MenuConfig::ReadSettings( DocumentConfig );
+		GetNotify()->Push( N_TYPE_SUCCESS , ( "Config loaded: " + JsonFile ).c_str() );
 	}
 	else
 	{
@@ -59,18 +64,20 @@ auto CSettingsJson::SaveConfig( const std::string& JsonFile ) -> void
 
 	ConfigWriter.StartObject();
 	{
-		ConfigWriter.String( XorStr( "Settings" ) );
+		ConfigWriter.String( ConfigSchema::kVersionKey );
+		ConfigWriter.Int( MenuConfig::kSchemaVersion );
+
+		ConfigWriter.String( ConfigSchema::kSettingsKey );
 		{
 			ConfigWriter.StartObject();
-			{
-
-			}
+			MenuConfig::WriteSettings( ConfigWriter );
 			ConfigWriter.EndObject();
 		}
 	}
 	ConfigWriter.EndObject();
 	
 	ConfigFile.close();
+	GetNotify()->Push( N_TYPE_SUCCESS , ( "Config saved: " + JsonFile ).c_str() );
 }
 
 auto CSettingsJson::DeleteConfig( const std::string& JsonFile ) -> void

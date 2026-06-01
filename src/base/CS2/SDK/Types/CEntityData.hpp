@@ -243,6 +243,7 @@ public:
 	SCHEMA_OFFSET( "C_BaseEntity" , "m_fFlags" , m_fFlags , uint32 );
 	SCHEMA_OFFSET( "C_BaseEntity" , "m_vecAbsVelocity" , m_vecAbsVelocity , Vector3 );
 	SCHEMA_OFFSET( "C_BaseEntity" , "m_MoveType" , m_MoveType , MoveType_t );
+	SCHEMA_OFFSET( "C_BaseEntity" , "m_flWaterLevel" , m_flWaterLevel , float32 );
 	SCHEMA_OFFSET( "C_BaseEntity" , "m_hOwnerEntity" , m_hOwnerEntity , CHandle );
 	SCHEMA_OFFSET( "C_BaseEntity" , "m_nSubclassID" , m_nSubclassID , CUtlStringToken );
 };
@@ -294,6 +295,7 @@ class CBasePlayerController : public C_BaseEntity
 public:
 	SCHEMA_OFFSET( "CBasePlayerController" , "m_nTickBase" , m_nTickBase , uint32 );
 	SCHEMA_OFFSET( "CBasePlayerController" , "m_hPawn" , m_hPawn , CHandle ); // C_CSPlayerPawn,C_CSObserverPawn
+	SCHEMA_OFFSET( "CBasePlayerController" , "m_hPredictedPawn" , m_hPredictedPawn , CHandle );
 	SCHEMA_OFFSET( "CBasePlayerController" , "m_steamID" , m_steamID , uint64 );
 	SCHEMA_OFFSET( "CBasePlayerController" , "m_bIsLocalPlayerController" , m_bIsLocalPlayerController , bool );
 };
@@ -317,6 +319,7 @@ public:
 	SCHEMA_OFFSET( "CCSPlayerController" , "m_pInventoryServices" , m_pInventoryServices , CCSPlayerController_InventoryServices* );
 	SCHEMA_OFFSET( "CCSPlayerController" , "m_sSanitizedPlayerName" , m_sSanitizedPlayerName , const char* );
 	SCHEMA_OFFSET( "CCSPlayerController" , "m_bPawnIsAlive" , m_bPawnIsAlive , bool );
+	SCHEMA_OFFSET( "CCSPlayerController" , "m_iPing" , m_iPing , uint32 );
 };
 
 class CPlayer_WeaponServices : public CPlayerPawnComponent
@@ -438,6 +441,7 @@ public:
 	SCHEMA_OFFSET( "C_CSPlayerPawnBase" , "m_flFlashDuration" , m_flFlashDuration , float32 );
 	SCHEMA_OFFSET( "C_CSPlayerPawnBase" , "m_flLastSpawnTimeIndex" , m_flLastSpawnTimeIndex , GameTime_t );
 	SCHEMA_OFFSET( "C_CSPlayerPawnBase" , "m_bGunGameImmunity" , m_bGunGameImmunity , bool );
+	SCHEMA_OFFSET( "C_CSPlayerPawnBase" , "m_bInLanding" , m_bInLanding , bool );
 	SCHEMA_OFFSET( "C_CSPlayerPawnBase" , "m_angEyeAngles" , m_angEyeAngles , QAngle );
 };
 
@@ -456,6 +460,7 @@ public:
 	SCHEMA_OFFSET( "C_CSPlayerPawn" , "m_bIsScoped" , m_bIsScoped , bool );
 	SCHEMA_OFFSET( "C_CSPlayerPawn" , "m_bWaitForNoAttack" , m_bWaitForNoAttack , bool );
 	SCHEMA_OFFSET( "C_CSPlayerPawn" , "m_bNeedToReApplyGloves" , m_bNeedToReApplyGloves , bool );
+	SCHEMA_OFFSET( "C_CSPlayerPawn" , "m_bInBombZone" , m_bInBombZone , bool );
 	SCHEMA_OFFSET( "C_CSPlayerPawn" , "m_entitySpottedState" , m_entitySpottedState , EntitySpottedState_t );
 	SCHEMA_OFFSET( "C_CSPlayerPawn" , "m_EconGloves" , m_EconGloves , C_EconItemView );
 	SCHEMA_OFFSET( "C_CSPlayerPawn" , "m_hHudModelArms" , m_hHudModelArms , CHandle ); // C_CS2HudModelArms
@@ -470,6 +475,12 @@ public:
 	inline auto IsAlive() -> bool
 	{
 		return m_iHealth() > 0;
+	}
+
+	inline auto IsValidMoveType() -> bool
+	{
+		const auto moveType = m_MoveType();
+		return moveType != MOVETYPE_NOCLIP && moveType != MOVETYPE_LADDER && moveType != MOVETYPE_OBSERVER;
 	}
 
 	inline auto HasArmor( int HitGroup ) -> bool
@@ -556,6 +567,8 @@ public:
 class C_BaseCSGrenade : public C_CSWeaponBase
 {
 public:
+	SCHEMA_OFFSET( "C_BaseCSGrenade" , "m_bPinPulled" , m_bPinPulled , bool );
+	SCHEMA_OFFSET( "C_BaseCSGrenade" , "m_fThrowTime" , m_fThrowTime , GameTime_t );
 };
 
 class C_BaseCSGrenadeProjectile : public C_BaseGrenade

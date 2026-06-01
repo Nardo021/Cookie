@@ -12,6 +12,11 @@
 
 #include <Common/MemoryEngine.hpp>
 
+#include <CS2/SDK/GCSDK/GCSDKTypes/ESOCacheEvent.hpp>
+#include <CS2/SDK/GCSDK/GCSDKTypes/SOID_t.hpp>
+
+#include <Common/MemoryEngine.hpp>
+
 auto CCSPlayerInventory::Get() ->CCSPlayerInventory*
 {
 	auto* pCCSInventoryManager = CCSInventoryManager::Get();
@@ -31,6 +36,21 @@ auto CCSPlayerInventory::Get() ->CCSPlayerInventory*
 	}
 
 	return pCCSPlayerInventory;
+}
+
+auto CPlayerInventory::SOCreated( GCSDK::SOID_t owner , CSharedObject* object , GCSDK::ESOCacheEvent event ) -> void
+{
+	vget<void( __thiscall* )( CPlayerInventory* , GCSDK::SOID_t , CSharedObject* , GCSDK::ESOCacheEvent )>( this , 0 )( this , owner , object , event );
+}
+
+auto CPlayerInventory::SOUpdated( GCSDK::SOID_t owner , CSharedObject* object , GCSDK::ESOCacheEvent event ) -> void
+{
+	vget<void( __thiscall* )( CPlayerInventory* , GCSDK::SOID_t , CSharedObject* , GCSDK::ESOCacheEvent )>( this , 1 )( this , owner , object , event );
+}
+
+auto CPlayerInventory::SODestroyed( GCSDK::SOID_t owner , CSharedObject* object , GCSDK::ESOCacheEvent event ) -> void
+{
+	vget<void( __thiscall* )( CPlayerInventory* , GCSDK::SOID_t , CSharedObject* , GCSDK::ESOCacheEvent )>( this , 2 )( this , owner , object , event );
 }
 
 auto CCSPlayerInventory::AddEconItem( CEconItem* pItem ) -> bool

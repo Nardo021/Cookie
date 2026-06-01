@@ -17,6 +17,22 @@ namespace IVEngineToClient_Search
 	inline CBasePattern GetLevelNameShortFn = { VmpStr( "IVEngineToClient::GetLevelNameShort" ) , VmpStr( "48 83 EC 28 E8 ? ? ? ? 84 C0 74 0C 48 8D ? ? ? ? ? 48 83 C4 28 C3 48 8B ? ? ? ? ? 48 85 C9 74 23 83 B9 30 02 00 00 02 7C 1A 48 8B 89 18 02 00 00 48 8D ? ? ? ? ? 48 85 C9 48 0F 45 C1 48 83 C4 28 C3 48 8D ? ? ? ? ? 48 83 C4 28 C3" ) , ENGINE2_DLL };
 }
 
+enum class NetFlow : int
+{
+	Outgoing = 0 ,
+	Incoming = 1 ,
+};
+
+class INetChannelInfo
+{
+public:
+	auto GetLatency( NetFlow flow ) -> float
+	{
+		VirtualFn( float )( INetChannelInfo* , int );
+		return vget< Fn >( this , 10 )( this , static_cast<int>( flow ) );
+	}
+};
+
 class IVEngineToClient
 {
 public:
@@ -27,6 +43,12 @@ public:
 	DECLARATE_CS2_FUNCTION( const char* , GetLevelNameShort , ( ) , IVEngineToClient , ( IVEngineToClient* ) , ( this ) );
 
 public:
+	auto GetNetChannelInfo( int splitScreenSlot = 0 ) -> INetChannelInfo*
+	{
+		VirtualFn( INetChannelInfo* )( IVEngineToClient* , int );
+		return vget< Fn >( this , SDK::VMT_Index::IVEngineClient2::GetNetChannelInfo )( this , splitScreenSlot );
+	}
+
 	auto GetScreenSize( int& width , int& height ) -> void
 	{
 		VirtualFn( void )( IVEngineToClient* , int& , int& );

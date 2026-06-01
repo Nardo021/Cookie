@@ -16,7 +16,10 @@
 class CGlobalVarsBase
 {
 public:
-	CUSTOM_OFFSET_FIELD( float , m_flCurrentTime , 0x30 );
-	CUSTOM_OFFSET_FIELD( float , m_flIntervalPerSubTick , 0x34 );
+	CUSTOM_OFFSET_FIELD( float , m_flIntervalPerSubTick , 0x30 );
+	CUSTOM_OFFSET_FIELD( float , m_flCurrentTime , 0x34 );
+	CUSTOM_OFFSET_FIELD( float , m_flCurrentTime2 , 0x38 );
+	CUSTOM_OFFSET_FIELD( float , m_flFrameTime , 0x3C );
+	CUSTOM_OFFSET_FIELD( float , m_flFrameTime2 , 0x40 );
 	CUSTOM_OFFSET_FIELD( int32_t , m_nTickCount , 0x48 );
 };

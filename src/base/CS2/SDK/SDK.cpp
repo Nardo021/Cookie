@@ -14,6 +14,7 @@
 #include <CS2/SDK/Interface/CMaterialSystem2.hpp>
 #include <CS2/SDK/Interface/IEngineCvar.hpp>
 #include <CS2/SDK/Interface/CInputSystem.hpp>
+#include <CS2/SDK/Interface/INetworkClientService.hpp>
 
 #define INCLUDE_CS2_SEARCH_FUNCTION(Interface,FuncName)\
 if ( !##Interface##_Search::##FuncName##Fn.Search() )\
@@ -31,6 +32,7 @@ namespace SDK
 	CMaterialSystem2* Interfaces::g_pMaterialSystem2 = nullptr;
 	IEngineCVar* Interfaces::g_pEngineCvar = nullptr;
 	CInputSystem* Interfaces::g_pInputSystem = nullptr;
+	INetworkClientService* Interfaces::g_pNetworkClientService = nullptr;
 
 	CGlobalVarsBase** Pointers::g_ppCGlobalVarsBase = nullptr;
 	IVPhysics2World** Pointers::g_ppIVPhysics2World = nullptr;
@@ -237,6 +239,19 @@ GetGameEntitySystemPointer:;
 		}
 
 		return g_pInputSystem;
+	}
+
+	INetworkClientService* Interfaces::NetworkClientService()
+	{
+		if ( !g_pNetworkClientService )
+		{
+			CreateInterfaceFn pfnFactory = CaptureFactory( ENGINE2_DLL );
+			g_pNetworkClientService = CaptureInterface<INetworkClientService>(
+				pfnFactory ,
+				XorStr( NETWORK_CLIENT_SERVICE_INTERFACE_VERSION ) );
+		}
+
+		return g_pNetworkClientService;
 	}
 
 	auto Pointers::GlobalVarsBase() -> CGlobalVarsBase*

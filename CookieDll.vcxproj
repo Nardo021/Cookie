@@ -58,7 +58,7 @@
   <PropertyGroup>
     <BaseRoot>$(ProjectDir)src\base</BaseRoot>
     <BaseInclude>$(BaseRoot);$(BaseRoot)\Common\Include</BaseInclude>
-    <CookieInclude>$(BaseRoot)\Client\Features\Cookie;$(BaseRoot)\Client\Game;$(BaseRoot)\Client\UI</CookieInclude>
+    <CookieInclude>$(BaseRoot)\Client\Features\Combat\Rage;$(BaseRoot)\Client\Features\Combat\Legit;$(BaseRoot)\Client\Features\Combat;$(BaseRoot)\Client\Features\Visuals;$(BaseRoot)\Client\Features\Movement;$(BaseRoot)\Client\Features\Inventory;$(BaseRoot)\Client\Features\Misc;$(BaseRoot)\Client\Features\Events;$(BaseRoot)\Client\Features\Init;$(BaseRoot)\Client\UI\Menu;$(BaseRoot)\Client\Game;$(BaseRoot)\Client\Utils;$(BaseRoot)\Client\Core;$(BaseRoot)\Client\Fonts;$(BaseRoot)\Client\Resources\embedded</CookieInclude>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -81,6 +81,9 @@
       <AdditionalLibraryDirectories>$(ProjectDir)vcpkg_installed\x64-windows-static\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>d3d11.lib;dxgi.lib;d3dcompiler.lib;dwmapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /E /I /Y "$(ProjectDir)src\base\Client\Resources" "$(OutDir)Resources\"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -108,6 +111,9 @@
       <AdditionalLibraryDirectories>$(ProjectDir)vcpkg_installed\x64-windows-static\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>d3d11.lib;dxgi.lib;d3dcompiler.lib;dwmapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /E /I /Y "$(ProjectDir)src\base\Client\Resources" "$(OutDir)Resources\"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="BaseSources.props" />
   <ItemGroup>
@@ -117,21 +123,47 @@
     <ClCompile Include="minhook\src\hde\hde64.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\base\Client\Features\Cookie\Aimbot.hpp" />
-    <ClInclude Include="src\base\Client\Features\Cookie\Bhop.hpp" />
-    <ClInclude Include="src\base\Client\Features\Cookie\Esp.hpp" />
-    <ClInclude Include="src\base\Client\Features\Cookie\PaintKits.hpp" />
-    <ClInclude Include="src\base\Client\Features\Cookie\SkinChanger.hpp" />
-    <ClInclude Include="src\base\Client\Features\Cookie\TextureOverride.hpp" />
-    <ClInclude Include="src\base\Client\Features\Cookie\NoSpread.hpp" />
-    <ClInclude Include="src\base\Client\Features\Cookie\Tracers.hpp" />
-    <ClInclude Include="src\base\Client\Features\Cookie\Triggerbot.hpp" />
+    <ClInclude Include="src\base\Client\Features\Init\FeatureInit.hpp" />
+    <ClInclude Include="src\base\Client\Features\Combat\Legit\Aimbot.hpp" />
+    <ClInclude Include="src\base\Client\Features\Combat\AutoWall.hpp" />
+    <ClInclude Include="src\base\Client\Features\Combat\AutoWallTrace.hpp" />
+    <ClInclude Include="src\base\Client\Features\Movement\Bhop.hpp" />
+    <ClInclude Include="src\base\Client\Features\Visuals\Chams.hpp" />
+    <ClInclude Include="src\base\Client\Features\Combat\EnginePred.hpp" />
+    <ClInclude Include="src\base\Client\Features\Visuals\EspOverlay.hpp" />
+    <ClInclude Include="src\base\Client\Features\Combat\Legit\LegitBot.hpp" />
+    <ClInclude Include="src\base\Client\UI\Menu\MenuEffects.hpp" />
+    <ClInclude Include="src\base\Client\Features\Movement\Movement.hpp" />
+    <ClInclude Include="src\base\Client\Features\Combat\Rage\Ragebot.hpp" />
+    <ClInclude Include="src\base\Client\Features\Inventory\SkinChangerSetModel.hpp" />
+    <ClInclude Include="src\base\Client\Fonts\EmbeddedFonts.hpp" />
+    <ClInclude Include="src\base\Client\Features\Inventory\SkinChangerInventory.hpp" />
+    <ClInclude Include="src\base\Client\Features\Inventory\WeaponIcons.hpp" />
+    <ClInclude Include="src\base\Client\Features\Inventory\Gloves.hpp" />
+    <ClInclude Include="src\base\Client\Features\Combat\LagComp.hpp" />
+    <ClInclude Include="src\base\Client\Features\Inventory\PaintKits.hpp" />
+    <ClInclude Include="src\base\Client\Features\Inventory\SkinChanger.hpp" />
+    <ClInclude Include="src\base\Client\Features\Inventory\TextureOverride.hpp" />
+    <ClInclude Include="src\base\Client\Features\Combat\NoSpread.hpp" />
+    <ClInclude Include="src\base\Client\Features\Visuals\Tracers.hpp" />
+    <ClInclude Include="src\base\Client\Features\Combat\Legit\Triggerbot.hpp" />
     <ClInclude Include="src\base\Client\Game\Game.hpp" />
     <ClInclude Include="src\base\Client\Game\Offsets.hpp" />
     <ClInclude Include="src\base\Client\Game\Patterns.hpp" />
     <ClInclude Include="src\base\Client\Game\Trace.hpp" />
-    <ClInclude Include="src\base\Client\UI\CookieIcon.hpp" />
-    <ClInclude Include="src\base\Client\UI\CookieMenu.hpp" />
+    <ClInclude Include="src\base\Client\UI\Menu\CookieIcon.hpp" />
+    <ClInclude Include="src\base\Client\UI\Menu\CookieMenu.hpp" />
+    <ClInclude Include="src\base\Client\Core\CConVars.hpp" />
+    <ClInclude Include="src\base\Client\Core\CCookieConfig.hpp" />
+    <ClInclude Include="src\base\Client\Core\CEasing.hpp" />
+    <ClInclude Include="src\base\Client\Core\CLog.hpp" />
+    <ClInclude Include="src\base\Client\Core\CSigScan.hpp" />
+    <ClInclude Include="src\base\Client\Core\CSchemaV2.hpp" />
+    <ClInclude Include="src\base\Client\Core\CShadowVMT.hpp" />
+    <ClInclude Include="src\base\Client\Core\CSpoofCall.hpp" />
+    <ClInclude Include="src\base\Client\Utils\CDraw.hpp" />
+    <ClInclude Include="src\base\Client\Utils\CInputSystem.hpp" />
+    <ClInclude Include="src\base\Client\Utils\CNotify.hpp" />
     <ClInclude Include="sdk\buttons.hpp" />
     <ClInclude Include="sdk\offsets.hpp" />
   </ItemGroup>

@@ -15,7 +15,12 @@
 #include <CS2/Hook/Hook_IsRelativeMouseMode.hpp>
 
 #include <Client/CCookieClient.hpp>
-#include <Client/Settings/Settings.hpp>
+#include <Client/Features/Inventory/WeaponIcons.hpp>
+#include <Client/Fonts/EmbeddedFonts.hpp>
+#include <Client/UI/Menu/MenuAssets.hpp>
+#include <Client/UI/Menu/MenuConfig.hpp>
+#include <Client/UI/Menu/MenuSettings.hpp>
+#include <Client/Utils/CInputSystem.hpp>
 
 static CCookieGUI g_CookieGUI{};
 
@@ -61,6 +66,7 @@ auto CCookieGUI::OnInit( IDXGISwapChain* pSwapChain ) -> void
 
 	InitFont();
 	UpdateStyle();
+	MenuAssets::Init( m_pDevice );
 
 	m_WndProc_o = (WNDPROC)SetWindowLongPtrA( m_hCS2Window , GWLP_WNDPROC , (LONG_PTR)GUI_WndProc );
 
@@ -72,6 +78,8 @@ auto CCookieGUI::OnDestroy() -> void
 	SetWindowLongPtrA( m_hCS2Window , GWLP_WNDPROC , (LONG_PTR)GetCookieGUI()->m_WndProc_o );
 
 	m_bVisible = false;
+
+	MenuAssets::Shutdown();
 
 	if ( m_pFreeType_Font )
 	{
@@ -108,6 +116,10 @@ auto CCookieGUI::InitFont() -> void
 	}
 
 	CoTaskMemFree( szWindowsFontPath );
+
+	WeaponIcons::Init();
+	EmbeddedFonts::InitFontAwesome( 14.f );
+	EmbeddedFonts::InitLexendBold( 15.f );
 }
 
 void CCookieGUI::OnPresent( IDXGISwapChain* pSwapChain )
@@ -175,6 +187,7 @@ void CCookieGUI::OnRender( IDXGISwapChain* pSwapChain )
 		if ( m_needRecreateDeviceObjects )
 		{
 			ImGui_ImplDX11_CreateDeviceObjects();
+			MenuAssets::Init( m_pDevice );
 			m_needRecreateDeviceObjects = false;
 		}
 
@@ -235,7 +248,9 @@ LRESULT WINAPI CCookieGUI::GUI_WndProc( HWND hwnd , UINT uMsg , WPARAM wParam , 
 
 	if ( GetCookieGUI()->m_bInit )
 	{
-		if ( uMsg == WM_KEYUP && wParam == VK_INSERT )
+		GetInputSystem()->OnWndProc( hwnd , uMsg , wParam , lParam );
+
+		if ( uMsg == WM_KEYUP && wParam == static_cast<WPARAM>( MenuSettings::menuToggleKey ) )
 			GetCookieGUI()->OnReopenGUI();
 
 		if ( GetCookieGUI()->IsVisible() && ImGui_ImplWin32_WndProcHandler( hwnd , uMsg , wParam , lParam ) == 0 )

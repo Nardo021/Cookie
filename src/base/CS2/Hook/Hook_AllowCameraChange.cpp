@@ -2,8 +2,8 @@
 
 #include <Windows.h>
 
-#include <Client/Features/Cookie/AntiAim.hpp>
-#include <Client/Features/Cookie/ThirdPerson.hpp>
+#include <Client/Features/Misc/AntiAim.hpp>
+#include <Client/Features/Visuals/ThirdPerson.hpp>
 #include <Client/Game/Game.hpp>
 #include <Client/Game/Offsets.hpp>
 #include <CS2/SDK/FunctionListSDK.hpp>

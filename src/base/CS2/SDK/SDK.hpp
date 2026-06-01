@@ -12,6 +12,7 @@ class CSoundOpSystem;
 class IBaseFileSystem;
 class CMaterialSystem2;
 class CInputSystem;
+class INetworkClientService;
 
 class CGlobalVarsBase;
 class IVPhysics2World;
@@ -53,6 +54,7 @@ namespace SDK
 		static CMaterialSystem2* MaterialSystem2();
 		static IEngineCVar* EngineCvar();
 		static CInputSystem* InputSystem();
+		static INetworkClientService* NetworkClientService();
 
 	private:
 		static IVEngineToClient* g_pEngineToClient;
@@ -65,6 +67,7 @@ namespace SDK
 		static CMaterialSystem2* g_pMaterialSystem2;
 		static IEngineCVar* g_pEngineCvar;
 		static CInputSystem* g_pInputSystem;
+		static INetworkClientService* g_pNetworkClientService;
 	};
 
 	class Pointers

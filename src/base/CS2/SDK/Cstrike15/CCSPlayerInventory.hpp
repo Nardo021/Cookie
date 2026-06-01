@@ -11,9 +11,18 @@ class CGCClientSharedObjectCache;
 class CGCClientSharedObjectTypeCache;
 class CEconItem;
 
+namespace GCSDK
+{
+	struct SOID_t;
+	enum ESOCacheEvent : int;
+}
+
 class CPlayerInventory : public ISharedObjectListener
 {
 public:
+	auto SOCreated( GCSDK::SOID_t owner , CSharedObject* object , GCSDK::ESOCacheEvent event ) -> void;
+	auto SOUpdated( GCSDK::SOID_t owner , CSharedObject* object , GCSDK::ESOCacheEvent event ) -> void;
+	auto SODestroyed( GCSDK::SOID_t owner , CSharedObject* object , GCSDK::ESOCacheEvent event ) -> void;
 };
 
 class CCSPlayerInventory : public CPlayerInventory

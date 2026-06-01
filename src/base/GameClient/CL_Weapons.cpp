@@ -84,6 +84,24 @@ auto CL_Weapons::GetLocalWeaponDefinitionIndex() -> int
 	return -1;
 }
 
+auto CL_Weapons::IsLocalThrowingGrenade() -> bool
+{
+	auto* controller = GetCL_Players()->GetLocalPlayerController();
+	auto* weapon = GetLocalActiveWeapon();
+	if ( !controller || !weapon )
+		return false;
+
+	const auto* vdata = GetLocalWeaponVData();
+	if ( !vdata || vdata->m_WeaponType().m_Type != CSWeaponType_t::WEAPONTYPE_GRENADE )
+		return false;
+
+	const auto* grenade = reinterpret_cast<C_BaseCSGrenade*>( weapon );
+	const float serverTime = static_cast<float>( controller->m_nTickBase() ) * ( 1.f / 64.f );
+	const float throwTime = grenade->m_fThrowTime().m_Value;
+
+	return !grenade->m_bPinPulled() && throwTime > 0.f && throwTime < serverTime;
+}
+
 auto GetCL_Weapons() -> CL_Weapons*
 {
 	return &g_CL_Weapons;

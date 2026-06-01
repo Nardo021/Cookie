@@ -14,6 +14,7 @@ public:
 	auto GetLocalWeaponVData() -> CCSWeaponBaseVData*;
 	auto GetLocalWeaponType() -> CSWeaponType_t;
 	auto GetLocalWeaponDefinitionIndex() -> int;
+	auto IsLocalThrowingGrenade() -> bool;
 };
 
 auto GetCL_Weapons() -> CL_Weapons*;

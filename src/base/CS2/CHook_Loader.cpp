@@ -3,6 +3,8 @@
 #include <Common/MemoryEngine.hpp>
 #include <MinHook/MinHook.h>
 
+#include <cstring>
+
 #include <CS2/SDK/SDK.hpp>
 
 #include <CS2/Hook/Hook_SOCacheSubscribed.hpp>
@@ -27,6 +29,14 @@
 #include <CS2/Hook/Hook_IsLoadoutAllowed.hpp>
 #include <CS2/Hook/Hook_EquipItemInLoadout.hpp>
 #include <CS2/Hook/Hook_DrawGlow.hpp>
+#include <CS2/Hook/Hook_DrawObject.hpp>
+#include <CS2/Hook/Hook_GetRenderFov.hpp>
+#include <CS2/Hook/Hook_LevelInit.hpp>
+#include <CS2/Hook/Hook_LevelShutdown.hpp>
+#include <CS2/Hook/Hook_PredictionSimulation.hpp>
+#include <CS2/Hook/Hook_SetModel.hpp>
+#include <CS2/Hook/Hook_HandleGameEvents.hpp>
+#include <CS2/Hook/Hook_InputParser.hpp>
 
 static CHook_Loader g_CHook_Loader{};
 
@@ -70,7 +80,7 @@ auto CHook_Loader::InstallSecondHook() -> bool
 		{ { XorStr( "Hook::OnAddEntity" ) , XorStr( Patterns::sig_OnAddEntity ) , CLIENT_DLL } , &Hook_OnAddEntity , reinterpret_cast<LPVOID*>( &OnAddEntity_o ) },
 		{ { XorStr( "Hook::OnRemoveEntity" ) , XorStr( Patterns::sig_OnRemoveEntity ) , CLIENT_DLL } , &Hook_OnRemoveEntity , reinterpret_cast<LPVOID*>( &OnRemoveEntity_o ) },
 		{ { XorStr( "Hook::FrameStageNotify" ) , XorStr( Patterns::sig_FrameStageNotify ) , CLIENT_DLL } , &Hook_FrameStageNotify , reinterpret_cast<LPVOID*>( &FrameStageNotify_o ) },
-		{ { XorStr( "Hook::GetMatricesForView" ) , XorStr( "48 8B C4 48 89 68 ? 48 89 70 ? 57 48 81 EC ? ? ? ? 0F 29 70 ? 49 8B F1" ) , CLIENT_DLL } , &Hook_GetMatricesForView , reinterpret_cast<LPVOID*>( &GetMatricesForView_o ) },
+		{ { XorStr( "Hook::GetMatricesForView" ) , XorStr( "48 8B C4 48 89 68 ? 48 89 70 ? 57 48 81 EC ? ? ? ? 0F 29 70 ? 49 8B F1" ) , CLIENT_DLL } , &Hook_GetMatricesForView , reinterpret_cast<LPVOID*>( &GetMatricesForView_o ) , true , true },
 		{ { XorStr( "Hook::OverrideView" ) , XorStr( Patterns::sig_OverrideView ) , CLIENT_DLL } , &Hook_OverrideView , reinterpret_cast<LPVOID*>( &OverrideView_o ) },
 		{ { XorStr( "Hook::CreateMove" ) , XorStr( Patterns::sig_CreateMoveHook ) , CLIENT_DLL } , &Hook_CreateMove , reinterpret_cast<LPVOID*>( &CreateMove_o ) },
 		{ { XorStr( "Hook::SerializePartialToArray" ) , XorStr( Patterns::sig_SerializePartialToArray ) , CLIENT_DLL } , &Hook_MessageLite_SerializePartialToArray , reinterpret_cast<LPVOID*>( &ProtobufSerializePartialToArrayOriginal ) },
@@ -83,6 +93,15 @@ auto CHook_Loader::InstallSecondHook() -> bool
 		{ {XorStr("Hook::IsLoadoutAllowed") , XorStr("48 89 5C 24 ? 48 89 6C 24 ? 48 89 74 24 ? 57 48 83 EC ? 48 8B E9 48 8B 0D ? ? ? ? ? ? ? FF 50") , CLIENT_DLL } ,&Hook_IsLoadoutAllowed , reinterpret_cast<LPVOID*>(&IsLoadoutAllowed_o) , true , true } ,
 		{ { XorStr( "Hook::EquipItemInLoadout" ) , XorStr( Patterns::sig_EquipItemInLoadout ) , CLIENT_DLL } ,& Hook_EquipItemInLoadout , reinterpret_cast<LPVOID*>( &EquipItemInLoadout_o ) },
 		{ { XorStr( "Hook::DrawGlow" ) , XorStr( "40 53 48 83 EC 20 48 8B 54" ) , CLIENT_DLL } , &Hook_DrawGlow , reinterpret_cast<LPVOID*>( &DrawGlow_o ) },
+		{ { XorStr( "Hook::DrawObject" ) , XorStr( Patterns::sig_DrawObject ) , SCENESYSTEM_DLL } , &Hook_DrawObject , reinterpret_cast<LPVOID*>( &DrawObject_o ) , true , true },
+		{ { XorStr( "Hook::SetModel" ) , XorStr( Patterns::sig_SetModel ) , CLIENT_DLL } , &Hook_SetModel , reinterpret_cast<LPVOID*>( &SetModel_o ) , true , true },
+		{ { XorStr( "Hook::LevelInit" ) , XorStr( Patterns::sig_LevelInitHook ) , CLIENT_DLL } , &Hook_LevelInit , reinterpret_cast<LPVOID*>( &LevelInit_o ) , true , true },
+		{ { XorStr( "Hook::LevelShutdown" ) , XorStr( Patterns::sig_LevelShutdown ) , CLIENT_DLL } , &Hook_LevelShutdown , reinterpret_cast<LPVOID*>( &LevelShutdown_o ) , true , true },
+		{ { XorStr( "Hook::GetRenderFov" ) , XorStr( Patterns::sig_GetRenderFov ) , CLIENT_DLL } , &Hook_GetRenderFov , reinterpret_cast<LPVOID*>( &GetRenderFov_o ) , true , true },
+		{ { XorStr( "Hook::SetViewModelFov" ) , XorStr( Patterns::sig_SetViewModelFov ) , CLIENT_DLL } , &Hook_SetViewModelFov , reinterpret_cast<LPVOID*>( &SetViewModelFov_o ) , true , true },
+		{ { XorStr( "Hook::PredictionSimulation" ) , XorStr( Patterns::sig_PredictionSimulation ) , CLIENT_DLL } , &Hook_PredictionSimulation , reinterpret_cast<LPVOID*>( &PredictionSimulation_o ) , true , true },
+		{ { XorStr( "Hook::InputParser" ) , XorStr( Patterns::sig_InputParser ) , CLIENT_DLL } , &Hook_InputParser , reinterpret_cast<LPVOID*>( &InputParser_o ) , true , true },
+		{ { XorStr( "Hook::HandleGameEvents" ) , XorStr( Patterns::sig_HandleGameEvents ) , CLIENT_DLL } , &Hook_HandleGameEvents , reinterpret_cast<LPVOID*>( &HandleGameEvents_o ) , true , true },
 	};
 
 	return InstallHooks();
@@ -97,13 +116,36 @@ auto CHook_Loader::InstallHooks() -> bool
 
 		if ( !Hook.m_Pattern.Search( Hook.m_bSkipError ) )
 		{
-			if ( !Hook.m_bSkipError )
+			if ( Hook.m_bSkipIfNotFound )
+			{
+				const char* const patternName = Hook.m_Pattern.GetPatternName();
+				const bool isDrawObjectHook =
+					patternName && strcmp( patternName , "Hook::DrawObject" ) == 0;
+
+				if ( isDrawObjectHook )
+				{
+					DEV_LOG(
+						"[warn] Hook skipped (signature not found): '%s' in %s — Chams disabled; other features unaffected\n" ,
+						patternName ,
+						Hook.m_Pattern.GetDllName() );
+				}
+				else
+				{
+					DEV_LOG(
+						"[warn] Hook skipped (signature not found): '%s' in %s\n" ,
+						patternName ,
+						Hook.m_Pattern.GetDllName() );
+				}
+			}
+			else if ( !Hook.m_bSkipError )
+			{
 				DEV_LOG( "[error] Hook #1 -> '%s'\n" , Hook.m_Pattern.GetPatternName() );
+			}
 
 			if ( !Hook.m_bSkipIfNotFound )
 				return false;
-			else
-				continue;
+
+			continue;
 		}
 
 		auto Status = MH_CreateHook( Hook.m_Pattern.GetFunction() , Hook.m_pDetour , Hook.m_pOriginal );

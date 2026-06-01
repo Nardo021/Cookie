@@ -6,6 +6,7 @@
 #include <CS2/SDK/Update/CUserCmd.hpp>
 
 #include <Client/CCookieClient.hpp>
+#include <CS2/Hook/Hook_InputParser.hpp>
 
 #include <GameClient/CL_Players.hpp>
 #include <GameClient/CL_Bypass.hpp>
@@ -47,7 +48,9 @@ auto Hook_CreateMove( CCSGOInput* pCCSGOInput , uint32_t split_screen_index , bo
 		return Result;
 
 	GetCL_Bypass()->PreClientCreateMove( pUserCmd );
+	g_inputParserCmd = pUserCmd;
 	GetCookieClient()->OnCreateMove( pCCSGOInput , split_screen_index , pUserCmd );
+	g_inputParserCmd = nullptr;
 	GetCL_Bypass()->PostClientCreateMove( pCCSGOInput , pUserCmd );
 
 	return Result;

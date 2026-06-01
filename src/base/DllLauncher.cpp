@@ -11,6 +11,7 @@
 #include <CS2/SDK/CFunctionList.hpp>
 
 #include <Client/CCookieClient.hpp>
+#include <Client/Features/Init/FeatureInit.hpp>
 
 static CDllLauncher g_CDllLauncher{};
 
@@ -137,6 +138,8 @@ auto WINAPI CDllLauncher::StartCheatTheard( LPVOID lpThreadParameter ) -> DWORD
 		DEV_LOG( "[error] Hook_Loader::InstallSecondHook\n" );
 		return 0;
 	}
+
+	FeatureInit::VerifyHooks();
 
 	DEV_LOG( "[+] Cookie initialized\n" );
 

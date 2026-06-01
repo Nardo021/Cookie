@@ -19,7 +19,11 @@ namespace Patterns
     constexpr const char* sig_GetChatObject = "48 8B 05 ? ? ? ? C3 ? ? ? ? ? ? ? ? 48 8B 05 ? ? ? ? 48 8D 0D";
     constexpr const char* sig_SendChatMessage = "4C 89 44 24 ? 4C 89 4C 24 ? 53 B8";
     constexpr const char* sig_RegenerateWeaponSkins = "48 83 EC ? E8 ? ? ? ? 48 85 C0 0F 84 ? ? ? ? 48 8B 10";
-    constexpr const char* sig_LevelInit = "40 55 56 41 56 48 8D 6C 24 ? 48 81 EC ? ? ? ? 48 8B 0D";
+    constexpr const char* sig_SetModel = "48 89 5C 24 10 48 89 7C 24 20 55 48 8B EC 48 83 EC 50";
+    constexpr const char* sig_GetRenderFov = "40 53 48 81 EC 80 00 00 00 48 8B D9 E8 ?? ?? ?? ?? 48 85";
+    constexpr const char* sig_SetViewModelFov = "40 53 48 83 EC 30 33 C9 E8 ? ? ? ? 48 8B D8 48 85 C0 0F 84 ? ? ? ? 48 8B 00 48 8B CB FF 90 ? ? ? ? 84 C0 0F 84 ? ? ? ? 48 8B CB";
+    constexpr const char* sig_PredictionSimulation = "48 8B C4 4C 89 40 18 48 89 48 08 55 53 56 57 48";
+    constexpr const char* sig_LevelInitHook = "48 89 5C 24 ? 56 48 83 EC ? 48 8B 0D ? ? ? ? 48 8B F2";
     constexpr const char* sig_LevelShutdown = "48 83 EC ? 48 8B 0D ? ? ? ? 48 8D 15 ? ? ? ? 45 33 C9 45 33 C0 ? ? ? FF 50 ? 48 85 C0 74 ? 48 8B 0D ? ? ? ? 48 8B D0 ? ? ? 41 FF 50 ? 48 83 C4";
     constexpr const char* sig_FlashOverlay = "85 D2 0F 88 ? ? ? ? 48 89 4C 24 ? 55 56";
     constexpr const char* sig_TraceShape = "48 89 5C 24 ? 48 89 4C 24 ? 55 57";
@@ -87,6 +91,8 @@ namespace Patterns
     constexpr const char* sig_ThirdPersonBypassAlt = "75 15 44 88 BC 3E ? ? ? ? 44 89 BC 3E";
     constexpr const char* sig_CreateMoveHook = "85 D2 0F 85 ? ? ? ? 48 8B C4 44 88 40 18";
     constexpr const char* sig_SerializePartialToArray = "48 89 5C 24 ? 55 56 57 48 81 EC ? ? ? ? 48 8B 05 ? ? ? ? 48 33 C4 48 89 84 24 ? ? ? ? 49 63 F0";
+    constexpr const char* sig_InputParser = "48 8B C4 4C 89 48 20 55 56 41 56 48 8D 68 B1 48 81 EC D0 00 00 00";
+    constexpr const char* sig_HandleGameEvents = "40 55 53 41 55 41 57 48 8D AC 24 ? ? ? ? 48 81 EC ? ? ? ? 48 8B 02";
 
     // materialsystem2.dll
     constexpr const char* sig_CreateMaterial = "48 89 5C 24 ? 48 89 6C 24 ? 48 89 74 24 ? 48 89 7C 24 ? 41 56 48 81 EC ? ? ? ? 48 8B 05 ? ? ? ? 48 8B F2";
