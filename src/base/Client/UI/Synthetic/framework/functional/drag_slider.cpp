@@ -127,7 +127,7 @@ bool slider_behavior_t(const ImRect& bb, ImGuiID id, ImGuiDataType data_type, TY
         }
 
         if (set_new_value)
-            if ((g.LastItemData.InFlags & ImGuiItemFlags_ReadOnly) || (flags & ImGuiSliderFlags_ReadOnly))
+            if ((g.LastItemData.ItemFlags & ImGuiItemFlags_ReadOnly) || (flags & ImGuiSliderFlags_ReadOnly))
                 set_new_value = false;
 
         if (set_new_value)
@@ -229,7 +229,7 @@ bool slider_scalar(std::string_view label, ImGuiDataType data_type, T* p_data, c
     if (!ItemAdd(rect, id)) return false;
 
     if (!format) format = DataTypeGetInfo(data_type)->PrintFmt;
-    bool hovered = ItemHoverable(slider, id, g.LastItemData.InFlags), held, pressed = ButtonBehavior(ImRect(rect.Min, rect.Max), id, &hovered, &held, NULL);
+    bool hovered = ItemHoverable(slider, id, g.LastItemData.ItemFlags), held, pressed = ButtonBehavior(ImRect(rect.Min, rect.Max), id, &hovered, &held, NULL);
 
     ImRect grab_bb;
     const bool value_changed = slider_behavior(ImRect(slider.Min, slider.Max), id, data_type, p_data, p_min, p_max, format, NULL, &grab_bb);

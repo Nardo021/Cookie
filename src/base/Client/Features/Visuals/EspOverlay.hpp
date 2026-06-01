@@ -7,6 +7,7 @@
 #include <vector>
 
 #include <ImGui/imgui.h>
+#include <Client/UI/Synthetic/SyntheticCompat/imgui_compat.hpp>
 
 #include <Client/Features/Visuals/Esp.hpp>
 

@@ -15,7 +15,7 @@ void c_gui::render()
 
 		gui->set_next_window_size(SCALE(set->c_window.window_size));
 
-		gui->begin({ "NAME" }, { 0 }, set->c_window.window_flags);
+		gui->begin({ "Cookie" }, { 0 }, set->c_window.window_flags);
 		{
 			const ImVec2 pos = GetWindowPos();
 			const ImVec2 size = GetWindowSize();
@@ -378,7 +378,11 @@ void c_gui::render()
 								var->c_lua.opened = false;
 
 							gui->set_cursor_pos(SCALE(10, 50));
+#if 0
 							text_editor->render("Text Editor", SCALE(480, 420));
+#else
+							ImGui::TextDisabled( "Text editor unavailable in this build." );
+#endif
 
 							gui->set_cursor_pos(GetWindowSize() - SCALE(122, 34));
 							if (widget->tool_button("Save", "", SCALE(54, 28)))
@@ -507,7 +511,7 @@ void c_gui::render()
 			}
 			gui->end_content();
 
-			gui->pop_style_var(2);
+			gui->pop_style_var();
 
 		}
 		gui->end();

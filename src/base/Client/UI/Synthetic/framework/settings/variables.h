@@ -46,6 +46,8 @@ public:
 
 		bool watermark = true;
 		int watermark_position = 1;
+		bool use_custom_position = false;
+		ImVec2 custom_position{ -1.f, -1.f };
 
 	} c_watermark;
 

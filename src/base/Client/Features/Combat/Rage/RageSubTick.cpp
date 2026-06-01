@@ -39,11 +39,15 @@ namespace RageSubTick
 		s_computedSeeds.clear();
 		s_computedSeeds.reserve( 256 );
 
+		auto* tier0 = GetTIER0Functions();
+		if ( !tier0 || !tier0->RandomSeed_o || !tier0->RandomFloat_o )
+			return;
+
 		for ( int i = 0; i <= 255; ++i )
 		{
-			RandomSeed( i + 1 );
-			const float spread = RandomFloat( 0.f , 1.f );
-			const float angle = RandomFloat( 0.f , 6.28318530718f );
+			tier0->RandomSeed_o( static_cast<uint32_t>( i + 1 ) );
+			const float spread = tier0->RandomFloat_o( 0.f , 1.f );
+			const float angle = tier0->RandomFloat_o( 0.f , 6.28318530718f );
 			s_computedSeeds.emplace_back( spread , angle );
 		}
 	}

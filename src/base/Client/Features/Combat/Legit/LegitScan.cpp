@@ -197,7 +197,7 @@ namespace LegitScan
 
 			const ::QAngle spreadView = NoSpread::detail::ApplySpread( sdkAim , spreadX , spreadY );
 			::Vector3 spreadDir{};
-			Math::AngleVectors( spreadView , spreadDir , nullptr , nullptr );
+			Math::AngleVectors( spreadView , spreadDir );
 			spreadDir.Normalize();
 
 			const ::Vector3 end = start + spreadDir * weaponRange;

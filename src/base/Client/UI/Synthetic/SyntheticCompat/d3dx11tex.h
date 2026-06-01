@@ -19,7 +19,7 @@ struct D3DX11_IMAGE_LOAD_INFO
 	UINT BindFlags = D3D11_BIND_SHADER_RESOURCE;
 	UINT CpuAccessFlags = 0;
 	UINT MiscFlags = 0;
-	DXGI_FORMAT Format = DXGI_FORMAT_FROM_FILE;
+	DXGI_FORMAT Format = DXGI_FORMAT_UNKNOWN;
 	UINT Filter = 0;
 	UINT MipFilter = 0;
 };

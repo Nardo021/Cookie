@@ -6,6 +6,9 @@ auto Hook_IsRelativeMouseMode( CInputSystem* pInputSystem , bool Active ) -> voi
 {
 	GetCookieGUI()->m_bMainActive = Active;
 
+	if ( !IsRelativeMouseMode_o )
+		return;
+
 	if ( GetCookieGUI()->IsVisible() )
 		return IsRelativeMouseMode_o( pInputSystem , false );
 

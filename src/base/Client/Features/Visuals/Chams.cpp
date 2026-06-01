@@ -23,7 +23,7 @@ namespace Chams
 			std::byte pad[0x8]{};
 		};
 
-		struct KV3ID_t
+		struct ChamsKV3ID
 		{
 			const char* szName = nullptr;
 			uint64_t unk0 = 0;
@@ -64,12 +64,15 @@ namespace Chams
 			alignas( 16 ) std::byte storage[0x100 + sizeof( KeyValues3Blob )]{};
 			auto* kv3 = reinterpret_cast<KeyValues3Blob*>( storage + 0x100 );
 
-			KV3ID_t kv3Id{};
+			ChamsKV3ID kv3Id{};
 			kv3Id.szName = name;
 			kv3Id.unk0 = 0x469806E97412167CULL;
 			kv3Id.unk1 = 0xE73790B53EE6F2AFULL;
 
-			if ( !KeyValues3_LoadKV3( kv3 , vmatBuffer , &kv3Id ) )
+			if ( !KeyValues3_LoadKV3( reinterpret_cast<KeyValues3*>( kv3 ) , vmatBuffer , reinterpret_cast<KV3ID_t*>( &kv3Id ) ) )
+				return nullptr;
+
+			if ( !CMaterialSystem2_Search::CreateMaterialFn.GetFunction() )
 				return nullptr;
 
 			CMaterial2** outMaterial = nullptr;

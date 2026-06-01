@@ -75,7 +75,7 @@ bool dropdown_list(std::string_view label, std::string_view preview_value, int v
     ImGuiContext& g = *GImGui;
     ImGuiWindow* window = GetCurrentWindow();
 
-    ImGuiNextWindowDataFlags backup_next_window_data_flags = g.NextWindowData.Flags;
+    ImGuiNextWindowDataFlags backup_next_window_data_flags = g.NextWindowData.HasFlags;
     g.NextWindowData.ClearFlags();
 
     const ImGuiStyle& style = g.Style;
@@ -161,7 +161,7 @@ bool combo(std::string_view label, int* current_item, std::vector<std::string>& 
     if (*current_item >= 0 && *current_item < static_cast<int>(items.size()))
         preview_value = &items[*current_item];
 
-    if (popup_max_height_in_items != -1 && !(g.NextWindowData.Flags & ImGuiNextWindowDataFlags_HasSizeConstraint))
+    if (popup_max_height_in_items != -1 && !(g.NextWindowData.HasFlags & ImGuiNextWindowDataFlags_HasSizeConstraint))
         SetNextWindowSizeConstraints(ImVec2(0, 0), ImVec2(FLT_MAX, calc_combo_size(popup_max_height_in_items, 30)));
 
     if (!dropdown_list(label.data(), preview_value ? preview_value->c_str() : nullptr, static_cast<int>(items.size()), max_count, ImGuiComboFlags_None, false))
@@ -239,7 +239,7 @@ bool tool_dropdown_list(std::string_view label, std::string_view preview_value, 
     ImGuiContext& g = *GImGui;
     ImGuiWindow* window = GetCurrentWindow();
 
-    ImGuiNextWindowDataFlags backup_next_window_data_flags = g.NextWindowData.Flags;
+    ImGuiNextWindowDataFlags backup_next_window_data_flags = g.NextWindowData.HasFlags;
     g.NextWindowData.ClearFlags();
 
     const ImGuiStyle& style = g.Style;
@@ -306,7 +306,7 @@ bool tool_combo(std::string_view label, int* current_item, std::vector<std::stri
     if (*current_item >= 0 && *current_item < static_cast<int>(items.size()))
         preview_value = &items[*current_item];
 
-    if (popup_max_height_in_items != -1 && !(g.NextWindowData.Flags & ImGuiNextWindowDataFlags_HasSizeConstraint))
+    if (popup_max_height_in_items != -1 && !(g.NextWindowData.HasFlags & ImGuiNextWindowDataFlags_HasSizeConstraint))
         SetNextWindowSizeConstraints(ImVec2(0, 0), ImVec2(FLT_MAX, calc_combo_size(popup_max_height_in_items, 30)));
 
     if (!tool_dropdown_list(label.data(), preview_value ? preview_value->c_str() : nullptr, static_cast<int>(items.size()), max_count, ImGuiComboFlags_None, false))

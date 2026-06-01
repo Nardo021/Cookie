@@ -7,11 +7,10 @@ class CSDL3Functions final
 public:
 	auto OnInit() -> bool;
 
-public:
-	using SDL_WarpMouseInWindow_t = int( __stdcall* )( void* , float , float );
+	auto WarpMouseInWindow( void* sdlWindow , float x , float y ) -> int;
 
-public:
-	SDL_WarpMouseInWindow_t SDL_WarpMouseInWindow_o = nullptr;
+private:
+	void* m_pfnWarpMouseInWindow = nullptr;
 };
 
 auto GetSDL3Functions() -> CSDL3Functions*;

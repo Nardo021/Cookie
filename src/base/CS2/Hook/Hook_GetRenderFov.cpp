@@ -1,5 +1,6 @@
 #include "Hook_GetRenderFov.hpp"
 
+#include <CS2/SDK/Types/CEntityData.hpp>
 #include <Client/Features/Visuals/WorldFov.hpp>
 
 #include <GameClient/CL_Players.hpp>

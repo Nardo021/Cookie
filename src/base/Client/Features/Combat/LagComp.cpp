@@ -290,7 +290,7 @@ namespace LagComp
 		const float correct = std::clamp( latency , 0.f , svMaxUnlag );
 		const float maxDelta = std::min( svMaxUnlag - correct , kFallbackMaxUnlag );
 
-		return globalVars->m_flCurtime() - maxDelta;
+		return globalVars->m_flCurrentTime() - maxDelta;
 	}
 
 	auto GetMaxRecordCount() noexcept -> int

@@ -207,3 +207,5 @@ namespace CookieCore
 		}
 	}
 }
+
+namespace CEasing = CookieCore::Easing;

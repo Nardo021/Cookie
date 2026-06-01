@@ -132,13 +132,7 @@ namespace MenuEffects
 			MenuAssets::RenderMenuBackgroundImage( draw , origin , size , config.menuBackgroundAlpha );
 
 		if ( config.blurPlaceholder && !config.shaderBlur )
-		{
-			draw->AddRectFilled(
-				origin ,
-				ImVec2( origin.x + size.x , origin.y + size.y ) ,
-				IM_COL32( 12 , 14 , 22 , 180 ) ,
-				8.f );
-		}
+			DrawPanelBlurOverlay( draw , origin , ImVec2( origin.x + size.x , origin.y + size.y ) , 8.f );
 
 		if ( !config.particles )
 			return;

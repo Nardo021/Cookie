@@ -131,7 +131,7 @@ namespace ESP
         if (localPawn)
             currentTime = Game::Read<float>(localPawn + Offsets::m_flSimulationTime);
         else if (auto* globalVars = SDK::Pointers::GlobalVarsBase())
-            currentTime = globalVars->m_flCurrentTime;
+            currentTime = globalVars->m_flCurrentTime();
         if (config.bBombTimer)
         {
             uintptr_t pBombSystem = Game::Read<uintptr_t>(Game::clientBase + Offsets::dwPlantedC4);

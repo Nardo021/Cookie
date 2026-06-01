@@ -1,21 +1,18 @@
 #include <Client/UI/Synthetic/SyntheticConfig.hpp>
+#include <Client/UI/Synthetic/SyntheticMenu.hpp>
 #include <Client/UI/Synthetic/SyntheticTabs.hpp>
-#include <Client/UI/Synthetic/SyntheticWatermark.hpp>
-#include <Client/UI/Menu/MenuEffects.hpp>
 #include <Client/UI/Synthetic/SyntheticBinds.hpp>
 #include <Version.hpp>
 
-#include "framework/settings/functions.h"
-#include "framework/shader/blur.hpp"
-#include "framework/data/font.h"
-#include "framework/data/texture.h"
+#include <framework/settings/functions.h>
 
 void c_gui::render()
 {
+	if ( !SyntheticMenu::IsInitialized() || !set->c_font.inter_medium[0] || !set->c_font.inter_medium[1] )
+		return;
+
 	{
 		notify->setup_notify();
-
-		draw->add_image(GetBackgroundDrawList(), set->c_texture.bg, { 0, 0 }, { 1920, 1080 }, { 0, 0 }, { 1, 1 }, gui->get_clr(clr->c_other_clr.white_clr));
 
 		gui->set_next_window_size(SCALE(set->c_window.window_size));
 
@@ -36,21 +33,11 @@ void c_gui::render()
 				style->ItemSpacing = SCALE(set->c_window.item_spacing);
 			}
 
-			if ( MenuEffects::config.shaderBlur )
-				draw_background_blur( draw_list , g_pSwapChain , g_pd3dDevice , g_pd3dDeviceContext , GetWindowPos() , GetWindowPos() + GetWindowSize() , style->WindowRounding );
-			
 			draw->add_rect_filled(draw_list, { pos.x, pos.y }, { pos.x + size.x, pos.y + size.y }, gui->get_clr(clr->c_window.general_layout), SCALE(set->c_window.general_rounding));
 			draw->add_rect(draw_list, { pos.x, pos.y }, { pos.x + size.x, pos.y + size.y }, gui->get_clr(clr->c_window.general_stroke), SCALE(set->c_window.general_rounding));
 
 			draw->add_rect_filled(draw_list, { pos.x + SCALE(110), pos.y + SCALE(15) }, { pos.x + (size.x - SCALE(15)), pos.y + (size.y - SCALE(15)) }, gui->get_clr(clr->c_window.layout), SCALE(set->c_window.rounding));
 			draw->add_rect(draw_list, { pos.x + SCALE(110), pos.y + SCALE(15) }, { pos.x + (size.x - SCALE(15)), pos.y + (size.y - SCALE(15)) }, gui->get_clr(clr->c_window.stroke), SCALE(set->c_window.rounding));
-
-			if ( MenuEffects::config.particles || MenuEffects::config.menuBackgroundImage || MenuEffects::config.blurPlaceholder )
-			{
-				const ImVec2 panelOrigin( pos.x + SCALE( 110 ) , pos.y + SCALE( 15 ) );
-				const ImVec2 panelSize( size.x - SCALE( 125 ) , size.y - SCALE( 30 ) );
-				MenuEffects::RenderMenuBackground( panelSize , &panelOrigin );
-			}
 
 			draw->rect_filled_multi_color(draw_list, { pos.x + size.x / 2, pos.y }, { pos.x + size.x, pos.y + 1 }, gui->get_clr(clr->c_other_clr.accent_clr, 0.2f), gui->get_clr(clr->c_other_clr.accent_clr, 0.f), gui->get_clr(clr->c_other_clr.accent_clr, 0.f), gui->get_clr(clr->c_other_clr.accent_clr, 0.2f));
 			draw->rect_filled_multi_color(draw_list, { pos.x, pos.y }, { pos.x + size.x / 2, pos.y + 1 }, gui->get_clr(clr->c_other_clr.accent_clr, 0.f), gui->get_clr(clr->c_other_clr.accent_clr, 0.2f), gui->get_clr(clr->c_other_clr.accent_clr, 0.2f), gui->get_clr(clr->c_other_clr.accent_clr, 0.f));
@@ -60,7 +47,8 @@ void c_gui::render()
 
 			draw->render_text(draw_list, set->c_font.icon[2], { pos.x, pos.y }, { pos.x + SCALE(110), pos.y + size.y }, gui->get_clr(clr->c_other_clr.accent_clr), "B", 0, 0, { 0.5, 0.5 });
 
-			gui->push_font(set->c_font.name);
+			if ( set->c_font.name )
+				gui->push_font( set->c_font.name );
 
 			const int vtx_start_one = draw_list->VtxBuffer.Size;
 			gui->rotate_start();
@@ -74,7 +62,8 @@ void c_gui::render()
 			const int vtx_end_two = draw_list->VtxBuffer.Size;
 			draw->set_linear_color_alpha(draw_list, vtx_start_two, vtx_end_two, pos + ImVec2(0, size.y / 2), pos + ImVec2(0, size.y / 2 + size.y / 3), gui->get_clr(clr->c_other_clr.accent_clr), gui->get_clr(clr->c_other_clr.accent_clr, 0.f));
 
-			gui->pop_font();
+			if ( set->c_font.name )
+				gui->pop_font();
 
 			gui->set_cursor_pos(SCALE(110, 15));
 
@@ -102,7 +91,7 @@ void c_gui::render()
 			}
 			gui->end_content();
 
-			gui->pop_style_var(2);
+			gui->pop_style_var();
 
 		}
 		gui->end();
@@ -165,7 +154,6 @@ void c_gui::render()
 		gui->pop_style_var(2);
 
 		SyntheticBinds::RenderOverlay();
-		SyntheticWatermark::Render();
 
 	}
 }

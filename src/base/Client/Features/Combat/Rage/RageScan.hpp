@@ -79,6 +79,8 @@ namespace RageScan
 	};
 
 	auto ApplyAdaptiveWeapon( ScanSettings& settings ) noexcept -> void;
+
+	auto EvaluatePoint(
 		const ::Vector3& eye ,
 		const ::Vector3& point ,
 		uint32_t studioHitbox ,

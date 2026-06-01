@@ -8,6 +8,7 @@
 #include <CS2/SDK/Cstrike15/CCSPlayerInventory.hpp>
 #include <CS2/SDK/Econ/CEconItem.hpp>
 #include <CS2/SDK/Econ/CEconItemDefinition.hpp>
+#include <CS2/SDK/Econ/CEconItemSchema.hpp>
 #include <CS2/SDK/Econ/CEconItemSystem.hpp>
 #include <CS2/SDK/GCSDK/CGCClientSharedObjectCache.hpp>
 #include <CS2/SDK/GCSDK/GCSDKTypes/EconItemConstants.hpp>
@@ -108,7 +109,7 @@ namespace Gloves
 			if ( !definition )
 				return 41;
 
-			return static_cast<int>( definition->LoadoutSlot() );
+			return static_cast<int>( definition.value()->LoadoutSlot() );
 		}
 
 		auto ConfigChanged() noexcept -> bool
@@ -210,7 +211,7 @@ namespace Gloves
 			if ( !viewModelServices )
 				return;
 
-			auto* viewModel = viewModelServices->m_hViewModel().Get<C_CSGOViewModel>();
+			auto* viewModel = reinterpret_cast<C_CSGOViewModel*>( viewModelServices->m_hViewModel()->Get() );
 			if ( !viewModel )
 				return;
 
@@ -418,7 +419,7 @@ namespace Gloves
 		if ( !viewModelServices )
 			return;
 
-		auto* viewModel = viewModelServices->m_hViewModel().Get<C_CSGOViewModel>();
+		auto* viewModel = reinterpret_cast<C_CSGOViewModel*>( viewModelServices->m_hViewModel()->Get() );
 		if ( !viewModel )
 			return;
 

@@ -234,7 +234,7 @@ namespace Movement
 					( ringRadius * std::sin( angle ) ) + origin.m_y ,
 					origin.m_z
 				};
-				const Game::Vector3 end{ start.m_x , start.m_y , start.m_z - traceDepth };
+				const Game::Vector3 end{ start.x , start.y , start.z - traceDepth };
 
 				float fraction = 1.f;
 				if ( !Trace::RunTrace(

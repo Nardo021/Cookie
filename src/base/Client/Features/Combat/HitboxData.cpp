@@ -58,7 +58,7 @@ namespace HitboxData
 			if ( !modelState.m_hModel().is_valid() )
 				return nullptr;
 
-			return modelState.m_hModel().get();
+			return static_cast<CModel*>( modelState.m_hModel() );
 		}
 
 		auto HasNativeHitbox( CModel* model , uint32_t studioIndex ) noexcept -> bool

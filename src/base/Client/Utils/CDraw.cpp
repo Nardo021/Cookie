@@ -123,17 +123,18 @@ auto CDraw::DrawText( ImDrawList* drawList , const ImFont* font , const ImVec2& 
 	if ( font == nullptr )
 		font = ImGui::GetFont();
 
-	drawList->PushTextureID( font->ContainerAtlas->TexID );
+	ImFont* drawFont = const_cast<ImFont*>( font );
+	drawList->PushTextureID( drawFont->ContainerAtlas->TexID );
 
 	if ( flags & DRAW_TEXT_DROPSHADOW )
-		drawList->AddText( font , font->FontSize , position + ImVec2( thickness , thickness ) , outlineColor , text );
+		drawList->AddText( drawFont , drawFont->FontSize , position + ImVec2( thickness , thickness ) , outlineColor , text , nullptr );
 	else if ( flags & DRAW_TEXT_OUTLINE )
 	{
-		drawList->AddText( font , font->FontSize , position + ImVec2( thickness , -thickness ) , outlineColor , text );
-		drawList->AddText( font , font->FontSize , position + ImVec2( -thickness , thickness ) , outlineColor , text );
+		drawList->AddText( drawFont , drawFont->FontSize , position + ImVec2( thickness , -thickness ) , outlineColor , text , nullptr );
+		drawList->AddText( drawFont , drawFont->FontSize , position + ImVec2( -thickness , thickness ) , outlineColor , text , nullptr );
 	}
 
-	drawList->AddText( font , font->FontSize , position , color , text );
+	drawList->AddText( drawFont , drawFont->FontSize , position , color , text , nullptr );
 	drawList->PopTextureID();
 }
 

@@ -128,12 +128,10 @@ auto CCookieClient::OnRender() -> void
 	if ( SkinChanger::NeedsTick() )
 		SkinChanger::Tick();
 
-	if ( gui->IsVisible() )
+	SyntheticWatermark::RenderOverlay();
+
+	if ( gui->IsVisible() && SyntheticMenu::IsInitialized() )
 		SyntheticMenu::Render();
-	else if ( SyntheticMenu::IsInitialized() && var->c_watermark.watermark )
-		SyntheticWatermark::Render();
-	else
-		MenuEffects::RenderWatermark();
 
 	GetInputSystem()->Update();
 

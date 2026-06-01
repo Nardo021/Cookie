@@ -1,4 +1,4 @@
-#include "SyntheticTabs.hpp"
+﻿#include "SyntheticTabs.hpp"
 #include "SyntheticTabCommon.hpp"
 #include "SyntheticSkinWeapons.hpp"
 
@@ -80,10 +80,10 @@ namespace SyntheticTabs
 
 			widget->text_field( "Search skins" , "M" , s_skinSearch , sizeof( s_skinSearch ) , SCALE( ImVec2( GetContentRegionAvail().x , 35 ) ) );
 
-			static const auto rarityNames = Strings( {
+			static const auto rarityNames = ItemStrings( {
 				"All" , "Consumer" , "Industrial" , "Mil-Spec" , "Restricted" , "Classified" , "Covert" , "Contraband" ,
 			} );
-			Combo( "Rarity" , &s_rarityFilter , rarityNames );
+			UiCombo( "Rarity" , &s_rarityFilter , rarityNames );
 
 			if ( s_paintKitLabels.empty() )
 			{
@@ -100,11 +100,11 @@ namespace SyntheticTabs
 			}
 			else
 			{
-				if ( Combo( "Paint Kit" , &s_paintKitPick , s_paintKitLabels ) )
+				if ( UiCombo( "Paint Kit" , &s_paintKitPick , s_paintKitLabels ) )
 					cfg.paintKit = s_paintKitIds[static_cast<size_t>( s_paintKitPick )];
 			}
 
-			SliderInt( "Paint Kit ID" , &cfg.paintKit , 0 , 120000 , 1 , "%d" );
+			UiSliderInt( "Paint Kit ID" , &cfg.paintKit , 0 , 120000 , 1 , "%d" );
 		}
 
 		auto DrawStatusLine( const char* text , bool ok ) noexcept -> void
@@ -128,7 +128,7 @@ namespace SyntheticTabs
 		{
 			using namespace SyntheticUI;
 
-			Checkbox( "Enable Custom Texture" , &CustomTexture::enabled );
+			UiCheckbox( "Enable Custom Texture" , &CustomTexture::enabled );
 			widget->text_field( "Image Path" , "M" , CustomTexture::imagePath , sizeof( CustomTexture::imagePath ) , SCALE( ImVec2( GetContentRegionAvail().x , 35 ) ) );
 
 			if ( widget->button( "Load Image" , ImVec2( GetContentRegionAvail().x , SCALE( 35 ) ) ) )
@@ -139,14 +139,14 @@ namespace SyntheticTabs
 
 			DrawStatusLine( CustomTexture::imageLoaded ? "Image loaded" : "No image loaded" , CustomTexture::imageLoaded );
 
-			SliderInt( "Filter Width (0=any)" , &CustomTexture::filterWidth , 0 , 4096 , 256 , "%d" );
-			SliderInt( "Filter Height (0=any)" , &CustomTexture::filterHeight , 0 , 4096 , 256 , "%d" );
+			UiSliderInt( "Filter Width (0=any)" , &CustomTexture::filterWidth , 0 , 4096 , 256 , "%d" );
+			UiSliderInt( "Filter Height (0=any)" , &CustomTexture::filterHeight , 0 , 4096 , 256 , "%d" );
 			if ( CustomTexture::filterWidth < 0 )
 				CustomTexture::filterWidth = 0;
 			if ( CustomTexture::filterHeight < 0 )
 				CustomTexture::filterHeight = 0;
 
-			Separator();
+			UiSeparator();
 
 			if ( !CustomTexture::browseMode )
 			{
@@ -191,9 +191,9 @@ namespace SyntheticTabs
 			if ( widget->button( "Reset Browse" , ImVec2( GetContentRegionAvail().x , SCALE( 35 ) ) ) )
 				CustomTexture::ResetBrowse();
 
-			Separator();
-			Checkbox( "No Filter (all 2D)" , &CustomTexture::noFilter );
-			SliderInt( "Min Texture Size" , &CustomTexture::minSize , 1 , 512 , 32 , "%d" );
+			UiSeparator();
+			UiCheckbox( "No Filter (all 2D)" , &CustomTexture::noFilter );
+			UiSliderInt( "Min Texture Size" , &CustomTexture::minSize , 1 , 512 , 32 , "%d" );
 			if ( CustomTexture::minSize < 1 )
 				CustomTexture::minSize = 1;
 
@@ -237,7 +237,7 @@ namespace SyntheticTabs
 		{
 			gui->begin_child( "Gloves & Knife" );
 			{
-				Checkbox( "Enable Gloves" , &Gloves::config.enabled );
+				UiCheckbox( "Enable Gloves" , &Gloves::config.enabled );
 				if ( Gloves::config.enabled )
 				{
 					static std::vector<std::string> gloveNames;
@@ -247,21 +247,21 @@ namespace SyntheticTabs
 							gloveNames.emplace_back( g.m_pszName ? g.m_pszName : "?" );
 					}
 					if ( !gloveNames.empty() )
-						Combo( "Glove Model" , &Gloves::config.modelIndex , gloveNames );
+						UiCombo( "Glove Model" , &Gloves::config.modelIndex , gloveNames );
 
-					SliderInt( "Glove PaintKit" , &Gloves::config.paintKit , 0 , 100000 , 1 , "%d" );
-					SliderFloat( "Glove Wear" , &Gloves::config.wear , 0.f , 1.f , 0.001f , "%.4f" );
-					SliderInt( "Glove Seed" , &Gloves::config.seed , 0 , 1000 , 1 , "%d" );
-					static const auto teams = Strings( { "Terrorist (2)" , "CT (3)" } );
+					UiSliderInt( "Glove PaintKit" , &Gloves::config.paintKit , 0 , 100000 , 1 , "%d" );
+					UiSliderFloat( "Glove Wear" , &Gloves::config.wear , 0.f , 1.f , 0.001f , "%.4f" );
+					UiSliderInt( "Glove Seed" , &Gloves::config.seed , 0 , 1000 , 1 , "%d" );
+					static const auto teams = ItemStrings( { "Terrorist (2)" , "CT (3)" } );
 					int teamIdx = Gloves::config.team == 2 ? 0 : 1;
-					if ( Combo( "Loadout Team" , &teamIdx , teams ) )
+					if ( UiCombo( "Loadout Team" , &teamIdx , teams ) )
 						Gloves::config.team = teamIdx == 0 ? 2 : 3;
 					if ( widget->button( "Apply Gloves" , ImVec2( GetContentRegionAvail().x , SCALE( 35 ) ) ) )
 						Gloves::ApplyFromConfig();
 				}
 
-				Separator();
-				Checkbox( "Knife Changer" , &SkinChanger::knifeChangerEnabled );
+				UiSeparator();
+				UiCheckbox( "Knife Changer" , &SkinChanger::knifeChangerEnabled );
 				if ( SkinChanger::knifeChangerEnabled )
 				{
 					static std::vector<std::string> knifeNames;
@@ -270,14 +270,14 @@ namespace SyntheticTabs
 						for ( int i = 0; i < SkinChanger::knifeModelCount; ++i )
 							knifeNames.emplace_back( SkinChanger::knifeModels[i].name );
 					}
-					if ( Combo( "Knife Model" , &SkinChanger::selectedKnifeModel , knifeNames ) )
+					if ( UiCombo( "Knife Model" , &SkinChanger::selectedKnifeModel , knifeNames ) )
 					{
 						SkinChanger::lastAppliedWeapon = 0;
 						SkinChanger::forceUpdate.store( true );
 					}
 				}
 
-				Separator();
+				UiSeparator();
 				if ( widget->button( "Force Update" , ImVec2( GetContentRegionAvail().x , SCALE( 35 ) ) ) )
 					SkinChanger::forceUpdate.store( true );
 				if ( widget->button( "Randomize All" , ImVec2( GetContentRegionAvail().x , SCALE( 35 ) ) ) )
@@ -305,23 +305,23 @@ namespace SyntheticTabs
 					for ( int i = 0; i < SyntheticSkinWeapons::kCount; ++i )
 						weaponNames.emplace_back( SyntheticSkinWeapons::kList[i].name );
 				}
-				Combo( "Weapon" , &s_selectedWeapon , weaponNames );
+				UiCombo( "Weapon" , &s_selectedWeapon , weaponNames );
 
 				if ( s_selectedWeapon >= 0 && s_selectedWeapon < SyntheticSkinWeapons::kCount )
 				{
 					const int defIdx = SyntheticSkinWeapons::kList[s_selectedWeapon].defIndex;
 					SkinChanger::SkinConfig& cfg = SkinChanger::weaponSkins[defIdx];
 
-					Checkbox( "Enabled" , &cfg.enabled );
+					UiCheckbox( "Enabled" , &cfg.enabled );
 					PaintKitPicker( cfg );
-					SliderFloat( "Wear" , &cfg.wear , 0.f , 1.f , 0.001f , "%.4f" );
-					SliderInt( "Seed" , &cfg.seed , 0 , 1000 , 1 , "%d" );
+					UiSliderFloat( "Wear" , &cfg.wear , 0.f , 1.f , 0.001f , "%.4f" );
+					UiSliderInt( "Seed" , &cfg.seed , 0 , 1000 , 1 , "%d" );
 
 					bool useStatTrak = cfg.statTrak >= 0;
-					if ( Checkbox( "StatTrak" , &useStatTrak ) )
+					if ( UiCheckbox( "StatTrak" , &useStatTrak ) )
 						cfg.statTrak = useStatTrak ? 0 : -1;
 					if ( useStatTrak )
-						SliderInt( "StatTrak Value" , &cfg.statTrak , 0 , 999999 , 1 , "%d" );
+						UiSliderInt( "StatTrak Value" , &cfg.statTrak , 0 , 999999 , 1 , "%d" );
 				}
 			}
 			gui->end_child();
@@ -335,3 +335,4 @@ namespace SyntheticTabs
 		gui->end_group();
 	}
 }
+

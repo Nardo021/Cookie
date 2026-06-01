@@ -1,4 +1,6 @@
 #include "../settings/functions.h"
+#include "../../SyntheticCompat/begin_imgui_compat.h"
+#include "../../SyntheticCompat/SyntheticScrollPatch.hpp"
 
 bool scrollbar_ex(const ImRect& bb_frame, ImGuiID id, ImGuiAxis axis, ImS64* p_scroll_v, ImS64 size_avail_v, ImS64 size_contents_v, ImDrawFlags flags)
 {
@@ -201,7 +203,7 @@ static ImVec2 calc_window_size_after_constraint(ImGuiWindow* window, const ImVec
 {
     ImGuiContext& g = *GImGui;
     ImVec2 new_size = size_desired;
-    if (g.NextWindowData.Flags & ImGuiNextWindowDataFlags_HasSizeConstraint)
+    if (g.NextWindowData.HasFlags & ImGuiNextWindowDataFlags_HasSizeConstraint)
     {
         // See comments in SetNextWindowSizeConstraints() for details about setting size_min an size_max.
         ImRect cr = g.NextWindowData.SizeConstraintRect;
@@ -535,61 +537,6 @@ static int update_window_manual_resize(ImGuiWindow* window, const ImVec2& size_a
     return ret_auto_fit_mask;
 }
 
-static float calc_scroll_edge_snap(float target, float snap_min, float snap_max, float snap_threshold, float center_ratio)
-{
-    if (target <= snap_min + snap_threshold)
-        return ImLerp(snap_min, target, center_ratio);
-    if (target >= snap_max - snap_threshold)
-        return ImLerp(target, snap_max, center_ratio);
-    return target;
-}
-
-constexpr float SCROLL_CLAMP_THRESHOLD = 20.0f;
-constexpr float SCROLL_INACCURACY = 2.0f;
-
-static ImVec2 calc_next_scroll_from_scroll_target_and_clamp(ImGuiWindow* window, bool clamp)
-{
-    ImVec2 scroll = window->Scroll;
-    if (window->ScrollTarget.x < FLT_MAX)
-    {
-        float decoration_total_width = window->ScrollbarSizes.x;
-        float center_x_ratio = window->ScrollTargetCenterRatio.x;
-        float scroll_target_x = window->ScrollTarget.x;
-        if (window->ScrollTargetEdgeSnapDist.x > 0.0f)
-        {
-            float snap_x_min = 0.0f;
-            float snap_x_max = window->ScrollMax.x + window->SizeFull.x - decoration_total_width;
-            scroll_target_x = calc_scroll_edge_snap(scroll_target_x, snap_x_min, snap_x_max, window->ScrollTargetEdgeSnapDist.x, center_x_ratio);
-        }
-        scroll.x = scroll_target_x - center_x_ratio * (window->SizeFull.x - decoration_total_width);
-    }
-    if (window->ScrollTarget.y < FLT_MAX)
-    {
-        float decoration_total_height = window->TitleBarHeight() + window->MenuBarHeight() + window->ScrollbarSizes.y;
-        float center_y_ratio = window->ScrollTargetCenterRatio.y;
-        float scroll_target_y = window->ScrollTarget.y;
-        if (window->ScrollTargetEdgeSnapDist.y > 0.0f)
-        {
-            float snap_y_min = 0.0f;
-            float snap_y_max = window->ScrollMax.y + window->SizeFull.y - decoration_total_height;
-            scroll_target_y = calc_scroll_edge_snap(scroll_target_y, snap_y_min, snap_y_max, window->ScrollTargetEdgeSnapDist.y, center_y_ratio);
-        }
-        scroll.y = scroll_target_y - center_y_ratio * (window->SizeFull.y - decoration_total_height);
-    }
-    scroll.x = IM_FLOOR(ImMax(scroll.x, 0.0f));
-    scroll.y = IM_FLOOR(ImMax(scroll.y, 0.0f));
-    if (!window->Collapsed && !window->SkipItems)
-    {
-        scroll.x = ImMin(scroll.x, window->ScrollMax.x);
-        if (!clamp)
-            scroll.y = ImMin(scroll.y - SCROLL_CLAMP_THRESHOLD, window->ScrollMax.y + SCROLL_CLAMP_THRESHOLD);
-        else
-            scroll.y = ImMin(scroll.y, window->ScrollMax.y);
-    }
-    return scroll;
-}
-
-
 static ImGuiWindow* create_new_window(const char* name, ImGuiWindowFlags flags)
 {
     // Create window the first time
@@ -720,7 +667,7 @@ void render_window_decorations(ImGuiWindow* window, const ImRect& title_bar_rect
             ImU32 bg_col = GetColorU32(get_window_bg_color_idx(window));
             bool override_alpha = false;
             float alpha = 1.0f;
-            if (g.NextWindowData.Flags & ImGuiNextWindowDataFlags_HasBgAlpha)
+            if (g.NextWindowData.HasFlags & ImGuiNextWindowDataFlags_HasBgAlpha)
             {
                 alpha = g.NextWindowData.BgAlphaVal;
                 override_alpha = true;
@@ -918,7 +865,7 @@ bool c_gui::begin(std::string_view name, bool* p_open, ImGuiWindowFlags flags)
     {
         update_window_in_focus_order_list(window, window_just_created, flags);
         window->Flags = (ImGuiWindowFlags)flags;
-        window->ChildFlags = (g.NextWindowData.Flags & ImGuiNextWindowDataFlags_HasChildFlags) ? g.NextWindowData.ChildFlags : 0;
+        window->ChildFlags = (g.NextWindowData.HasFlags & ImGuiNextWindowDataFlags_HasChildFlags) ? g.NextWindowData.ChildFlags : 0;
         window->LastFrameActive = current_frame;
         window->LastTimeActive = (float)g.Time;
         window->BeginOrderWithinParent = 0;
@@ -977,7 +924,7 @@ bool c_gui::begin(std::string_view name, bool* p_open, ImGuiWindowFlags flags)
     // (FIXME: Consider splitting the HasXXX flags into X/Y components
     bool window_pos_set_by_api = false;
     bool window_size_x_set_by_api = false, window_size_y_set_by_api = false;
-    if (g.NextWindowData.Flags & ImGuiNextWindowDataFlags_HasPos)
+    if (g.NextWindowData.HasFlags & ImGuiNextWindowDataFlags_HasPos)
     {
         window_pos_set_by_api = (window->SetWindowPosAllowFlags & g.NextWindowData.PosCond) != 0;
         if (window_pos_set_by_api && ImLengthSqr(g.NextWindowData.PosPivotVal) > 0.00001f)
@@ -993,7 +940,7 @@ bool c_gui::begin(std::string_view name, bool* p_open, ImGuiWindowFlags flags)
             SetWindowPos(window, g.NextWindowData.PosVal, g.NextWindowData.PosCond);
         }
     }
-    if (g.NextWindowData.Flags & ImGuiNextWindowDataFlags_HasSize)
+    if (g.NextWindowData.HasFlags & ImGuiNextWindowDataFlags_HasSize)
     {
         window_size_x_set_by_api = (window->SetWindowSizeAllowFlags & g.NextWindowData.SizeCond) != 0 && (g.NextWindowData.SizeVal.x > 0.0f);
         window_size_y_set_by_api = (window->SetWindowSizeAllowFlags & g.NextWindowData.SizeCond) != 0 && (g.NextWindowData.SizeVal.y > 0.0f);
@@ -1003,7 +950,7 @@ bool c_gui::begin(std::string_view name, bool* p_open, ImGuiWindowFlags flags)
             g.NextWindowData.SizeVal.y = window->SizeFull.y;
         SetWindowSize(window, g.NextWindowData.SizeVal, g.NextWindowData.SizeCond);
     }
-    if (g.NextWindowData.Flags & ImGuiNextWindowDataFlags_HasScroll)
+    if (g.NextWindowData.HasFlags & ImGuiNextWindowDataFlags_HasScroll)
     {
         if (g.NextWindowData.ScrollVal.x >= 0.0f)
         {
@@ -1016,13 +963,13 @@ bool c_gui::begin(std::string_view name, bool* p_open, ImGuiWindowFlags flags)
             window->ScrollTargetCenterRatio.y = 0.0f;
         }
     }
-    if (g.NextWindowData.Flags & ImGuiNextWindowDataFlags_HasContentSize)
+    if (g.NextWindowData.HasFlags & ImGuiNextWindowDataFlags_HasContentSize)
         window->ContentSizeExplicit = g.NextWindowData.ContentSizeVal;
     else if (first_begin_of_the_frame)
         window->ContentSizeExplicit = ImVec2(0.0f, 0.0f);
-    if (g.NextWindowData.Flags & ImGuiNextWindowDataFlags_HasCollapsed)
+    if (g.NextWindowData.HasFlags & ImGuiNextWindowDataFlags_HasCollapsed)
         SetWindowCollapsed(window, g.NextWindowData.CollapsedVal, g.NextWindowData.CollapsedCond);
-    if (g.NextWindowData.Flags & ImGuiNextWindowDataFlags_HasFocus)
+    if (g.NextWindowData.HasFlags & ImGuiNextWindowDataFlags_HasFocus)
         FocusWindow(window);
     if (window->Appearing)
         set_window_condition_allow_flag(window, ImGuiCond_Appearing, false);
@@ -1355,43 +1302,7 @@ bool c_gui::begin(std::string_view name, bool* p_open, ImGuiWindowFlags flags)
 
         // Apply scrolling
         window->DC.StateStorage = &window->StateStorage;
-
-            struct scroll_state
-            {
-                float scroll = 0.f;
-                bool active_clamp = true;
-            };
-
-            // Apply scrolling
-            window->ScrollTarget = ImVec2(window->ScrollTarget.x, window->ScrollTarget.y + g.NextWindowData.ScrollVal.y);
-
-            const ImGuiID id = window->GetID(name.data());
-
-            scroll_state* scroll_anim = gui->anim_container(&scroll_anim, id);
-
-            if (IsKeyDown(ImGuiKey_MouseWheelY) && (window->Scroll.y == 0.0f || (window->Scroll.y > window->ScrollMax.y - SCROLL_INACCURACY && window->Scroll.y < window->ScrollMax.y + SCROLL_INACCURACY)) && g.ActiveId != GetWindowScrollbarID(window, ImGuiAxis_Y) && IsWindowHovered() && window->ScrollMax.y != 0.0f)
-                scroll_anim->active_clamp = false;
-            else if (window->Scroll.y == -SCROLL_CLAMP_THRESHOLD || window->Scroll.y == window->ScrollMax.y + SCROLL_CLAMP_THRESHOLD)
-                scroll_anim->active_clamp = true;
-
-            if (window->Scroll.y > 0.1f && window->Scroll.y < window->ScrollMax.y - SCROLL_INACCURACY)
-                scroll_anim->active_clamp = true;
-
-            float needed_scroll_clamp = scroll_anim->active_clamp ? calc_next_scroll_from_scroll_target_and_clamp(window, true).y : calc_next_scroll_from_scroll_target_and_clamp(window, false).y;
-
-            scroll_anim->scroll = ImLerp(scroll_anim->scroll, needed_scroll_clamp, gui->fixed_speed(16.f));
-
-            if (g.ActiveId != GetWindowScrollbarID(window, ImGuiAxis_Y))
-            {
-                if (!(flags & ImGuiWindowFlags_NoScrollWithMouse) && window->Scroll.y != needed_scroll_clamp)
-                    window->Scroll.y = std::round(scroll_anim->scroll);
-            }
-            else
-            {
-                window->Scroll.y = needed_scroll_clamp;
-                window->ScrollTarget = ImVec2(FLT_MAX, FLT_MAX);
-            }
-        
+        SyntheticScroll::ApplyAnimatedWindowScroll( window , window->GetID( name.data() ) , flags );
 
         // DRAWING
 

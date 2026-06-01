@@ -37,6 +37,7 @@
 #include <CS2/Hook/Hook_SetModel.hpp>
 #include <CS2/Hook/Hook_HandleGameEvents.hpp>
 #include <CS2/Hook/Hook_InputParser.hpp>
+#include <CS2/Hook/Hook_SetViewModelFov.hpp>
 
 static CHook_Loader g_CHook_Loader{};
 

@@ -158,7 +158,7 @@ void c_gui::set_next_window_pos(const ImVec2& pos, ImGuiCond cond, const ImVec2&
 {
     ImGuiContext& g = *GImGui;
 
-    g.NextWindowData.Flags |= ImGuiNextWindowDataFlags_HasPos;
+    g.NextWindowData.HasFlags |= ImGuiNextWindowDataFlags_HasPos;
     g.NextWindowData.PosVal = pos;
     g.NextWindowData.PosPivotVal = ImVec2(ImClamp(pivot.x, 0.0f, 1.0f), ImClamp(pivot.y, 0.0f, 1.0f));
     g.NextWindowData.PosCond = (cond != 0 && ImIsPowerOfTwo(cond)) ? cond : ImGuiCond_Always;
@@ -169,7 +169,7 @@ void c_gui::set_next_window_size(const ImVec2& size, ImGuiCond cond)
     IM_ASSERT(size.x >= 0.0f && size.y >= 0.0f);
     IM_ASSERT(cond == 0 || ImIsPowerOfTwo(cond));
 
-    g.NextWindowData.Flags |= ImGuiNextWindowDataFlags_HasSize;
+    g.NextWindowData.HasFlags |= ImGuiNextWindowDataFlags_HasSize;
     g.NextWindowData.SizeVal = size;
     g.NextWindowData.SizeCond = cond != 0 ? cond : ImGuiCond_Always;
 }
@@ -416,70 +416,6 @@ void c_widget::separator()
 {
     draw->add_line(GetWindowDrawList(), GetCursorScreenPos(), GetCursorScreenPos() + ImVec2(GetContentRegionAvail().x, 0), gui->get_clr(clr->c_element.separator), 1.f);
     gui->spacing();
-}
-
-void c_gui::water_mark(std::string name, std::vector<std::string> function, watermark_position type, bool* visible)
-{
-    static ImVec2 content_size, pos, current_pos;
-
-    struct spectator_state
-    {
-        float alpha;
-    };
-
-    spectator_state* state = gui->anim_container(&state, ImGui::GetID(name.c_str()));
-
-    state->alpha = ImLerp(state->alpha, *visible ? 1.f : 0.f, fixed_speed(12.f));
-
-    push_style_var(ImGuiStyleVar_Alpha, state->alpha);
-
-    if (state->alpha >= 0.01f) {
-
-        switch (type)
-        {
-        case mark_top_left:
-            pos = SCALE(10, 10);
-            break;
-        case mark_top_right:
-            pos = ImVec2(ImGui::GetIO().DisplaySize.x - content_size.x, SCALE(10));
-            break;
-        case mark_bottom_left:
-            pos = ImVec2(SCALE(10), ImGui::GetIO().DisplaySize.y - content_size.y);
-            break;
-        case mark_bottom_right:
-            pos = ImVec2(ImGui::GetIO().DisplaySize.x - content_size.x, ImGui::GetIO().DisplaySize.y - content_size.y);
-            break;
-        }
-
-        current_pos = ImLerp(current_pos, pos, fixed_speed(25.f));
-
-        gui->push_style_color(ImGuiCol_WindowBg, gui->get_clr(clr->c_window.layout));
-        gui->push_style_var(ImGuiStyleVar_WindowRounding, SCALE(4.f));
-        gui->push_style_var(ImGuiStyleVar_WindowPadding, SCALE(10, 10));
-        gui->push_style_var(ImGuiStyleVar_ItemSpacing, SCALE(20, 10));
-
-        SetNextWindowPos(current_pos);
-        gui->begin("watermark", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize);
-        {
-            ImDrawList* draw_list = ImGui::GetWindowDrawList();
-
-            for (int i = 0; i < function.size(); i++)
-            {
-                widget->text_colored(set->c_font.inter_medium[0], gui->get_clr(i == 0 ? clr->c_text.text_active : clr->c_text.text), function[i]);
-                gui->sameline();
-                draw->add_rect_filled(draw_list, ImGui::GetCursorScreenPos() - SCALE(12, 0), ImGui::GetCursorScreenPos() + SCALE(-9, 14), gui->get_clr(clr->c_child.stroke), 10.f);
-                gui->sameline();
-            }
-
-            content_size = ImGui::GetContentRegionMax() + SCALE(20, 20);
-        }
-        gui->end();
-
-        gui->pop_style_var(3);
-        gui->pop_style_color(1);
-
-    }
-    pop_style_var();
 }
 
 #include <chrono>

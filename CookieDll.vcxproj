@@ -58,18 +58,20 @@
   <PropertyGroup>
     <BaseRoot>$(ProjectDir)src\base</BaseRoot>
     <BaseInclude>$(BaseRoot);$(BaseRoot)\Common\Include</BaseInclude>
-    <CookieInclude>$(BaseRoot)\Client\UI\Synthetic\SyntheticCompat;$(BaseRoot)\Client\UI\Synthetic;$(BaseRoot)\Client\UI\Synthetic\framework\settings;$(BaseRoot)\Client\Features\Combat\Rage;$(BaseRoot)\Client\Features\Combat\Legit;$(BaseRoot)\Client\Features\Combat;$(BaseRoot)\Client\Features\Visuals;$(BaseRoot)\Client\Features\Movement;$(BaseRoot)\Client\Features\Inventory;$(BaseRoot)\Client\Features\Misc;$(BaseRoot)\Client\Features\Events;$(BaseRoot)\Client\Features\Init;$(BaseRoot)\Client\UI\Menu;$(BaseRoot)\Client\Game;$(BaseRoot)\Client\Utils;$(BaseRoot)\Client\Core;$(BaseRoot)\Client\Fonts;$(BaseRoot)\Client\Resources\embedded</CookieInclude>
+    <CookieInclude>$(BaseRoot)\Client\UI\Synthetic\include_shim;$(BaseRoot)\Client\UI\Synthetic\SyntheticCompat;$(BaseRoot)\Client\UI\Synthetic;$(BaseRoot)\Client\Features\Combat\Rage;$(BaseRoot)\Client\Features\Combat\Legit;$(BaseRoot)\Client\Features\Combat;$(BaseRoot)\Client\Features\Visuals;$(BaseRoot)\Client\Features\Movement;$(BaseRoot)\Client\Features\Inventory;$(BaseRoot)\Client\Features\Misc;$(BaseRoot)\Client\Features\Events;$(BaseRoot)\Client\Features\Init;$(BaseRoot)\Client\UI\Menu;$(BaseRoot)\Client\Game;$(BaseRoot)\Client\Utils;$(BaseRoot)\Client\Core;$(BaseRoot)\Client\Fonts;$(BaseRoot)\Client\Resources\embedded</CookieInclude>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>false</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;COOKIE_EXPORTS;RELEASE_BUILD;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;COOKIE_EXPORTS;RELEASE_BUILD;_WINDOWS;_USRDLL;_WIN64;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(CookieInclude);$(ProjectDir)src;$(ProjectDir)src\third_party;$(ProjectDir)minhook;$(BaseInclude);$(BaseInclude)\ImGui;$(ProjectDir)sdk;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ForcedIncludeFiles>$(BaseRoot)\Client\UI\Synthetic\include_shim\global_compat.hpp;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <AdditionalOptions>/FS %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ResourceCompile>
       <AdditionalIncludeDirectories>$(ProjectDir)src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -91,13 +93,15 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>false</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;COOKIE_EXPORTS;RELEASE_BUILD;_WINDOWS;_USRDLL;STB_IMAGE_STATIC;STB_IMAGE_IMPLEMENTATION;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;COOKIE_EXPORTS;RELEASE_BUILD;_WINDOWS;_USRDLL;_WIN64;NOMINMAX;STB_IMAGE_STATIC;STB_IMAGE_IMPLEMENTATION;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(CookieInclude);$(ProjectDir)src;$(ProjectDir)src\third_party;$(ProjectDir)minhook;$(BaseInclude);$(BaseInclude)\ImGui;$(ProjectDir)sdk;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ForcedIncludeFiles>$(BaseRoot)\Client\UI\Synthetic\include_shim\global_compat.hpp;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalOptions>/FS %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ResourceCompile>
       <AdditionalIncludeDirectories>$(ProjectDir)src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -117,10 +121,22 @@
   </ItemDefinitionGroup>
   <Import Project="BaseSources.props" />
   <ItemGroup>
-    <ClCompile Include="minhook\src\buffer.c" />
-    <ClCompile Include="minhook\src\hook.c" />
-    <ClCompile Include="minhook\src\trampoline.c" />
-    <ClCompile Include="minhook\src\hde\hde64.c" />
+    <ClCompile Include="minhook\src\buffer.c">
+      <CompileAs>CompileAsCpp</CompileAs>
+      <AdditionalOptions>/D_WIN64 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="minhook\src\hook.c">
+      <CompileAs>CompileAsCpp</CompileAs>
+      <AdditionalOptions>/D_WIN64 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="minhook\src\trampoline.c">
+      <CompileAs>CompileAsCpp</CompileAs>
+      <AdditionalOptions>/D_WIN64 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="minhook\src\hde\hde64.c">
+      <CompileAs>CompileAsCpp</CompileAs>
+      <AdditionalOptions>/D_WIN64 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\base\Client\Features\Init\FeatureInit.hpp" />

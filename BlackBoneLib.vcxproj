@@ -45,7 +45,9 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <Target Name="BuildBlackBoneLib" AfterTargets="Build">
     <Error Condition="!Exists('$(BlackBoneProject)')" Text="Missing external/BlackBone. Clone: git clone https://github.com/DarthTon/BlackBone external/BlackBone" />
+    <Error Condition="!Exists('$(BlackBoneProps)')" Text="Missing $(BlackBoneProps). Restore external/BlackBone/CookieBuild.props from the Cookie repo." />
     <MSBuild Projects="$(BlackBoneProject)" Properties="Configuration=$(Configuration);Platform=$(Platform);PlatformToolset=$(PlatformToolset);ForceImportBeforeCppTargets=$(BlackBoneProps)" />
+    <Error Condition="!Exists('$(BlackBoneOut)')" Text="BlackBone.lib not found at $(BlackBoneOut). Check BlackBone MSBuild output above (toolset / SDK)." />
     <Copy SourceFiles="$(BlackBoneOut)" DestinationFolder="$(LauncherLibDir)" SkipUnchangedFiles="true" />
   </Target>
   <Target Name="CleanBlackBoneLib" AfterTargets="Clean">

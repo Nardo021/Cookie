@@ -68,7 +68,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
       <AdditionalLibraryDirectories>$(ProjectDir)src\launcher\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>BlackBone.lib;d3d9.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>BlackBone.lib;d3d9.lib;Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>powershell -NoProfile -ExecutionPolicy Bypass -File "$(ProjectDir)tools\embed_vac3.ps1" -InputDll "$(ProjectDir)obj\Release\Win32\vac3_inhibitor.dll" -OutputHeader "$(ProjectDir)src\launcher\vac3_bypass\vac3_bypass.hpp"
@@ -97,7 +97,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -Command "$dll='$(ProjectDir)obj\$
       <OptimizeReferences>true</OptimizeReferences>
       <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
       <AdditionalLibraryDirectories>$(ProjectDir)src\launcher\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>BlackBone.lib;d3d9.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>BlackBone.lib;d3d9.lib;Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>powershell -NoProfile -ExecutionPolicy Bypass -File "$(ProjectDir)tools\embed_vac3.ps1" -InputDll "$(ProjectDir)obj\Release\Win32\vac3_inhibitor.dll" -OutputHeader "$(ProjectDir)src\launcher\vac3_bypass\vac3_bypass.hpp"

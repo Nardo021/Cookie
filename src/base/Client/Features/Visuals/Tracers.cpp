@@ -29,12 +29,12 @@ namespace BulletTracer
 			};
 
 			float fraction = 1.f;
-			if ( localPawn && Trace::RunTrace(
+			if ( localPawn && ::Trace::RunTrace(
 				traceStart ,
 				traceEnd ,
 				localPawn ,
 				localHandle ,
-				Trace::kShotFilterProfile ,
+				::Trace::kShotFilterProfile ,
 				fraction ) )
 			{
 				const float hitDist = range * std::clamp( fraction , 0.f , 1.f );

@@ -10,6 +10,9 @@ auto Hook_DrawObject(
 	void* unk1 ,
 	void* unk2 ) -> void
 {
+	if ( !DrawObject_o )
+		return;
+
 	if ( Chams::OnDrawObject(
 			animatableObject ,
 			dx11 ,

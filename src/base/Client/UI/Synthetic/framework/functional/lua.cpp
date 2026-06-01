@@ -1,4 +1,4 @@
-﻿#include "../settings/functions.h"
+﻿#include <framework/settings/functions.h>
 
 bool load_button(std::string_view label, bool* callback) {
     ImGuiWindow* window = GetCurrentWindow();
@@ -95,3 +95,4 @@ bool c_widget::lua_selectable(lua_data* data, int lua_id)
     
     return pressed;
 }
+

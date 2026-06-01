@@ -20,7 +20,7 @@ namespace SkinChangerSetModel
 		if ( !entity || !modelName )
 			return modelName;
 
-		if ( const auto* identity = entity->pEntityIdentity() )
+		if ( auto* identity = entity->pEntityIdentity() )
 		{
 			const char* designer = identity->DesingerName().String();
 			if ( !designer || std::strstr( designer , "viewmodel" ) == nullptr )
@@ -54,14 +54,16 @@ namespace SkinChangerSetModel
 		if ( weapon->GetOriginalOwnerXuid() != inventory->GetOwner().m_id )
 			return modelName;
 
-		auto* weaponItemView = &weapon->m_AttributeManager().m_Item();
+		auto* weaponItemView = weapon->m_AttributeManager()->m_Item();
+		if ( !weaponItemView )
+			return modelName;
 		auto* weaponDefinition = weaponItemView->GetStaticData();
 		if ( !weaponDefinition )
 			return modelName;
 
-		auto* loadoutItemView = inventory->GetItemInLoadout(
-			weapon->m_iOriginalTeamNumber() ,
-			static_cast<int>( weaponDefinition->LoadoutSlot() ) );
+		const int team = weapon->m_iOriginalTeamNumber();
+		const int slot = static_cast<int>( weaponDefinition->LoadoutSlot() );
+		auto* loadoutItemView = inventory->GetItemInLoadout( team , slot );
 
 		if ( !loadoutItemView )
 			return modelName;

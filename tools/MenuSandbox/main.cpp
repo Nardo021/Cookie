@@ -5,10 +5,9 @@
 #pragma comment( lib , "d3d11.lib" )
 #pragma comment( lib , "dxgi.lib" )
 #pragma comment( lib , "d3dcompiler.lib" )
-#pragma comment( lib , "d3dx11.lib" )
 
 #include <d3d11.h>
-#include <d3dx11.h>
+#include <Client/UI/Synthetic/SyntheticCompat/d3dx11tex.h>
 #include <tchar.h>
 
 bool CreateDeviceD3D( HWND hWnd );
@@ -56,9 +55,9 @@ int main( int , char** )
 	ImGui_ImplDX11_Init( g_pd3dDevice , g_pd3dDeviceContext );
 
 	if ( set->c_texture.bg == nullptr )
-		D3DX11CreateShaderResourceViewFromMemory( g_pd3dDevice , background , sizeof( background ) , &info , pump , &set->c_texture.bg , 0 );
+		D3DX11CreateShaderResourceViewFromMemory( g_pd3dDevice , background , sizeof( background ) , &g_dx11ImageInfo , pump , &set->c_texture.bg , 0 );
 	if ( set->c_texture.logo == nullptr )
-		D3DX11CreateShaderResourceViewFromMemory( g_pd3dDevice , logo , sizeof( logo ) , &info , pump , &set->c_texture.logo , 0 );
+		D3DX11CreateShaderResourceViewFromMemory( g_pd3dDevice , logo , sizeof( logo ) , &g_dx11ImageInfo , pump , &set->c_texture.logo , 0 );
 
 	bool done = false;
 	while ( !done )

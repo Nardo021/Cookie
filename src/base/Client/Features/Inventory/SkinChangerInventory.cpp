@@ -48,7 +48,7 @@ namespace SkinChangerInventory
 			if ( !definition )
 				return -1;
 
-			return static_cast<int>( definition->LoadoutSlot() );
+			return static_cast<int>( definition.value()->LoadoutSlot() );
 		}
 
 		auto FindManagedItem( int defIndex ) noexcept -> CEconItem*
@@ -160,7 +160,9 @@ namespace SkinChangerInventory
 			if ( weapon->GetOriginalOwnerXuid() != steamId )
 				return;
 
-			auto* weaponItemView = &weapon->m_AttributeManager().m_Item();
+			auto* weaponItemView = weapon->m_AttributeManager()->m_Item();
+			if ( !weaponItemView )
+				return;
 			auto* weaponDefinition = weaponItemView->GetStaticData();
 			if ( !weaponDefinition )
 				return;
@@ -184,9 +186,9 @@ namespace SkinChangerInventory
 			}
 			else
 			{
-				loadoutItemView = inventory->GetItemInLoadout(
-					weapon->m_iOriginalTeamNumber() ,
-					GetLoadoutSlotForDefIndex( weaponDefinition->m_nDefIndex() ) );
+				const int team = weapon->m_iOriginalTeamNumber();
+				const int slot = GetLoadoutSlotForDefIndex( weaponDefinition->m_nDefIndex() );
+				loadoutItemView = inventory->GetItemInLoadout( team , slot );
 			}
 
 			if ( !loadoutItemView )
@@ -214,9 +216,9 @@ namespace SkinChangerInventory
 			if ( !weaponSceneNode )
 				return;
 
-			const CBaseHandle weaponHandle = weapon->pEntityIdentity()
+			const CHandle weaponHandle = weapon->pEntityIdentity()
 				? weapon->pEntityIdentity()->Handle()
-				: CBaseHandle{};
+				: CHandle{};
 
 			if ( isKnife )
 			{
@@ -281,9 +283,9 @@ namespace SkinChangerInventory
 			return true;
 
 		std::lock_guard<std::mutex> lock( SkinChanger::configMutex );
-		for ( const auto& [ , cfg ] : SkinChanger::weaponSkins )
+		for ( const auto& entry : SkinChanger::weaponSkins )
 		{
-			if ( cfg.enabled && cfg.paintKit > 0 )
+			if ( entry.second.enabled && entry.second.paintKit > 0 )
 				return true;
 		}
 
@@ -378,12 +380,12 @@ namespace SkinChangerInventory
 		auto* viewModelServices = localPawn->m_pViewModelServices();
 		C_CSGOViewModel* viewModel = nullptr;
 		if ( viewModelServices )
-			viewModel = viewModelServices->m_hViewModel().Get<C_CSGOViewModel>();
+			viewModel = reinterpret_cast<C_CSGOViewModel*>( viewModelServices->m_hViewModel()->Get() );
 
 		const int highestIndex = entitySystem->GetHighestEntityIndex();
 		for ( int i = 64 + 1; i <= highestIndex; ++i )
 		{
-			auto* entity = entitySystem->Get<C_BaseEntity>( i );
+			auto* entity = entitySystem->GetBaseEntity<C_BaseEntity>( i );
 			if ( !entity )
 				continue;
 

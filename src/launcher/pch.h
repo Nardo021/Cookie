@@ -7,6 +7,7 @@
 #include <vector>
 
 #include <windows.h>
+#include <tchar.h>
 
 #include <d3d9.h>
 

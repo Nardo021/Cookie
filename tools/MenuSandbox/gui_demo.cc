@@ -1,5 +1,5 @@
-#include "settings/functions.h"
-#include "shader/blur.hpp"
+#include <framework/settings/functions.h>
+#include <framework/shader/blur.hpp>
 
 void c_gui::render()
 {
@@ -8,11 +8,11 @@ void c_gui::render()
 	{
 		notify->setup_notify();
 
-		draw->add_image(GetBackgroundDrawList(), set->c_texture.bg, { 0, 0 }, { 1920, 1080 }, { 0, 0 }, { 1, 1 }, gui->get_clr(clr->c_other_clr.white_clr));
+		draw->add_image(GetBackgroundDrawList(), (ImTextureID)set->c_texture.bg, { 0, 0 }, { 1920, 1080 }, { 0, 0 }, { 1, 1 }, gui->get_clr(clr->c_other_clr.white_clr));
 
 		gui->set_next_window_size(SCALE(set->c_window.window_size));
 
-		gui->begin({ "NAME" }, { 0 }, set->c_window.window_flags);
+		gui->begin({ "Cookie" }, { 0 }, set->c_window.window_flags);
 		{
 			const ImVec2 pos = GetWindowPos();
 			const ImVec2 size = GetWindowSize();
@@ -504,7 +504,7 @@ void c_gui::render()
 			}
 			gui->end_content();
 
-			gui->pop_style_var(2);
+			gui->pop_style_var();
 
 		}
 		gui->end();

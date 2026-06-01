@@ -1,4 +1,4 @@
-#include "SyntheticTabs.hpp"
+﻿#include "SyntheticTabs.hpp"
 #include "SyntheticTabCommon.hpp"
 
 #include <Client/Features/Misc/AntiAim.hpp>
@@ -16,28 +16,28 @@ namespace SyntheticTabs
 		{
 			gui->begin_child( "Anti-Aim" );
 			{
-				Checkbox( "Anti-Aim" , &AntiAim::config.enabled );
+				UiCheckbox( "Anti-Aim" , &AntiAim::config.enabled );
 				if ( AntiAim::config.enabled )
 				{
-					static const auto aaModes = Strings( { "Static" , "Spin" } );
-					Combo( "Mode" , &AntiAim::config.mode , aaModes );
+					static const auto aaModes = ItemStrings( { "Static" , "Spin" } );
+					UiCombo( "Mode" , &AntiAim::config.mode , aaModes );
 
 					if ( AntiAim::config.mode == static_cast<int>( AntiAim::Mode::Static ) )
 					{
-						static const auto pitchModes = Strings( { "Custom" , "Down" , "Up" , "Zero" } );
-						Combo( "Pitch Mode" , &AntiAim::config.pitchType , pitchModes );
+						static const auto pitchModes = ItemStrings( { "Custom" , "Down" , "Up" , "Zero" } );
+						UiCombo( "Pitch Mode" , &AntiAim::config.pitchType , pitchModes );
 						if ( AntiAim::config.pitchType == static_cast<int>( AntiAim::PitchType::None ) )
-							SliderFloat( "Pitch" , &AntiAim::config.pitch , -89.f , 89.f , 1.f , "%.0f" );
+							UiSliderFloat( "Pitch" , &AntiAim::config.pitch , -89.f , 89.f , 1.f , "%.0f" );
 
-						static const auto yawModes = Strings( { "Custom Offset" , "Backwards" , "Forwards" } );
-						Combo( "Yaw Mode" , &AntiAim::config.yawType , yawModes );
+						static const auto yawModes = ItemStrings( { "Custom Offset" , "Backwards" , "Forwards" } );
+						UiCombo( "Yaw Mode" , &AntiAim::config.yawType , yawModes );
 						if ( AntiAim::config.yawType == static_cast<int>( AntiAim::YawType::None ) )
-							SliderFloat( "Yaw" , &AntiAim::config.yaw , -180.f , 180.f , 1.f , "%.0f" );
+							UiSliderFloat( "Yaw" , &AntiAim::config.yaw , -180.f , 180.f , 1.f , "%.0f" );
 					}
 					else
 					{
-						SliderFloat( "Pitch" , &AntiAim::config.pitch , -89.f , 89.f , 1.f , "%.0f" );
-						SliderFloat( "Spin Speed" , &AntiAim::config.spinSpeed , 1.f , 360.f , 1.f , "%.0f" );
+						UiSliderFloat( "Pitch" , &AntiAim::config.pitch , -89.f , 89.f , 1.f , "%.0f" );
+						UiSliderFloat( "Spin Speed" , &AntiAim::config.spinSpeed , 1.f , 360.f , 1.f , "%.0f" );
 					}
 				}
 			}
@@ -45,12 +45,12 @@ namespace SyntheticTabs
 
 			gui->begin_child( "Bhop" );
 			{
-				Checkbox( "Bunny Hop" , &Bhop::config.enabled );
-				Checkbox( "Edge Jump" , &Bhop::config.edgeJump );
-				Checkbox( "Jump Bug" , &Bhop::config.jumpBug );
-				Checkbox( "Hold Space" , &Bhop::config.requireSpace );
-				Checkbox( "Auto Forward" , &Bhop::config.autoForward );
-				SliderInt( "Hop Chance" , &Bhop::config.hopChance , 0 , 100 , 1 , "%d%%" );
+				UiCheckbox( "Bunny Hop" , &Bhop::config.enabled );
+				UiCheckbox( "Edge Jump" , &Bhop::config.edgeJump );
+				UiCheckbox( "Jump Bug" , &Bhop::config.jumpBug );
+				UiCheckbox( "Hold Space" , &Bhop::config.requireSpace );
+				UiCheckbox( "Auto Forward" , &Bhop::config.autoForward );
+				UiSliderInt( "Hop Chance" , &Bhop::config.hopChance , 0 , 100 , 1 , "%d%%" );
 				if ( ( Bhop::NeedsTrace() || Movement::config.edgeBug ) && !Trace::ready )
 				{
 					draw->render_text(
@@ -75,23 +75,23 @@ namespace SyntheticTabs
 		{
 			gui->begin_child( "Movement Advanced" );
 			{
-				Checkbox( "Movement Fix" , &Movement::config.movementFix );
-				Checkbox( "Movement Correction" , &Movement::config.movementCorrection );
-				Checkbox( "Validate Angles" , &Movement::config.validateAngles );
-				Checkbox( "Edge Bug" , &Movement::config.edgeBug );
+				UiCheckbox( "Movement Fix" , &Movement::config.movementFix );
+				UiCheckbox( "Movement Correction" , &Movement::config.movementCorrection );
+				UiCheckbox( "Validate Angles" , &Movement::config.validateAngles );
+				UiCheckbox( "Edge Bug" , &Movement::config.edgeBug );
 				if ( Movement::config.edgeBug )
 				{
-					Checkbox( "Edge Bug Use Key" , &Movement::config.edgeBugUseKey );
+					UiCheckbox( "Edge Bug Use Key" , &Movement::config.edgeBugUseKey );
 					if ( Movement::config.edgeBugUseKey )
-						KeyBind( "Edge Bug Key" , &Movement::config.edgeBugKey );
+						UiKeyBind( "Edge Bug Key" , &Movement::config.edgeBugKey );
 				}
 
-				static const auto strafeModes = Strings( { "Off" , "Legit" , "Rage" } );
-				Combo( "Auto Strafe Mode" , reinterpret_cast<int*>( &Movement::config.strafeMode ) , strafeModes );
+				static const auto strafeModes = ItemStrings( { "Off" , "Legit" , "Rage" } );
+				UiCombo( "Auto Strafe Mode" , reinterpret_cast<int*>( &Movement::config.strafeMode ) , strafeModes );
 				if ( Movement::config.strafeMode != Movement::StrafeMode::Off )
 				{
-					SliderFloat( "Strafe Smoothing" , &Movement::config.strafeSmooth , 0.f , 100.f , 1.f , "%.0f" );
-					Checkbox( "Strafe Assist (WASD)" , &Movement::config.strafeAssist );
+					UiSliderFloat( "Strafe Smoothing" , &Movement::config.strafeSmooth , 0.f , 100.f , 1.f , "%.0f" );
+					UiCheckbox( "Strafe Assist (WASD)" , &Movement::config.strafeAssist );
 				}
 			}
 			gui->end_child();
@@ -99,3 +99,4 @@ namespace SyntheticTabs
 		gui->end_group();
 	}
 }
+

@@ -136,7 +136,7 @@ auto CNotify::Render() -> void
 		}
 
 		const float timeDelta = data.GetTimeDelta( currentTime );
-		data.animHandler.Update( io.DeltaTime , style.AnimationSpeed > 0.f ? style.AnimationSpeed : 0.25f );
+		data.animHandler.Update( io.DeltaTime , 0.25f );
 
 		if ( timeDelta >= ( kMaxLifetime - 0.25f ) )
 			data.animHandler.SetSwitch( false );
@@ -163,7 +163,7 @@ auto CNotify::Render() -> void
 			ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoInputs );
 
 		const ImU32 typeColor = data.GetTypeColor();
-		const ImVec4 typeColorVec = ImGui::ColorConvertU32ToFloat4( typeColor );
+		ImVec4 typeColorVec = ImGui::ColorConvertU32ToFloat4( typeColor );
 		typeColorVec.w *= animValue;
 
 		if ( ImFont* iconFont = EmbeddedFonts::GetFontAwesome() )

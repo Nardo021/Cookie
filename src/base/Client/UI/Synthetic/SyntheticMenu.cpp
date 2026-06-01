@@ -5,6 +5,7 @@
 #include <Client/CCookieGUI.hpp>
 #include <Client/UI/Menu/MenuSettings.hpp>
 #include <Client/UI/Synthetic/SyntheticLuaRuntime.hpp>
+#include <Common/DevLog.hpp>
 #include <Common/Include/Config.hpp>
 #include <framework/data/font.h>
 #include <framework/data/texture.h>
@@ -47,13 +48,13 @@ namespace SyntheticMenu
 			if ( set->c_texture.bg == nullptr )
 			{
 				D3DX11CreateShaderResourceViewFromMemory(
-					device , background , sizeof( background ) , &info , pump , &set->c_texture.bg , 0 );
+					device , background , sizeof( background ) , &g_dx11ImageInfo , pump , &set->c_texture.bg , 0 );
 			}
 
 			if ( set->c_texture.logo == nullptr )
 			{
 				D3DX11CreateShaderResourceViewFromMemory(
-					device , logo , sizeof( logo ) , &info , pump , &set->c_texture.logo , 0 );
+					device , logo , sizeof( logo ) , &g_dx11ImageInfo , pump , &set->c_texture.logo , 0 );
 			}
 		}
 	}
@@ -80,6 +81,12 @@ namespace SyntheticMenu
 		}
 
 		LoadFonts();
+		if ( !set->c_font.inter_medium[0] || !set->c_font.inter_medium[1] )
+		{
+			DEV_LOG( "[error] SyntheticMenu: core font load failed\n" );
+			return;
+		}
+
 		LoadTextures( device );
 
 		s_initialized = true;
@@ -170,6 +177,8 @@ namespace SyntheticMenu
 		var->c_dpi.dpi = newDpi;
 		var->c_watermark.watermark = MenuSettings::syntheticWatermark;
 		var->c_watermark.watermark_position = MenuSettings::syntheticWatermarkPosition;
+		var->c_watermark.use_custom_position = MenuSettings::useCustomHudPosition;
+		var->c_watermark.custom_position = ImVec2( MenuSettings::hudPositionX , MenuSettings::hudPositionY );
 		var->c_notify.notify_position = MenuSettings::syntheticNotifyPosition;
 	}
 
@@ -178,6 +187,9 @@ namespace SyntheticMenu
 		MenuSettings::menuDpiPercent = std::clamp( var->c_dpi.dpi_saved , 100 , 200 );
 		MenuSettings::syntheticWatermark = var->c_watermark.watermark;
 		MenuSettings::syntheticWatermarkPosition = var->c_watermark.watermark_position;
+		MenuSettings::useCustomHudPosition = var->c_watermark.use_custom_position;
+		MenuSettings::hudPositionX = var->c_watermark.custom_position.x;
+		MenuSettings::hudPositionY = var->c_watermark.custom_position.y;
 		MenuSettings::syntheticNotifyPosition = var->c_notify.notify_position;
 		if ( !var->c_lua.editable.empty() )
 			MenuSettings::activeLuaScript = var->c_lua.editable;

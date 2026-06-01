@@ -34,7 +34,9 @@
   <PropertyGroup>
     <RepoRoot>$(ProjectDir)..\..</RepoRoot>
     <SyntheticRoot>$(RepoRoot)\src\base\Client\UI\Synthetic</SyntheticRoot>
+    <BaseRoot>$(RepoRoot)\src\base</BaseRoot>
     <BaseInclude>$(RepoRoot)\src\base\Common\Include</BaseInclude>
+    <SandboxInclude>$(SyntheticRoot)\include_shim;$(SyntheticRoot)\SyntheticCompat;$(SyntheticRoot);$(BaseRoot)</SandboxInclude>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(RepoRoot)\bin\MenuSandbox\$(Configuration)\</OutDir>
@@ -47,45 +49,47 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SyntheticRoot);$(SyntheticRoot)\framework\settings;$(BaseInclude);$(BaseInclude)\ImGui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SandboxInclude);$(BaseInclude);$(BaseInclude)\ImGui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ForcedIncludeFiles>$(SyntheticRoot)\include_shim\global_compat_min.hpp;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
-      <AdditionalDependencies>d3d11.lib;dxgi.lib;d3dcompiler.lib;d3dx11.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SubSystem>Console</SubSystem>
+      <AdditionalDependencies>d3d11.lib;dxgi.lib;d3dcompiler.lib;windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SyntheticRoot);$(SyntheticRoot)\framework\settings;$(BaseInclude);$(BaseInclude)\ImGui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SandboxInclude);$(BaseInclude);$(BaseInclude)\ImGui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ForcedIncludeFiles>$(SyntheticRoot)\include_shim\global_compat_min.hpp;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
-      <AdditionalDependencies>d3d11.lib;dxgi.lib;d3dcompiler.lib;d3dx11.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SubSystem>Console</SubSystem>
+      <AdditionalDependencies>d3d11.lib;dxgi.lib;d3dcompiler.lib;windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="gui_demo.cc" />
     <ClCompile Include="config_demo.cpp" />
-    <ClCompile Include="$(SyntheticRoot)\framework\functional\begin.cpp" />
-    <ClCompile Include="$(SyntheticRoot)\framework\functional\begin_child.cpp" />
-    <ClCompile Include="$(SyntheticRoot)\framework\functional\base_elements.cpp" />
-    <ClCompile Include="$(SyntheticRoot)\framework\functional\button.cpp" />
-    <ClCompile Include="$(SyntheticRoot)\framework\functional\checkbox.cpp" />
-    <ClCompile Include="$(SyntheticRoot)\framework\functional\color_picker.cpp" />
-    <ClCompile Include="$(SyntheticRoot)\framework\functional\custom_draw.cpp" />
-    <ClCompile Include="$(SyntheticRoot)\framework\functional\drag_slider.cpp" />
-    <ClCompile Include="$(SyntheticRoot)\framework\functional\dropdown.cpp" />
-    <ClCompile Include="$(SyntheticRoot)\framework\functional\esp_preview.cpp" />
-    <ClCompile Include="$(SyntheticRoot)\framework\functional\keybind.cpp" />
-    <ClCompile Include="$(SyntheticRoot)\framework\functional\lua.cpp" />
-    <ClCompile Include="$(SyntheticRoot)\framework\functional\notifications.cpp" />
-    <ClCompile Include="$(SyntheticRoot)\framework\functional\selection.cpp" />
-    <ClCompile Include="$(SyntheticRoot)\framework\functional\textfield.cpp" />
-    <ClCompile Include="$(SyntheticRoot)\framework\functional\text_editor.cpp" />
+    <ClCompile Include="$(SyntheticRoot)\SyntheticCompat\begin_patched.cpp" />
+    <ClCompile Include="$(SyntheticRoot)\SyntheticCompat\begin_child_patched.cpp" />
+    <ClCompile Include="$(SyntheticRoot)\SyntheticCompat\base_elements_patched.cpp" />
+    <ClCompile Include="$(SyntheticRoot)\SyntheticCompat\button_patched.cpp" />
+    <ClCompile Include="$(SyntheticRoot)\SyntheticCompat\checkbox_patched.cpp" />
+    <ClCompile Include="$(SyntheticRoot)\SyntheticCompat\color_picker_patched.cpp" />
+    <ClCompile Include="$(SyntheticRoot)\SyntheticCompat\SyntheticDraw.cpp" />
+    <ClCompile Include="$(SyntheticRoot)\SyntheticCompat\drag_slider_patched.cpp" />
+    <ClCompile Include="$(SyntheticRoot)\SyntheticCompat\dropdown_patched.cpp" />
+    <ClCompile Include="$(SyntheticRoot)\SyntheticCompat\esp_preview_patched.cpp" />
+    <ClCompile Include="$(SyntheticRoot)\SyntheticCompat\keybind_patched.cpp" />
+    <ClCompile Include="$(SyntheticRoot)\SyntheticCompat\lua_widgets_stub.cpp" />
+    <ClCompile Include="$(SyntheticRoot)\SyntheticCompat\notifications_patched.cpp" />
+    <ClCompile Include="$(SyntheticRoot)\SyntheticCompat\selection_patched.cpp" />
+    <ClCompile Include="$(SyntheticRoot)\SyntheticCompat\textfield_stub.cpp" />
+    <ClCompile Include="$(SyntheticRoot)\SyntheticCompat\text_editor_link_stub.cpp" />
     <ClCompile Include="$(BaseInclude)\ImGui\imgui.cpp" />
     <ClCompile Include="$(BaseInclude)\ImGui\imgui_draw.cpp" />
     <ClCompile Include="$(BaseInclude)\ImGui\imgui_tables.cpp" />

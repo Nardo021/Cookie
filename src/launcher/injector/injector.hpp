@@ -1,6 +1,6 @@
 #pragma once
 
-#include <BlackBone/Process/Process.h>
+#include "BlackBoneInclude.hpp"
 #include "memory/memory.hpp"
 
 #include <chrono>

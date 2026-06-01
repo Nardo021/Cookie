@@ -1,5 +1,7 @@
 #include "CCSPlayerInventory.hpp"
 
+#include <algorithm>
+
 #include <CS2/SDK/Cstrike15/CCSInventoryManager.hpp>
 #include <CS2/SDK/FunctionListSDK.hpp>
 #include <CS2/SDK/Types/CEntityData.hpp>
@@ -114,8 +116,8 @@ auto CCSPlayerInventory::GetHighestIDs() -> std::pair<uint64_t , uint32_t>
 			if ( ( it->m_ulID & 0xF000000000000000 ) != 0 )
 				continue;
 
-			maxItemID = max( maxItemID , it->m_ulID );
-			maxInventoryID = max( maxInventoryID , it->m_unInventory );
+			maxItemID = std::max( maxItemID , it->m_ulID );
+			maxInventoryID = std::max( maxInventoryID , it->m_unInventory );
 		}
 	}
 

@@ -237,7 +237,7 @@ namespace Ragebot
 			if ( auto* vdata = GetCL_Weapons()->GetLocalWeaponVData() )
 			{
 				if ( vdata->m_WeaponType().m_Type == CSWeaponType_t::WEAPONTYPE_SNIPER_RIFLE && !localPawn->m_bIsScoped() )
-					GetCL_Bypass()->SetButton( cmd , IN_SECOND_ATTACK , true );
+					GetCL_Bypass()->SetButton( cmd , IN_ATTACK2 , true );
 			}
 		}
 

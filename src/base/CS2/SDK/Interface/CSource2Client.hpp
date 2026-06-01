@@ -3,6 +3,7 @@
 #include <Common/Common.hpp>
 
 #include <CS2/CBasePattern.hpp>
+#include <CS2/SDK/SDK.hpp>
 
 #define SOURCE2_CLIENT_INTERFACE_VERSION "Source2Client002"
 

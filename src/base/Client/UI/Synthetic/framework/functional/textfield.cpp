@@ -413,13 +413,13 @@ bool input_text_ex(std::string_view label, const char* hint, char* buf, int buf_
         if (!(flags & ImGuiInputTextFlags_MergedItem))
             if (!ItemAdd(rect, id, &rect, ImGuiItemFlags_Inputable)) return false;
     }
-    const bool hovered = ItemHoverable(rect, id, g.LastItemData.InFlags);
+    const bool hovered = ItemHoverable(rect, id, g.LastItemData.ItemFlags);
     if (hovered)
         g.MouseCursor = ImGuiMouseCursor_TextInput;
 
     ImGuiInputTextState* state = GetInputTextState(id);
 
-    if (g.LastItemData.InFlags & ImGuiItemFlags_ReadOnly)
+    if (g.LastItemData.ItemFlags & ImGuiItemFlags_ReadOnly)
         flags |= ImGuiInputTextFlags_ReadOnly;
     const bool is_readonly = (flags & ImGuiInputTextFlags_ReadOnly) != 0;
     const bool is_password = (flags & ImGuiInputTextFlags_Password) != 0;
@@ -1169,7 +1169,7 @@ bool input_text_ex(std::string_view label, const char* hint, char* buf, int buf_
         if (g.LastItemData.ID == 0)
         {
             g.LastItemData.ID = id;
-            g.LastItemData.InFlags = item_data_backup.InFlags;
+            g.LastItemData.ItemFlags = item_data_backup.ItemFlags;
             g.LastItemData.StatusFlags = item_data_backup.StatusFlags;
         }
     }

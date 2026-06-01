@@ -59,12 +59,7 @@ enum fade_direction : int
     diagonally_reversed,
 };
 
-enum watermark_position : int {
-    mark_top_left,
-    mark_top_right,
-    mark_bottom_left,
-    mark_bottom_right,
-};
+#include <Client/UI/Synthetic/SyntheticCompat/SyntheticUiTypes.hpp>
 
 enum interpolation_type {
     back,
@@ -156,7 +151,7 @@ public:
 
     void                            end_content();
 
-    void                            water_mark(std::string name, std::vector<std::string> function, watermark_position type, bool* visible);
+    void                            water_mark(std::string name, std::vector<std::string> function, watermark_position type, bool* visible, watermark_layout* layout = nullptr);
 
     inline                          ImGuiWindow* get_current_window() { ImGuiContext& g = *GImGui; g.CurrentWindow->WriteAccessed = true; return g.CurrentWindow; };
 

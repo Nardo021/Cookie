@@ -491,6 +491,9 @@ namespace MenuConfig
 		writer.Key( "dpiPercent" ); writer.Int( MenuSettings::menuDpiPercent );
 		writer.Key( "syntheticWatermark" ); writer.Bool( MenuSettings::syntheticWatermark );
 		writer.Key( "syntheticWatermarkPosition" ); writer.Int( MenuSettings::syntheticWatermarkPosition );
+		writer.Key( "useCustomHudPosition" ); writer.Bool( MenuSettings::useCustomHudPosition );
+		writer.Key( "hudPositionX" ); writer.Double( static_cast<double>( MenuSettings::hudPositionX ) );
+		writer.Key( "hudPositionY" ); writer.Double( static_cast<double>( MenuSettings::hudPositionY ) );
 		writer.Key( "syntheticNotifyPosition" ); writer.Int( MenuSettings::syntheticNotifyPosition );
 		ConfigJson::WriteString( writer , "activeLuaScript" , MenuSettings::activeLuaScript.c_str() );
 		writer.EndObject();
@@ -890,6 +893,13 @@ namespace MenuConfig
 			ConfigJson::ReadInt( menu , "dpiPercent" , MenuSettings::menuDpiPercent );
 			ConfigJson::ReadBool( menu , "syntheticWatermark" , MenuSettings::syntheticWatermark );
 			ConfigJson::ReadInt( menu , "syntheticWatermarkPosition" , MenuSettings::syntheticWatermarkPosition );
+			ConfigJson::ReadBool( menu , "useCustomHudPosition" , MenuSettings::useCustomHudPosition );
+			float hudX = MenuSettings::hudPositionX;
+			float hudY = MenuSettings::hudPositionY;
+			ConfigJson::ReadFloat( menu , "hudPositionX" , hudX );
+			ConfigJson::ReadFloat( menu , "hudPositionY" , hudY );
+			MenuSettings::hudPositionX = hudX;
+			MenuSettings::hudPositionY = hudY;
 			ConfigJson::ReadInt( menu , "syntheticNotifyPosition" , MenuSettings::syntheticNotifyPosition );
 			char luaScript[128] = {};
 			ConfigJson::ReadString( menu , "activeLuaScript" , luaScript , sizeof( luaScript ) );

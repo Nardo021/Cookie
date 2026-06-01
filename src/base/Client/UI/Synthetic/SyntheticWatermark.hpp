@@ -4,4 +4,5 @@ namespace SyntheticWatermark
 {
 	auto Update() noexcept -> void;
 	auto Render() noexcept -> void;
+	auto RenderOverlay() noexcept -> void;
 }

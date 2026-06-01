@@ -9,8 +9,6 @@
 #include <Common/Helpers/StringHelper.hpp>
 
 #include <CS2/SDK/SDK.hpp>
-#include <CS2/SDK/Interface/IEngineToClient.hpp>
-#include <CS2/SDK/SDL3/SDL3_Functions.hpp>
 
 #include <CS2/Hook/Hook_IsRelativeMouseMode.hpp>
 
@@ -22,8 +20,22 @@
 #include <Client/UI/Menu/MenuConfig.hpp>
 #include <Client/UI/Menu/MenuSettings.hpp>
 #include <Client/Utils/CInputSystem.hpp>
+#include <Client/Utils/CNotify.hpp>
 
 static CCookieGUI g_CookieGUI{};
+
+namespace
+{
+	auto WarpCursorToClientPos( HWND hwnd , float clientX , float clientY ) noexcept -> void
+	{
+		if ( !hwnd )
+			return;
+
+		POINT pt{ static_cast<LONG>( clientX ) , static_cast<LONG>( clientY ) };
+		if ( ::ClientToScreen( hwnd , &pt ) )
+			::SetCursorPos( pt.x , pt.y );
+	}
+}
 
 IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler( HWND hwnd , UINT msg , WPARAM wParam , LPARAM lParam );
 
@@ -123,6 +135,9 @@ auto CCookieGUI::InitFont() -> void
 	WeaponIcons::Init();
 	EmbeddedFonts::InitFontAwesome( 14.f );
 	EmbeddedFonts::InitLexendBold( 15.f );
+
+	io.Fonts->Build();
+	ImGui_ImplDX11_CreateDeviceObjects();
 }
 
 void CCookieGUI::OnPresent( IDXGISwapChain* pSwapChain )
@@ -187,6 +202,10 @@ void CCookieGUI::OnRender( IDXGISwapChain* pSwapChain )
 
 		ImGui::SetCurrentContext( m_pImGuiContext );
 
+		ImFontAtlas* fontAtlas = ImGui::GetIO().Fonts;
+		if ( !fontAtlas || !fontAtlas->IsBuilt() )
+			return;
+
 		if ( m_needRecreateDeviceObjects )
 		{
 			ImGui_ImplDX11_CreateDeviceObjects();
@@ -209,6 +228,9 @@ void CCookieGUI::OnRender( IDXGISwapChain* pSwapChain )
 
 		GetCookieClient()->OnRender();
 
+		if ( m_bInit )
+			GetNotify()->Render();
+
 		ImGui::EndFrame();
 		ImGui::Render();
 
@@ -225,7 +247,11 @@ auto CCookieGUI::OnReopenGUI() -> void
 	ImGui::GetIO().MouseDrawCursor = m_bVisible;
 	ShowCursor( !m_bVisible );
 
-	IsRelativeMouseMode_o( SDK::Interfaces::InputSystem() , m_bVisible ? false : m_bMainActive );
+	if ( IsRelativeMouseMode_o )
+	{
+		if ( auto* inputSystem = SDK::Interfaces::InputSystem() )
+			IsRelativeMouseMode_o( inputSystem , m_bVisible ? false : m_bMainActive );
+	}
 
 	if ( m_bVisible )
 	{
@@ -234,8 +260,8 @@ auto CCookieGUI::OnReopenGUI() -> void
 
 		ImGui::GetIO().MousePos = m_vecMousePosSave;
 
-		if ( SDK::Interfaces::EngineToClient()->IsInGame() )
-			GetSDL3Functions()->SDL_WarpMouseInWindow_o( nullptr , ImGui::GetIO().MousePos.x , ImGui::GetIO().MousePos.y );
+		if ( m_hCS2Window )
+			WarpCursorToClientPos( m_hCS2Window , ImGui::GetIO().MousePos.x , ImGui::GetIO().MousePos.y );
 	}
 	else
 	{

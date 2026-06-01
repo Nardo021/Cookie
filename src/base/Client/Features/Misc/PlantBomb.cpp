@@ -17,7 +17,7 @@ namespace PlantBomb
 			if ( !pawn )
 				return false;
 
-			const auto* weaponServices = pawn->m_pWeaponServices();
+			auto* weaponServices = pawn->m_pWeaponServices();
 			if ( !weaponServices )
 				return false;
 

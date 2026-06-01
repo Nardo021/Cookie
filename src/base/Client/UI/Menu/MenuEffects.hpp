@@ -10,10 +10,10 @@ namespace MenuEffects
 	struct Config
 	{
 		bool  watermark = true;
-		bool  particles = true;
-		bool  shaderBlur = true;
-		bool  blurPlaceholder = true;
-		bool  menuBackgroundImage = true;
+		bool  particles = false;
+		bool  shaderBlur = false;
+		bool  blurPlaceholder = false;
+		bool  menuBackgroundImage = false;
 		float menuBackgroundAlpha = 0.35f;
 		int   maxParticles = 80;
 		float particleLinkDistance = 120.f;
@@ -39,6 +39,14 @@ namespace MenuEffects
 		std::vector<Particle> particles_;
 	};
 
+	inline ImU32 PanelBlurTintColor() noexcept { return IM_COL32( 12 , 14 , 22 , 180 ); }
+
+	inline auto DrawPanelBlurOverlay( ImDrawList* draw , ImVec2 min , ImVec2 max , float rounding ) -> void
+	{
+		if ( !draw )
+			return;
+		draw->AddRectFilled( min , max , PanelBlurTintColor() , rounding );
+	}
 	auto RenderWatermark() -> void;
 	auto RenderMenuBackground( ImVec2 size , const ImVec2* originOverride = nullptr ) -> void;
 

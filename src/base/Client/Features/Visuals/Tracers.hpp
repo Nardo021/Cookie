@@ -23,8 +23,8 @@ namespace BulletTracer
 
     inline TracerConfig config;
 
-    static constexpr float PI = 3.14159265358979323846f;
-    static constexpr float DEG2RAD = PI / 180.0f;
+    static constexpr float kPi = 3.14159265358979323846f;
+    static constexpr float DEG2RAD = kPi / 180.0f;
 
     // Convert pitch/yaw angles to a unit direction vector
     inline void AngleToDir(float pitch, float yaw, float out[3])
@@ -115,7 +115,7 @@ namespace BulletTracer
         return false;
     }
 
-    void AddTrace( const Vector3& start , const Vector3& end );
+    void AddTrace( const Vector3& start , const Vector3& end ) noexcept;
     void OnCreateMove() noexcept;
 
     // Helper: lerp along the trace

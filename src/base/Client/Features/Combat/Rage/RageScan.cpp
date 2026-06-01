@@ -103,14 +103,14 @@ namespace RageScan
 		}
 
 		auto PassesSafePoint(
-			const Vector3& eye ,
+			const Game::Vector3& eye ,
 			const HitboxData::Sample& hitbox ,
 			int scale ,
 			uintptr_t localPawn ,
 			uint32_t localHandle ,
 			uintptr_t targetAddr ) noexcept -> bool
 		{
-			std::vector<Vector3> points;
+			std::vector<::Vector3> points;
 			HitboxData::BuildMultipoints( hitbox , scale , points );
 			if ( points.size() <= 1 )
 				return Trace::IsVisible(
@@ -556,9 +556,9 @@ namespace RageScan
 				spreadX ,
 				spreadY );
 
-			const QAngle spreadView = NoSpread::detail::ApplySpread( sdkAim , spreadX , spreadY );
+			const ::QAngle spreadView = NoSpread::detail::ApplySpread( sdkAim , spreadX , spreadY );
 			::Vector3 spreadDir{};
-			Math::AngleVectors( spreadView , spreadDir , nullptr , nullptr );
+			Math::AngleVectors( spreadView , spreadDir );
 			spreadDir.Normalize();
 
 			const ::Vector3 end = start + spreadDir * weaponRange;

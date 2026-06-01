@@ -17,6 +17,7 @@
 #include <Client/Features/Combat/NoSpread.hpp>
 #include <Client/Features/Combat/Rage/Ragebot.hpp>
 #include <Client/Features/Combat/Legit/Triggerbot.hpp>
+#include <Client/Features/Combat/Legit/WeaponConfig.hpp>
 #include <Client/Game/Game.hpp>
 #include <Client/Game/Offsets.hpp>
 
@@ -157,7 +158,7 @@ namespace LegitBot
 			const auto viewAngles = Game::Read<Game::QAngle>( Game::clientBase + Offsets::dwViewAngles );
 			::QAngle sdkView( viewAngles.pitch , viewAngles.yaw , 0.f );
 			::Vector3 forward{};
-			Math::AngleVectors( sdkView , forward , nullptr , nullptr );
+			Math::AngleVectors( sdkView , forward );
 			forward.Normalize();
 
 			if ( LegitScan::IsSmokeBetween( eye , eye + forward * 128.f ) )
